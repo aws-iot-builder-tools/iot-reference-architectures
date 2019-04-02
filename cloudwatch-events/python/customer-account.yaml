@@ -1,0 +1,80 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Description
+
+Parameters:
+  PartnerAccountParameter:
+    Type: String
+    Description: Enter the account ID of the partner account
+Resources:
+  # The CloudWatch Events rule that catches CreateThing API calls and invokes the Lambda function
+  EventRule:
+    Type: AWS::Events::Rule
+    Properties:
+      Description: EventRule
+      EventPattern:
+        source:
+          - aws.iot
+        detail-type:
+          - AWS API Call via CloudTrail
+        detail:
+          eventSource:
+            - iot.amazonaws.com
+          eventName:
+            - CreateThing
+      State: ENABLED
+      Targets:
+        - Arn: !GetAtt LambdaFunction.Arn
+          Id: 1
+  # The role that the Lambda function in the customer account will use
+  LambdaFunctionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ "", [ "publish-to-partner-role-", !Ref PartnerAccountParameter ] ]
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: lambda.amazonaws.com
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              # The role needs to be explicitly allowed to perform assume role on the role in the partner's account
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: !Join [ "", [ "arn:aws:iam::", !Ref PartnerAccountParameter, ":role/publish-from-customer-role-", !Ref "AWS::AccountId" ] ]
+              - Effect: Allow
+                Action:
+                  - iot:DescribeThing
+                Resource: "*"
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: "*"
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Environment:
+        Variables:
+          # Pass the role information to the Lambda function in the environment variables so it isn't hardcoded
+          ROLE_ARN: !Join [ "", [ "arn:aws:iam::", !Ref PartnerAccountParameter, ":role/publish-from-customer-role-", !Ref "AWS::AccountId" ] ]
+      Code: customer-triggered-on-create-thing.py
+      Handler: customer-triggered-on-create-thing.lambda_handler
+      Role: !GetAtt LambdaFunctionRole.Arn
+      Runtime: python2.7
+  LambdaFunctionVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !GetAtt LambdaFunction.Arn
+  # Gives the Lambda service permission to invoke the Lambda function
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !GetAtt LambdaFunction.Arn
+      Action: lambda:InvokeFunction
+      Principal: events.amazonaws.com
+      SourceArn: !GetAtt EventRule.Arn

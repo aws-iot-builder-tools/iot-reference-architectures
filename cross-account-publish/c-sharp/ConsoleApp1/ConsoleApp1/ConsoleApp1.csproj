@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp2.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <PackageReference Include="AWSSDK.IoT" Version="3.3.100" />
+      <PackageReference Include="AWSSDK.IotData" Version="3.3.100" />
+      <PackageReference Include="AWSSDK.SecurityToken" Version="3.3.100" />
+    </ItemGroup>
+
+</Project>

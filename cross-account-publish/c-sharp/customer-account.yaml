@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Allows another account to publish into this account using a named cross-account role
+
+Parameters:
+  PartnerAccountParameter:
+    Type: String
+    Description: Enter the account ID of the partner account
+Resources:
+  PublishFromPartnerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ "", [ "publish-from-partner-role-", !Ref PartnerAccountParameter ] ]
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              AWS: !Join [ "", [ "arn:aws:iam::", !Ref PartnerAccountParameter, ":role/publish-to-customer-role-", !Ref "AWS::AccountId" ] ]
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iot:DescribeEndpoint
+                  - iot:Publish
+                Resource: "*"

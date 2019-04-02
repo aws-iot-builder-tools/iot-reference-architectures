@@ -1,0 +1,67 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Allows another account to publish into this account using a named cross-account role
+
+Parameters:
+  CustomerAccountParameter:
+    Type: String
+    Description: Enter the account ID of the customer account
+Resources:
+  # Rule to take messages from our cross account publish topic hierarchy and republish them to the appropriate customer
+  CrossAccountPublishRule:
+    Type: AWS::IoT::TopicRule
+    Properties:
+      TopicRulePayload:
+        RuleDisabled: false
+        Sql: !Join [ "", [ "SELECT *, concat(\"cross_account_publish/", !Ref "AWS::AccountId", "/\", regexp_replace(topic(), \"^[^/]*/[^/]*/\", \"\")) AS topic FROM 'cross_account_publish/", !Ref CustomerAccountParameter, "/#'" ] ]
+        Actions:
+          - Lambda:
+              FunctionArn: !GetAtt LambdaFunction.Arn
+  # The role that the Lambda function in the partner account will use
+  LambdaRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ "", [ "publish-to-customer-role-", !Ref CustomerAccountParameter ] ]
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: lambda.amazonaws.com
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: !Join [ "", [ "arn:aws:iam::", !Ref CustomerAccountParameter, ":role/publish-from-partner-role-", !Ref "AWS::AccountId" ] ]
+              - Effect: Allow
+                Action:
+                  - logs:*
+                Resource: "*"
+  LambdaFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      Environment:
+        Variables:
+          # Pass the role information to the Lambda function in the environment variables so it isn't hardcoded
+          ROLE_ARN: !Join [ "", [ "arn:aws:iam::", !Ref CustomerAccountParameter, ":role/publish-from-partner-role-", !Ref "AWS::AccountId" ] ]
+      Code: partner-triggered-on-message.py
+      Handler: partner-triggered-on-message.lambda_handler
+      Role: !GetAtt LambdaRole.Arn
+      Runtime: python2.7
+  LambdaFunctionVersion:
+    Type: AWS::Lambda::Version
+    Properties:
+      FunctionName: !GetAtt LambdaFunction.Arn
+  # Gives the AWS IoT Rules Engine permission to invoke the Lambda function
+  PermissionForRulesEngineToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      SourceArn: !GetAtt CrossAccountPublishRule.Arn
+      Action: lambda:InvokeFunction
+      Principal: iot.amazonaws.com
+      FunctionName: !GetAtt LambdaFunction.Arn
+      SourceAccount: !Ref AWS::AccountId

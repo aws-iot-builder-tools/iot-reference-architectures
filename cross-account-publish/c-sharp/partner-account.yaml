@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: Creates a role that can be used to publish messages to AWS IoT Core that can be assumed by an EC2 instance
+
+Parameters:
+  CustomerAccountParameter:
+    Type: String
+    Description: Enter the account ID of the customer account
+Resources:
+  PublishToCustomerRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Join [ "", [ "publish-to-customer-role-", !Ref CustomerAccountParameter ] ]
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRole
+            Principal:
+              Service: ec2.amazonaws.com
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sts:AssumeRole
+                Resource: !Join [ "", [ "arn:aws:iam::", !Ref CustomerAccountParameter, ":role/publish-from-partner-role-", !Ref "AWS::AccountId" ] ]
+  PublishToCustomerInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref PublishToCustomerRole

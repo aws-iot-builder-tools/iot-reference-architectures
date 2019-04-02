@@ -1,6 +1,19 @@
 ## IoT Reference Architectures
 
-The repo is a place to store sequence diagrams and reference architectures that we refer to in IoT presentations. It also contains code that generates some of the sequence and architecture diagrams programmatically so they can be kept up to date.
+The repo is a place to store architecture diagrams and the code for reference architectures that we refer to in IoT presentations.
+
+## Terminology
+
+- Partner - an entity that builds solutions on AWS that can be integrated into a customer's own AWS account
+- Customer - an entity with an AWS account that can utilize partner solutions
+
+## Reference architecture list
+
+- CloudWatch Events
+  - [Python](cloudwatch-events/python) - Sets up a CloudWatch Events rule that triggers a Python function when CreateThing is called. The Python function cross-account publishes the event information from a customer's account to a partner's account to give the partner visibility to new devices that a customer creates in their account.
+- Cross-account publish
+  - [C#](cross-account-publish/c-sharp) - A C# application that can cross-account publish from a partner's account to a customer's account to give the partner the ability to easily share information with their customers. This C# application is for running on EC2, not on AWS Lambda, and includes the necessary role that must be attached to the EC2 instance.
+  - [Python](cross-account-publish/python) - A Python Lambda function that can cross-account publish from a partner's account to a customer's account using the AWS IoT Rules Engine
 
 ## License Summary
 
