@@ -4,6 +4,8 @@ Questions, suggestions, problems? Create an issue!
 
 **NOTE: Commands listed were validated in Mac OS. They may work in Linux and CygWin. They will not work in Windows/PowerSHELL**
 
+<!-- toc -->
+
 # AWS IoT
 
 ## Useful OpenSSL commands
