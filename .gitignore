@@ -6,3 +6,5 @@ obj
 venv
 *.swp
 bin
+.gradle
+out
