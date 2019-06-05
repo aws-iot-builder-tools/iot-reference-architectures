@@ -1,0 +1,112 @@
+plugins {
+    // Adds dependencyUpdates task
+    id 'com.github.ben-manes.versions' version '0.21.0'
+}
+
+def gradleDependencyVersion = '5.4.1'
+
+wrapper {
+    gradleVersion = gradleDependencyVersion
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+mainClassName = 'com.awslabs.aws.iot.websockets.Example'
+
+// Specify all of our dependency versions
+def awsSdk2Version = '2.5.52'
+def jodaTimeVersion = '2.10.2'
+def junitVersion = '4.12'
+def awaitilityVersion = '3.1.6'
+
+// NOTE: Do not upgrade to 1.1.1, 1.2.0, or 1.2.1 or you will get "Incorrect upgrade" errors
+// See - https://github.com/eclipse/paho.mqtt.java/issues/345
+def pahoVersion = '1.1.0'
+
+group = 'com.awslabs.aws.iot.websockets.Example'
+version = '0.1.3'
+
+description = """"""
+
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url "https://repo.gradle.org/gradle/libs-releases-local/"
+    }
+}
+
+dependencies {
+    compile "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$pahoVersion"
+    compile "joda-time:joda-time:$jodaTimeVersion"
+
+    compile "software.amazon.awssdk:iot:$awsSdk2Version"
+    compile "software.amazon.awssdk:sts:$awsSdk2Version"
+
+    testCompile "junit:junit:$junitVersion"
+    testCompile "org.awaitility:awaitility:$awaitilityVersion"
+}
+
+// From: https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a
+task resolveDependencies {
+    doLast {
+        project.rootProject.allprojects.each { subProject ->
+            subProject.buildscript.configurations.each { configuration ->
+                // Check to prevent "Resolving configuration 'integrationTestImplementation' directly is not allowed" error
+                if (!configuration.getName().contains("integrationTest")) {
+                    resolveConfiguration(configuration)
+                }
+            }
+            subProject.configurations.each { configuration ->
+                // Check to prevent "Resolving configuration 'integrationTestImplementation' directly is not allowed" error
+                if (!configuration.getName().contains("integrationTest")) {
+                    resolveConfiguration(configuration)
+                }
+            }
+        }
+    }
+}
+
+void resolveConfiguration(configuration) {
+    if (isResolveableConfiguration(configuration)) {
+        configuration.resolve()
+    }
+}
+
+boolean isResolveableConfiguration(configuration) {
+    def nonResolveableConfigurations = ['apiElements', 'implementation',
+                                        'runtimeElements', 'runtimeOnly',
+                                        'testImplementation', 'testRuntimeOnly',
+                                        'generatedImplementation', 'generatedRuntimeOnly']
+
+    if (nonResolveableConfigurations.contains(configuration.getName())) {
+        return false
+    }
+    return true
+}
