@@ -53,7 +53,7 @@ repositories {
 }
 
 dependencies {
-    implementation "com.github.aws-samples:iot-reference-architectures:$mqttOverWebsocketsVersion"
+    compile "com.github.aws-samples:iot-reference-architectures:$mqttOverWebsocketsVersion"
 
     testCompile "junit:junit:$junitVersion"
     testCompile "org.awaitility:awaitility:$awaitilityVersion"
