@@ -12,6 +12,7 @@ Resources:
     Properties:
       TopicRulePayload:
         RuleDisabled: false
+        AwsIotSqlVersion: 2016-03-23
         Sql: !Join [ "", [ "SELECT *, concat(\"cross_account_publish/", !Ref "AWS::AccountId", "/\", regexp_replace(topic(), \"^[^/]*/[^/]*/\", \"\")) AS topic FROM 'cross_account_publish/", !Ref CustomerAccountParameter, "/#'" ] ]
         Actions:
           - Lambda:
