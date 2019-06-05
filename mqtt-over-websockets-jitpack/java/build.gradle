@@ -1,51 +1,41 @@
 plugins {
+    // Creates fat JAR
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
+
     // Adds dependencyUpdates task
     id 'com.github.ben-manes.versions' version '0.21.0'
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
 }
 
 def gradleDependencyVersion = '5.4.1'
 
 wrapper {
     gradleVersion = gradleDependencyVersion
-    distributionType = Wrapper.DistributionType.ALL
 }
 
 apply plugin: 'java'
-apply plugin: 'maven'
 apply plugin: 'application'
 apply plugin: 'idea'
 
 mainClassName = 'com.awslabs.aws.iot.websockets.Example'
 
+distZip.enabled = shadowDistZip.enabled = false
+distTar.enabled = shadowDistTar.enabled = false
+
 // Specify all of our dependency versions
-def awsSdk2Version = '2.5.56'
-def jodaTimeVersion = '2.10.2'
+def mqttOverWebsocketsVersion = 'mqtt-over-websockets-0.2'
 def junitVersion = '4.12'
 def awaitilityVersion = '3.1.6'
 
-// NOTE: Do not upgrade to 1.1.1, 1.2.0, or 1.2.1 or you will get "Incorrect upgrade" errors
-// See - https://github.com/eclipse/paho.mqtt.java/issues/345
-def pahoVersion = '1.1.0'
-
-group = 'com.awslabs.aws.iot.websockets.Example'
-version = '0.2'
+group = 'com.awslabs.aws.iot.websockets.jitpack.Example'
+version = '1.0-SNAPSHOT'
 
 description = """"""
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
-}
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -63,11 +53,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$pahoVersion"
-    compile "joda-time:joda-time:$jodaTimeVersion"
-
-    compile "software.amazon.awssdk:iot:$awsSdk2Version"
-    compile "software.amazon.awssdk:sts:$awsSdk2Version"
+    compile "com.github.aws-samples:iot-reference-architectures:$mqttOverWebsocketsVersion"
 
     testCompile "junit:junit:$junitVersion"
     testCompile "org.awaitility:awaitility:$awaitilityVersion"
