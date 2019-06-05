@@ -1,7 +1,4 @@
 plugins {
-    // Creates fat JAR
-    id 'com.github.johnrengelman.shadow' version '5.0.0'
-
     // Adds dependencyUpdates task
     id 'com.github.ben-manes.versions' version '0.21.0'
 }
@@ -10,6 +7,7 @@ def gradleDependencyVersion = '5.4.1'
 
 wrapper {
     gradleVersion = gradleDependencyVersion
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 apply plugin: 'java'
@@ -17,9 +15,6 @@ apply plugin: 'application'
 apply plugin: 'idea'
 
 mainClassName = 'com.awslabs.aws.iot.websockets.Example'
-
-distZip.enabled = shadowDistZip.enabled = false
-distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
 def awsSdk2Version = '2.5.52'
@@ -36,9 +31,19 @@ version = '0.1'
 
 description = """"""
 
-shadowJar {
-    // Create a shadow JAR with all of the necessary dependencies
-    archiveName = 'Example.jar'
+task sourcesJar(type: Jar, dependsOn: classes) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+
+artifacts {
+    archives sourcesJar
+    archives javadocJar
 }
 
 sourceCompatibility = 1.8
