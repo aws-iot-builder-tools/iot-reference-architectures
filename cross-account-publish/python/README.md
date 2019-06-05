@@ -1,5 +1,5 @@
 Cross-account publish Python example
---------------------------------
+------------------------------------
 
 This example code contains two CloudFormation templates and one Python function. The Python function is referenced in the CloudFormation template and is not meant to be called directly.
 
