@@ -28,7 +28,7 @@ distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
-def mqttOverWebsocketsVersion = 'mqtt-over-websockets-0.3.2'
+def mqttOverWebsocketsVersion = 'mqtt-over-websockets-0.3.4'
 def junitVersion = '4.12'
 def awaitilityVersion = '3.1.6'
 
