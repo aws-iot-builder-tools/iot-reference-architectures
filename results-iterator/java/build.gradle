@@ -18,17 +18,13 @@ apply plugin: 'idea'
 mainClassName = 'not-applicable'
 
 // Specify all of our dependency versions
-def awsSdk2Version = '2.5.58'
-def jodaTimeVersion = '2.10.2'
+def slf4jVersion = '1.7.25'
+def awsSdkVersion = '1.11.564'
 def junitVersion = '4.12'
-def awaitilityVersion = '3.1.6'
+def guavaVersion = '27.1-jre'
 
-// NOTE: Do not upgrade to 1.1.1, 1.2.0, or 1.2.1 or you will get "Incorrect upgrade" errors
-// See - https://github.com/eclipse/paho.mqtt.java/issues/345
-def pahoVersion = '1.1.0'
-
-group = 'com.awslabs.aws.iot.websockets.Example'
-version = '0.3.4'
+group = 'com.awslabs.aws.iot.resultsiterator'
+version = '0.1'
 
 description = """"""
 
@@ -63,14 +59,11 @@ repositories {
 }
 
 dependencies {
-    compile "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$pahoVersion"
-    compile "joda-time:joda-time:$jodaTimeVersion"
-
-    compile "software.amazon.awssdk:iot:$awsSdk2Version"
-    compile "software.amazon.awssdk:sts:$awsSdk2Version"
+    compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
+    compile "com.amazonaws:aws-java-sdk-core:$awsSdkVersion"
+    compile "com.google.guava:guava:$guavaVersion"
 
     testCompile "junit:junit:$junitVersion"
-    testCompile "org.awaitility:awaitility:$awaitilityVersion"
 }
 
 // From: https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a
