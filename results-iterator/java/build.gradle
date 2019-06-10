@@ -18,7 +18,7 @@ apply plugin: 'idea'
 mainClassName = 'not-applicable'
 
 // Specify all of our dependency versions
-def slf4jVersion = '1.7.25'
+def slf4jVersion = '1.7.26'
 def awsSdkVersion = '1.11.564'
 def junitVersion = '4.12'
 def guavaVersion = '27.1-jre'
