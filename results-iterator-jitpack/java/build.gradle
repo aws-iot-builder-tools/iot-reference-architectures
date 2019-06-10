@@ -1,0 +1,98 @@
+plugins {
+    // Creates fat JAR
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
+
+    // Adds dependencyUpdates task
+    id 'com.github.ben-manes.versions' version '0.21.0'
+}
+
+allprojects {
+    repositories {
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+def gradleDependencyVersion = '5.4.1'
+
+wrapper {
+    gradleVersion = gradleDependencyVersion
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+mainClassName = 'com.awslabs.aws.iot.resultsiterator.Example'
+
+distZip.enabled = shadowDistZip.enabled = false
+distTar.enabled = shadowDistTar.enabled = false
+
+// Specify all of our dependency versions
+def resultsIteratorVersion = 'results-iterator-0.1'
+def junitVersion = '4.12'
+def awsSdkVersion = '1.11.564'
+
+group = 'com.awslabs.aws.iot.resultsiterator.jitpack.Example'
+version = '1.0-SNAPSHOT'
+
+description = """"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+
+    maven {
+        url "https://repo.gradle.org/gradle/libs-releases-local/"
+    }
+}
+
+dependencies {
+    compile "com.github.aws-samples:iot-reference-architectures:$resultsIteratorVersion"
+    compile "com.amazonaws:aws-java-sdk-iot:$awsSdkVersion"
+
+    testCompile "junit:junit:$junitVersion"
+}
+
+// From: https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a
+task resolveDependencies {
+    doLast {
+        project.rootProject.allprojects.each { subProject ->
+            subProject.buildscript.configurations.each { configuration ->
+                // Check to prevent "Resolving configuration 'integrationTestImplementation' directly is not allowed" error
+                if (!configuration.getName().contains("integrationTest")) {
+                    resolveConfiguration(configuration)
+                }
+            }
+            subProject.configurations.each { configuration ->
+                // Check to prevent "Resolving configuration 'integrationTestImplementation' directly is not allowed" error
+                if (!configuration.getName().contains("integrationTest")) {
+                    resolveConfiguration(configuration)
+                }
+            }
+        }
+    }
+}
+
+void resolveConfiguration(configuration) {
+    if (isResolveableConfiguration(configuration)) {
+        configuration.resolve()
+    }
+}
+
+boolean isResolveableConfiguration(configuration) {
+    def nonResolveableConfigurations = ['apiElements', 'implementation',
+                                        'runtimeElements', 'runtimeOnly',
+                                        'testImplementation', 'testRuntimeOnly',
+                                        'generatedImplementation', 'generatedRuntimeOnly']
+
+    if (nonResolveableConfigurations.contains(configuration.getName())) {
+        return false
+    }
+    return true
+}
