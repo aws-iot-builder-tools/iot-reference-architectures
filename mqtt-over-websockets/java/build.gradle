@@ -19,7 +19,7 @@ mainClassName = 'not-applicable'
 
 // Specify all of our dependency versions
 def awsSdk2Version = '2.5.60'
-def jodaTimeVersion = '2.10.2'
+def jodaTimeVersion = '2.10.3'
 def junitVersion = '4.12'
 def awaitilityVersion = '3.1.6'
 
