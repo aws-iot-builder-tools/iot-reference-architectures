@@ -1,7 +1,7 @@
 MQTT over WebSockets in Java example with Jitpack dependency
 ------------------------------------------------------------
 
-This example code shows how to use the Java library in the [AWS IoT Core Websockets repo](https://github.com/awslabs/aws-iot-core-websockets) with [Jitpack](https://jitpack.io/awslabs/aws-iot-core-websockets).
+This example code shows how to use the Java library in the [AWS IoT Core Websockets repo](https://github.com/awslabs/aws-iot-core-websockets) with [Jitpack](https://jitpack.io/#awslabs/aws-iot-core-websockets).
 
 The benefit of using it as a library is that you don't need to include this code in each project.
 
