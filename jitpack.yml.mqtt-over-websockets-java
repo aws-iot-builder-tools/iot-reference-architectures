@@ -1,5 +1,0 @@
-jdk:
-  - openjdk8
-install:
-   - echo "Running a custom install command"
-   - cd mqtt-over-websockets/java/ && ./gradlew clean install -xtest
