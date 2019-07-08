@@ -28,7 +28,7 @@ distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
-def mqttOverWebsocketsVersion = 'mqtt-over-websockets-0.3.4'
+def awsIotCoreWebsockets = '0.3.5'
 def junitVersion = '4.12'
 def awaitilityVersion = '3.1.6'
 
@@ -53,7 +53,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.github.aws-samples:iot-reference-architectures:$mqttOverWebsocketsVersion"
+    compile "com.github.awslabs:aws-iot-core-websockets:$awsIotCoreWebsockets"
 
     testCompile "junit:junit:$junitVersion"
     testCompile "org.awaitility:awaitility:$awaitilityVersion"
