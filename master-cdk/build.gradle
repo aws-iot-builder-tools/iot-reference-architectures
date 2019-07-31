@@ -1,0 +1,52 @@
+plugins {
+    // Creates fat JAR
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+
+    // Adds dependencyUpdates task
+    id 'com.github.ben-manes.versions' version '0.21.0'
+}
+
+def gradleDependencyVersion = '5.5.1'
+
+wrapper {
+    gradleVersion = gradleDependencyVersion
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+// Use the GGProvisioner main class when the JAR is invoked directly
+mainClassName = 'com.awssamples.MasterApp'
+
+distZip.enabled = shadowDistZip.enabled = false
+distTar.enabled = shadowDistTar.enabled = false
+
+// Specify all of our dependency versions
+def awsCdkVersion = '1.2.0.DEVPREVIEW'
+def vavrVersion = '0.9.2'
+
+repositories {
+    mavenCentral()
+
+    maven { url "https://repo.gradle.org/gradle/libs-releases-local/" }
+}
+
+dependencies {
+    compile "software.amazon.awscdk:core:$awsCdkVersion"
+    compile "software.amazon.awscdk:iam:$awsCdkVersion"
+    compile "software.amazon.awscdk:sqs:$awsCdkVersion"
+    compile "software.amazon.awscdk:iot:$awsCdkVersion"
+    compile "software.amazon.awscdk:lambda:$awsCdkVersion"
+    compile "software.amazon.awscdk:dynamodb:$awsCdkVersion"
+    compile "io.vavr:vavr:$vavrVersion"
+    compile "org.gradle:gradle-tooling-api:$gradleDependencyVersion"
+}
+
+group = 'com.awssamples'
+version = '0.1'
+sourceCompatibility = '1.8'
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
