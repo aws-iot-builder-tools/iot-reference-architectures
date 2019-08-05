@@ -1,0 +1,3 @@
+{
+  "app": "rm -rf cdk.out && cd ../master-cdk && ./gradlew run --args='com.awssamples.sqs_to_iot_core.SqsToIotCoreStack sqs-to-iot-core-stack' 1>&2 && cd - > /dev/null && mv ../master-cdk/cdk.out ."
+}

@@ -20,6 +20,9 @@ The repo is a place to store architecture diagrams and the code for reference ar
 - Results iterator
   - Java
     - [Example with Jitpack](results-iterator-jitpack/java) - An example project that shows how to use the results iterator library with Jitpack and includes tests to validate that the library is working as expected. This example demonstrates how a customer can use the library as a Gradle dependency without duplicating the code.
+- DynamoDB API
+  - Java
+    - [SQS to DynamoDB to IoT Core](dynamodb-api/java) - An example project that shows how to take messages from SQS, move them DynamoDB, and then query the DynamoDB table with an IoT Core based API. This pattern is useful when multiple applications need access to messages from a device, the messages from a device come through a non-MQTT ingest mechanism and are stored in SQS, or when a device may send multiple messages that need to be processed in order.
 
 ## License Summary
 
