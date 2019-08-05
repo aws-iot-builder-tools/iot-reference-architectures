@@ -191,10 +191,18 @@ This optional step is just for bookkeeping purposes. Future features may make us
 
 ## Generating a certificate and CSR with OpenSSL
 
-### Create the thing's private key
+NOTE: Do either the RSA or the ECC command to generate the private key but not both!
+
+### RSA - Create the thing's private key
 
 ```
 openssl genrsa -out thing.key 4096
+```
+
+### ECC - Create the thing's private key
+
+```
+openssl ecparam -out thing.key -name prime256v1 -genkey
 ```
 
 ### Create a certificate signing request (CSR) with the private key

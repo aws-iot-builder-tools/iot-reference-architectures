@@ -28,7 +28,8 @@ Questions, suggestions, problems? Create an issue!
     + [Attach the policy to that certificate](#attach-the-policy-to-that-certificate)
     + [(Optional) Attach the certificate to the thing](#optional-attach-the-certificate-to-the-thing)
   * [Generating a certificate and CSR with OpenSSL](#generating-a-certificate-and-csr-with-openssl)
-    + [Create the thing's private key](#create-the-things-private-key)
+    + [RSA - Create the thing's private key](#rsa---create-the-things-private-key)
+    + [ECC - Create the thing's private key](#ecc---create-the-things-private-key)
     + [Create a certificate signing request (CSR) with the private key](#create-a-certificate-signing-request-csr-with-the-private-key)
     + [Signing your own certificate with the AWS IoT CA](#signing-your-own-certificate-with-the-aws-iot-ca)
   * [Creating your own certificate authority](#creating-your-own-certificate-authority)
@@ -257,10 +258,18 @@ This optional step is just for bookkeeping purposes. Future features may make us
 
 ## Generating a certificate and CSR with OpenSSL
 
-### Create the thing's private key
+NOTE: Do either the RSA or the ECC command to generate the private key but not both!
+
+### RSA - Create the thing's private key
 
 ```
 openssl genrsa -out thing.key 4096
+```
+
+### ECC - Create the thing's private key
+
+```
+openssl ecparam -out thing.key -name prime256v1 -genkey
 ```
 
 ### Create a certificate signing request (CSR) with the private key
