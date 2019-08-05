@@ -1,9 +1,6 @@
 plugins {
     // Creates fat JAR
     id 'com.github.johnrengelman.shadow' version '5.1.0'
-
-    // Downloads binary dependencies
-    id 'de.undercouch.download' version '3.4.3'
 }
 
 apply plugin: 'java'
