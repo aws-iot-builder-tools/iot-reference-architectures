@@ -34,10 +34,6 @@ def slf4jVersion = '1.7.26'
 def gsonVersion = '2.8.5'
 def awsSdk2Version = '2.7.17'
 def junitVersion = '4.12'
-def systemRulesVersion = '1.19.0'
-def mockitoVersion = '2.28.2'
-def hamcrestVersion = '2.1'
-def guavaVersion = '27.0-jre'
 def awsLambdaJavaCoreVersion = '1.2.0'
 
 group = 'com.awssamples.iot.dynamodb.Api'
@@ -64,8 +60,4 @@ dependencies {
     compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
 
     testCompile "junit:junit:$junitVersion"
-    testCompile "com.github.stefanbirkner:system-rules:$systemRulesVersion"
-    testCompile "org.hamcrest:hamcrest-core:$hamcrestVersion"
-    testCompile "org.mockito:mockito-core:$mockitoVersion"
-    testCompile "com.google.guava:guava:$guavaVersion"
 }
