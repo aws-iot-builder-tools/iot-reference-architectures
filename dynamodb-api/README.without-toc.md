@@ -2,30 +2,6 @@
 
 <!-- toc -->
 
-- [What is this architecture?](#what-is-this-architecture)
-- [Where is this architecture applicable?](#where-is-this-architecture-applicable)
-- [How do I launch it?](#how-do-i-launch-it)
-- [I ran into an issue with cdk deploy, what do I do?](#i-ran-into-an-issue-with-cdk-deploy-what-do-i-do)
-- [What is "an API on top of IoT Core"?](#what-is-an-api-on-top-of-iot-core)
-- [Why is an API on top of IoT Core desirable?](#why-is-an-api-on-top-of-iot-core-desirable)
-- [Why not provide direct DynamoDB access instead?](#why-not-provide-direct-dynamodb-access-instead)
-- [Is there a quick way to test it?](#is-there-a-quick-way-to-test-it)
-  * [To put a message into the queue (send-sqs-message.sh)](#to-put-a-message-into-the-queue-send-sqs-messagesh)
-  * [To send the query request (send-query-message.sh)](#to-send-the-query-request-send-query-messagesh)
-  * [To send the get request (send-get-message.sh)](#to-send-the-get-request-send-get-messagesh)
-  * [To send the next request (send-next-message.sh)](#to-send-the-next-request-send-next-messagesh)
-  * [To send the delete request (send-delete-message.sh)](#to-send-the-delete-request-send-delete-messagesh)
-- [How does the system work?](#how-does-the-system-work)
-  * [Phase 1: Dropping messages into SQS](#phase-1-dropping-messages-into-sqs)
-  * [Phase 2: Moving a message from SQS to DynamoDB](#phase-2-moving-a-message-from-sqs-to-dynamodb)
-  * [Phase 3: Utilizing the IoT Core based API](#phase-3-utilizing-the-iot-core-based-api)
-    + [Query operation](#query-operation)
-    + [Get operation](#get-operation)
-    + [Next operation](#next-operation)
-    + [Delete operation](#delete-operation)
-
-<!-- tocstop -->
-
 ## What is this architecture?
 
 This architecture shows how to take messages from an SQS queue, move them into DynamoDB automatically, and build an API on top of IoT Core that allows other systems to query the data in DynamoDB.
