@@ -65,6 +65,7 @@ dependencies {
     api("software.amazon.awscdk:lambda:$awsCdkVersion")
     api("software.amazon.awscdk:dynamodb:$awsCdkVersion")
     api("software.amazon.awscdk:apigateway:$awsCdkVersion")
+    api("software.amazon.awscdk:ecs:$awsCdkVersion")
     implementation("io.vavr:vavr:$vavrVersion")
     api("org.gradle:gradle-tooling-api:$gradleDependencyVersion")
     implementation("org.apache.commons:commons-lang3:$commonsLangVersion")

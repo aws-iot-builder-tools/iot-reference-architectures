@@ -1,0 +1,3 @@
+{
+  "app": "rm -rf cdk.out && zip iot_publish.zip iot_publish.py && cd ../master-cdk && ./gradlew run --args='com.awssamples.iot_publish_test.IotPublishTestStack iot-publish-test-stack' 1>&2 && cd - > /dev/null && mv ../master-cdk/cdk.out ."
+}

@@ -1,0 +1,8 @@
+FROM openjdk:11
+
+COPY build/libs/vertx.jar vertx.jar
+
+EXPOSE 1883
+CMD ["java", "-Dvertx.logger-delegate-factory-class-name=io.vertx.core.logging.SLF4JLogDelegateFactory", \
+        "-cp", "vertx.jar", \
+        "io.vertx.fargate.applications.NonTlsMqtt"]

@@ -70,8 +70,4 @@ public class MasterApp {
         log.error("Exception: " + throwable.getCause());
         return null;
     }
-
-    private static void logPossibleVersionIssue(Exception exception) {
-        log.error("Failed to create a CDK stack. Check the logs to determine the root cause.");
-    }
 }

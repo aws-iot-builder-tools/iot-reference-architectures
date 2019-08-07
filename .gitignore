@@ -23,3 +23,4 @@ aws-iot-sdk-browser-bundle-min.js
 *.pem
 *.pyc
 JunkTest.java
+iot_publish.zip
