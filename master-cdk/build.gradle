@@ -23,7 +23,7 @@ distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
-def awsCdkVersion = '1.3.0.DEVPREVIEW'
+def awsCdkVersion = '1.4.0.DEVPREVIEW'
 def vavrVersion = '0.10.2'
 
 repositories {
