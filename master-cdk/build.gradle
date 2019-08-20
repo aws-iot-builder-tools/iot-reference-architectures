@@ -16,7 +16,7 @@ apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'idea'
 
-// Use the GGProvisioner main class when the JAR is invoked directly
+// Use the MasterApp main class when the JAR is invoked directly
 mainClassName = 'com.awssamples.MasterApp'
 
 distZip.enabled = shadowDistZip.enabled = false
