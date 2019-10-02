@@ -14,9 +14,9 @@ public class CloudWatchEventsPolicies {
 
     public static PolicyStatement getMinimalCloudWatchEventsLoggingPolicy() {
         PolicyStatementProps cloudWatchPolicyStatementProps = PolicyStatementProps.builder()
-                .withEffect(Effect.ALLOW)
-                .withResources(ALL_LOG_GROUPS_AND_LOG_STREAMS)
-                .withActions(MINIMAL_LOGGING_ACTIONS)
+                .effect(Effect.ALLOW)
+                .resources(ALL_LOG_GROUPS_AND_LOG_STREAMS)
+                .actions(MINIMAL_LOGGING_ACTIONS)
                 .build();
 
         return new PolicyStatement(cloudWatchPolicyStatementProps);

@@ -15,9 +15,9 @@ public class LambdaPolicies {
 
     public static PolicyStatement getMinimalLambdaSqsQueueEventSourceMappingTargetPolicy(Queue queue) {
         PolicyStatementProps sqsPolicyStatementProps = PolicyStatementProps.builder()
-                .withEffect(Effect.ALLOW)
-                .withResources(Collections.singletonList(queue.getQueueArn()))
-                .withActions(MINIMAL_SQS_QUEUE_EVENT_SOURCE_MAPPING_TARGET_ACTIONS)
+                .effect(Effect.ALLOW)
+                .resources(Collections.singletonList(queue.getQueueArn()))
+                .actions(MINIMAL_SQS_QUEUE_EVENT_SOURCE_MAPPING_TARGET_ACTIONS)
                 .build();
 
         return new PolicyStatement(sqsPolicyStatementProps);
