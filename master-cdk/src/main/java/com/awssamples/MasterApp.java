@@ -1,5 +1,6 @@
 package com.awssamples;
 
+import com.awssamples.shared.CdkHelper;
 import software.amazon.awscdk.core.App;
 import software.amazon.awscdk.core.Construct;
 
@@ -14,6 +15,8 @@ public class MasterApp {
 
         String className = argv[0];
         String stackName = argv[1];
+       
+        CdkHelper.setStackName(stackName);
 
         Class stackClass = Class.forName(className);
         Constructor stackClassConstructor = stackClass.getConstructor(Construct.class, String.class);
