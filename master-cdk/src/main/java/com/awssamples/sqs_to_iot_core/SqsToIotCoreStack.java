@@ -1,7 +1,9 @@
 package com.awssamples.sqs_to_iot_core;
 
+import com.awssamples.shared.CdkHelper;
 import com.awssamples.shared.CloudWatchEventsPolicies;
 import com.awssamples.shared.LambdaPolicies;
+import com.awssamples.shared.Permissions;
 import io.vavr.control.Try;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnector;
@@ -22,7 +24,10 @@ import software.amazon.awscdk.services.sqs.QueueProps;
 import java.io.File;
 import java.util.*;
 
+import static java.util.Collections.singletonList;
+
 public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
+    private static final String SQS_QUEUE_ARN_PARAMETER = "SQS_QUEUE_ARN";
     private static final String DYNAMO_DB_TABLE_ARN = "dynamoDbTableArn";
     private static final String SQS_QUEUE_ARN = "sqsQueueArn";
     private static final String UUID_KEY = "uuidKey";
@@ -57,14 +62,12 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     private static final String NEXT_TOPIC_TEMPLATE = String.join("/", "request", "next", UUID, MESSAGE_ID);
     private static final String DEFAULT_NEXT_RESPONSE_TOPIC_PREFIX = "response/next";
     private final String projectDirectory = "../dynamodb-api/java/";
-    private final List<File> projectDirectoryFiles = Collections.singletonList(new File(projectDirectory));
+    private final List<File> projectDirectoryFiles = singletonList(new File(projectDirectory));
     private final String buildOutputDirectory = "build/libs/";
     private final String outputJar = "java-1.0-SNAPSHOT-all.jar";
     private final Duration queueVisibilityTimeout = Duration.seconds(30);
     // Queue visibility timeout must be greater than Lambda timeout
     private final Duration lambdaFunctionTimeout = Duration.seconds((int) queueVisibilityTimeout.toSeconds() / 2);
-    private final ServicePrincipal lambdaServicePrincipal = new ServicePrincipal("lambda");
-    private final String LAMBDA_INVOKE_FUNCTION = "lambda:InvokeFunction";
     private final String iotServicePrincipal = Fn.join(".", Arrays.asList("iot", getUrlSuffix()));
 
     public SqsToIotCoreStack(final Construct parent, final String name) {
@@ -73,14 +76,19 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         // Build all of the necessary JARs
         projectDirectoryFiles.forEach(this::buildJar);
 
-        Queue messageQueue = buildMessageQueue();
+        Optional<Map<String, String>> optionalArguments = CdkHelper.getArguments();
+
+        // Get the queue ARN from the arguments or build the message queue and extract the ARN
+        String sqsQueueArn = optionalArguments
+                .flatMap(this::getQueueArn)
+                .orElseGet(() -> buildMessageQueue().getQueueArn());
 
         Table messageTable = buildMessageTable();
 
         // Resources to move messages from SQS to DynamoDB
-        Role moveFromSqsToDynamoDbRole = buildMoveFromSqsToDynamoDbRole(messageQueue, messageTable);
-        Function moveFromSqsToDynamoDb = buildMoveFromSqsToDynamoDbLambda(messageQueue, messageTable, moveFromSqsToDynamoDbRole);
-        buildEventSourceMapping(messageQueue, moveFromSqsToDynamoDb);
+        Role moveFromSqsToDynamoDbRole = buildMoveFromSqsToDynamoDbRole(sqsQueueArn, messageTable);
+        Function moveFromSqsToDynamoDb = buildMoveFromSqsToDynamoDbLambda(sqsQueueArn, messageTable, moveFromSqsToDynamoDbRole);
+        buildEventSourceMapping(sqsQueueArn, moveFromSqsToDynamoDb);
 
         // Default environment for all functions just contains the table name
         Map<String, String> defaultEnvironment = getDefaultEnvironment(messageTable);
@@ -91,7 +99,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         PolicyStatement nextItemPolicyStatementForMessageTable = getNextItemPolicyStatementForTable(messageTable);
 
         // Resources to get messages from DynamoDB and publish to IoT Core
-        Role getMessageFromDynamoDbRole = buildIotEventRole("GetMessageFromDynamoDbRole", DEFAULT_GET_RESPONSE_TOPIC_PREFIX, Collections.singletonList(getItemPolicyStatementForMessageTable));
+        Role getMessageFromDynamoDbRole = buildIotEventRole("GetMessageFromDynamoDbRole", DEFAULT_GET_RESPONSE_TOPIC_PREFIX, singletonList(getItemPolicyStatementForMessageTable));
         Map<String, String> getMessageEnvironment = getGetMessageLambdaEnvironment();
         Function getMessageFromDynamoDb = buildIotEventLambda("GetMessageFromDynamoDbLambda", getMessageFromDynamoDbRole, defaultEnvironment, getMessageEnvironment, IOT_GET_EVENT_HANDLER);
         CfnTopicRule getRule = buildIotEventRule("GetMessageFromDynamoDbTopicRule", getMessageFromDynamoDb, "request/get/#");
@@ -105,24 +113,28 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         allowIotTopicRuleToInvokeLambdaFunction(queryRule, queryMessageFromDynamoDb, "LambdaInvocationPermissionsForIotQueryMessage");
 
         // Resources to delete messages from DynamoDB
-        Role deleteMessageFromDynamoDbRole = buildIotEventRole("DeleteMessageFromDynamoDbRole", DEFAULT_DELETE_RESPONSE_TOPIC_PREFIX, Collections.singletonList(deleteItemPolicyStatementForMessageTable));
+        Role deleteMessageFromDynamoDbRole = buildIotEventRole("DeleteMessageFromDynamoDbRole", DEFAULT_DELETE_RESPONSE_TOPIC_PREFIX, singletonList(deleteItemPolicyStatementForMessageTable));
         Map<String, String> deleteMessageEnvironment = getDeleteMessageLambdaEnvironment();
         Function deleteMessageFromDynamoDb = buildIotEventLambda("DeleteMessageFromDynamoDbLambda", deleteMessageFromDynamoDbRole, defaultEnvironment, deleteMessageEnvironment, IOT_DELETE_EVENT_HANDLER);
         CfnTopicRule deleteRule = buildIotEventRule("DeleteMessageFromDynamoDbTopicRule", deleteMessageFromDynamoDb, "request/delete/#");
         allowIotTopicRuleToInvokeLambdaFunction(deleteRule, deleteMessageFromDynamoDb, "LambdaInvocationPermissionsForIotDeleteMessage");
 
         // Resources to get the next message ID from DynamoDB
-        Role nextMessageFromDynamoDbRole = buildIotEventRole("NextMessageFromDynamoDbRole", DEFAULT_NEXT_RESPONSE_TOPIC_PREFIX, Collections.singletonList(nextItemPolicyStatementForMessageTable));
+        Role nextMessageFromDynamoDbRole = buildIotEventRole("NextMessageFromDynamoDbRole", DEFAULT_NEXT_RESPONSE_TOPIC_PREFIX, singletonList(nextItemPolicyStatementForMessageTable));
         Map<String, String> nextMessageEnvironment = getNextMessageLambdaEnvironment();
         Function nextMessageFromDynamoDb = buildIotEventLambda("NextMessageFromDynamoDbLambda", nextMessageFromDynamoDbRole, defaultEnvironment, nextMessageEnvironment, IOT_NEXT_EVENT_HANDLER);
         CfnTopicRule nextRule = buildIotEventRule("NextMessageFromDynamoDbTopicRule", nextMessageFromDynamoDb, "request/next/#");
         allowIotTopicRuleToInvokeLambdaFunction(nextRule, nextMessageFromDynamoDb, "LambdaInvocationPermissionsForIotNextMessage");
     }
 
+    private Optional<String> getQueueArn(Map<String, String> map) {
+        return Optional.ofNullable(map.get(SQS_QUEUE_ARN_PARAMETER));
+    }
+
     private CfnPermission allowIotTopicRuleToInvokeLambdaFunction(CfnTopicRule topicRule, Function function, String permissionName) {
         CfnPermissionProps cfnPermissionProps = CfnPermissionProps.builder()
                 .sourceArn(topicRule.getAttrArn())
-                .action(LAMBDA_INVOKE_FUNCTION)
+                .action(Permissions.LAMBDA_INVOKE_FUNCTION)
                 .principal(iotServicePrincipal)
                 .sourceAccount(getAccount())
                 .functionName(function.getFunctionArn())
@@ -138,7 +150,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
                         .build())
                 .build();
         CfnTopicRule.TopicRulePayloadProperty topicRulePayloadProperty = CfnTopicRule.TopicRulePayloadProperty.builder()
-                .actions(Collections.singletonList(actionProperty))
+                .actions(singletonList(actionProperty))
                 .ruleDisabled(false)
                 .sql("select *, topic() as topic from '" + topic + "'")
                 .build();
@@ -157,9 +169,9 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         return new Queue(this, "SqsQueue", queueProps);
     }
 
-    private EventSourceMapping buildEventSourceMapping(Queue queue, Function lambda) {
+    private EventSourceMapping buildEventSourceMapping(String sqsQueueArn, Function lambda) {
         EventSourceMappingProps eventSourceMappingProps = EventSourceMappingProps.builder()
-                .eventSourceArn(queue.getQueueArn())
+                .eventSourceArn(sqsQueueArn)
                 .batchSize(1)
                 .target(lambda)
                 .enabled(true)
@@ -224,9 +236,9 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         return new Function(this, functionName, functionProps);
     }
 
-    private Function buildMoveFromSqsToDynamoDbLambda(Queue queue, Table table, Role role) {
+    private Function buildMoveFromSqsToDynamoDbLambda(String queueArn, Table table, Role role) {
         Map<String, String> environment = new HashMap<>();
-        environment.put(SQS_QUEUE_ARN, queue.getQueueArn());
+        environment.put(SQS_QUEUE_ARN, queueArn);
         environment.put(DYNAMO_DB_TABLE_ARN, table.getTableArn());
         environment.put(UUID_KEY, "thingName");
         environment.put(MESSAGE_ID_KEY, "epochTime");
@@ -264,13 +276,13 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         return null;
     }
 
-    private Role buildMoveFromSqsToDynamoDbRole(Queue queue, Table table) {
-        PolicyStatement sqsPolicyStatement = LambdaPolicies.getMinimalLambdaSqsQueueEventSourceMappingTargetPolicy(queue);
+    private Role buildMoveFromSqsToDynamoDbRole(String queueArn, Table table) {
+        PolicyStatement sqsPolicyStatement = LambdaPolicies.getMinimalLambdaSqsQueueEventSourceMappingTargetPolicy(queueArn);
 
         PolicyStatementProps dynamoDbPolicyStatementProps = PolicyStatementProps.builder()
                 .effect(Effect.ALLOW)
-                .resources(Collections.singletonList(table.getTableArn()))
-                .actions(Arrays.asList("dynamodb:PutItem"))
+                .resources(singletonList(table.getTableArn()))
+                .actions(singletonList(Permissions.DYNAMODB_PUT_ITEM_PERMISSION))
                 .build();
         PolicyStatement dynamoDbPolicyStatement = new PolicyStatement(dynamoDbPolicyStatementProps);
 
@@ -285,7 +297,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         policyDocuments.put("root", policyDocument);
 
         RoleProps moveFromSqsToDynamoDbRoleProps = RoleProps.builder()
-                .assumedBy(lambdaServicePrincipal)
+                .assumedBy(LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL)
                 .inlinePolicies(policyDocuments)
                 .build();
 
@@ -295,8 +307,8 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     private Role buildIotEventRole(String roleName, String topicPrefix, List<PolicyStatement> additionalPolicyStatements) {
         PolicyStatementProps iotPolicyStatementProps = PolicyStatementProps.builder()
                 .effect(Effect.ALLOW)
-                .resources(Collections.singletonList(Fn.join("", Arrays.asList("arn:aws:iot:", getRegion(), ":", getAccount(), ":topic/", topicPrefix, "/*"))))
-                .actions(Collections.singletonList("iot:Publish"))
+                .resources(singletonList(Fn.join("", Arrays.asList("arn:aws:iot:", getRegion(), ":", getAccount(), ":topic/", topicPrefix, "/*"))))
+                .actions(singletonList("iot:Publish"))
                 .build();
         PolicyStatement iotPolicyStatement = new PolicyStatement(iotPolicyStatementProps);
 
@@ -315,7 +327,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         policyDocuments.put("root", policyDocument);
 
         RoleProps moveFromSqsToDynamoDbRoleProps = RoleProps.builder()
-                .assumedBy(lambdaServicePrincipal)
+                .assumedBy(LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL)
                 .inlinePolicies(policyDocuments)
                 .build();
 
@@ -323,26 +335,26 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     }
 
     private PolicyStatement getGetItemPolicyStatementForTable(Table table) {
-        return getPolicyStatementForTable(table, "dynamodb:GetItem");
+        return getPolicyStatementForTable(table, Permissions.DYNAMODB_GET_ITEM_PERMISSION);
     }
 
     private PolicyStatement getQueryPolicyStatementForTable(Table table) {
-        return getPolicyStatementForTable(table, "dynamodb:Query");
+        return getPolicyStatementForTable(table, Permissions.DYNAMODB_QUERY_PERMISSION);
     }
 
     private PolicyStatement getDeleteItemPolicyStatementForTable(Table table) {
-        return getPolicyStatementForTable(table, "dynamodb:DeleteItem");
+        return getPolicyStatementForTable(table, Permissions.DYNAMODB_DELETE_ITEM_PERMISSION);
     }
 
     private PolicyStatement getNextItemPolicyStatementForTable(Table table) {
-        return getPolicyStatementForTable(table, "dynamodb:Query");
+        return getPolicyStatementForTable(table, Permissions.DYNAMODB_QUERY_PERMISSION);
     }
 
     private PolicyStatement getPolicyStatementForTable(Table table, String action) {
         PolicyStatementProps dynamoDbPolicyStatementProps = PolicyStatementProps.builder()
                 .effect(Effect.ALLOW)
-                .resources(Collections.singletonList(table.getTableArn()))
-                .actions(Collections.singletonList(action))
+                .resources(singletonList(table.getTableArn()))
+                .actions(singletonList(action))
                 .build();
         return new PolicyStatement(dynamoDbPolicyStatementProps);
     }
