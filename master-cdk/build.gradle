@@ -25,6 +25,8 @@ distTar.enabled = shadowDistTar.enabled = false
 // Specify all of our dependency versions
 def awsCdkVersion = '1.12.0.DEVPREVIEW'
 def vavrVersion = '0.10.2'
+def slf4jVersion = '1.7.26'
+def jcabiVersion = '0.18'
 
 repositories {
     mavenCentral()
@@ -33,6 +35,9 @@ repositories {
 }
 
 dependencies {
+    compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
+    compile "com.jcabi:jcabi-log:$jcabiVersion"
+
     compile "software.amazon.awscdk:core:$awsCdkVersion"
     compile "software.amazon.awscdk:iam:$awsCdkVersion"
     compile "software.amazon.awscdk:sqs:$awsCdkVersion"

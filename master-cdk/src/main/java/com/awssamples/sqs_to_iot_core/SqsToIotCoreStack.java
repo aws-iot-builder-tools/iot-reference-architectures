@@ -8,6 +8,8 @@ import io.vavr.control.Try;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnector;
 import org.gradle.tooling.ProjectConnection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.core.Fn;
@@ -27,7 +29,8 @@ import java.util.*;
 import static java.util.Collections.singletonList;
 
 public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
-    private static final String SQS_QUEUE_ARN_PARAMETER = "SQS_QUEUE_ARN";
+    private static final Logger log = LoggerFactory.getLogger(SqsToIotCoreStack.class);
+    private static final String SQS_QUEUE_ARN_ENVIRONMENT_VARIABLE = "SQS_QUEUE_ARN";
     private static final String DYNAMO_DB_TABLE_ARN = "dynamoDbTableArn";
     private static final String SQS_QUEUE_ARN = "sqsQueueArn";
     private static final String UUID_KEY = "uuidKey";
@@ -128,7 +131,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     }
 
     private Optional<String> getQueueArn(Map<String, String> map) {
-        return Optional.ofNullable(map.get(SQS_QUEUE_ARN_PARAMETER));
+        return Optional.ofNullable(map.get(SQS_QUEUE_ARN_ENVIRONMENT_VARIABLE));
     }
 
     private CfnPermission allowIotTopicRuleToInvokeLambdaFunction(CfnTopicRule topicRule, Function function, String permissionName) {
@@ -163,6 +166,8 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     }
 
     private Queue buildMessageQueue() {
+        log.warn("Environment variable [" + SQS_QUEUE_ARN_ENVIRONMENT_VARIABLE + "] not specified, using a default SQS queue");
+
         QueueProps queueProps = QueueProps.builder()
                 .visibilityTimeout(queueVisibilityTimeout)
                 .build();
