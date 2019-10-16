@@ -15,7 +15,7 @@ public class MasterApp {
 
         String className = argv[0];
         String stackName = argv[1];
-       
+
         CdkHelper.setStackName(stackName);
 
         Class stackClass = Class.forName(className);

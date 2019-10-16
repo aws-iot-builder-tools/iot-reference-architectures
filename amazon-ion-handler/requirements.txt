@@ -1,0 +1,2 @@
+amazon.ion==0.4.1
+jsonpickle==1.0

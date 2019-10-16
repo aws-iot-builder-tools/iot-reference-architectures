@@ -1,6 +1,4 @@
-package com.awssamples.shared;
-
-import software.amazon.awscdk.services.iam.ServicePrincipal;
+package com.awssamples.iam;
 
 public class Permissions {
     public static final String DYNAMODB_PERMISSION_HEADER = "dynamodb";
