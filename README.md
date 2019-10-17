@@ -23,6 +23,11 @@ The repo is a place to store architecture diagrams and the code for reference ar
 - DynamoDB API
   - Java
     - [SQS to DynamoDB to IoT Core](dynamodb-api/java) - An example project that shows how to take messages from SQS, move them DynamoDB, and then query the DynamoDB table with an IoT Core based API. This pattern is useful when multiple applications need access to messages from a device, the messages from a device come through a non-MQTT ingest mechanism and are stored in SQS, or when a device may send multiple messages that need to be processed in order.
+- Binary payloads
+  - Java
+    - [CBOR Handler](cbor-handler) - An example project that shows how to convert between CBOR and JSON. This uses the rules engine base64 encoding support to work with binary payloads in AWS Lambda.
+  - Python
+    - [Amazon Ion Handler](amazon-ion-handler) - An example project that shows how to convert between Amazon Ion and JSON. This uses the rules engine base64 encoding support to work with binary payloads in AWS Lambda.
 
 ## License Summary
 

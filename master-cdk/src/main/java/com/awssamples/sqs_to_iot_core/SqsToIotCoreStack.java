@@ -1,9 +1,9 @@
 package com.awssamples.sqs_to_iot_core;
 
+import com.awssamples.iam.Permissions;
+import com.awssamples.iam.policies.CloudWatchEventsPolicies;
+import com.awssamples.iam.policies.LambdaPolicies;
 import com.awssamples.shared.CdkHelper;
-import com.awssamples.shared.CloudWatchEventsPolicies;
-import com.awssamples.shared.LambdaPolicies;
-import com.awssamples.shared.Permissions;
 import io.vavr.control.Try;
 import org.gradle.tooling.BuildLauncher;
 import org.gradle.tooling.GradleConnector;
@@ -29,6 +29,7 @@ import java.util.*;
 import static java.util.Collections.singletonList;
 
 public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
+    private static final String AWS_IOT_SQL_VERSION = "2016-03-23";
     private static final Logger log = LoggerFactory.getLogger(SqsToIotCoreStack.class);
     private static final String SQS_QUEUE_ARN_ENVIRONMENT_VARIABLE = "SQS_QUEUE_ARN";
     private static final String DYNAMO_DB_TABLE_ARN = "dynamoDbTableArn";
@@ -156,6 +157,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
                 .actions(singletonList(actionProperty))
                 .ruleDisabled(false)
                 .sql("select *, topic() as topic from '" + topic + "'")
+                .awsIotSqlVersion(AWS_IOT_SQL_VERSION)
                 .build();
         CfnTopicRuleProps cfnTopicRuleProps = CfnTopicRuleProps.builder()
                 .topicRulePayload(topicRulePayloadProperty)

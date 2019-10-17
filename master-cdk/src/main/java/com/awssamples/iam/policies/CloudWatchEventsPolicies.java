@@ -1,4 +1,4 @@
-package com.awssamples.shared;
+package com.awssamples.iam.policies;
 
 import software.amazon.awscdk.services.iam.Effect;
 import software.amazon.awscdk.services.iam.PolicyStatement;
