@@ -16,7 +16,7 @@ The repo is a place to store architecture diagrams and the code for reference ar
   - [Python](cross-account-publish/python) - A Python Lambda function that can cross-account publish from a partner's account to a customer's account using the AWS IoT Rules Engine
 - MQTT over WebSockets
   - Java
-    - [Example with Jitpack](mqttgover-websockets-jitpack/java) - An example project that shows how to use the MQTT over WebSocketsJava library with Jitpack and includes tests to validate that the library is working as expected. This example demonstrates how a customer can use the library as a Gradle dependency without duplicating the code.
+    - [Example with Jitpack](mqtt-over-websockets-jitpack/java) - An example project that shows how to use the MQTT over WebSocketsJava library with Jitpack and includes tests to validate that the library is working as expected. This example demonstrates how a customer can use the library as a Gradle dependency without duplicating the code.
 - Results iterator
   - Java
     - [Example with Jitpack](results-iterator-jitpack/java) - An example project that shows how to use the results iterator library with Jitpack and includes tests to validate that the library is working as expected. This example demonstrates how a customer can use the library as a Gradle dependency without duplicating the code.
