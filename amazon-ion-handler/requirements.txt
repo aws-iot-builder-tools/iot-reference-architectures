@@ -1,1 +1,1 @@
-amazon.ion==0.4.1
+amazon.ion==0.5.0
