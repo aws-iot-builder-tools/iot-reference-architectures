@@ -1,0 +1,62 @@
+plugins {
+    // Creates fat JAR
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+distZip.enabled = shadowDistZip.enabled = false
+distTar.enabled = shadowDistTar.enabled = false
+
+repositories {
+    jcenter()
+
+    mavenCentral()
+
+    maven { url "https://repo.gradle.org/gradle/libs-releases-local/" }
+}
+
+application {
+    // Required for shadow JAR but not used
+    mainClassName = 'not-applicable'
+}
+
+def gradleDependencyVersion = '5.5'
+
+wrapper {
+    gradleVersion = gradleDependencyVersion
+}
+
+// Specify all of our dependency versions
+def slf4jVersion = '1.7.28'
+def gsonVersion = '2.8.6'
+def cborVersion = '4.0.1'
+def awsSdk2Version = '2.10.7'
+def junitVersion = '4.12'
+def awsLambdaJavaCoreVersion = '1.2.0'
+
+group = 'com.awssamples.iot.cbor.Handler'
+version = '1.0-SNAPSHOT'
+
+description = """"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    compile "com.amazonaws:aws-lambda-java-core:$awsLambdaJavaCoreVersion"
+    compile "software.amazon.awssdk:iotdataplane:$awsSdk2Version"
+
+    compile "com.google.code.gson:gson:$gsonVersion"
+    compile "com.upokecenter:cbor:$cborVersion"
+
+    compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
+
+    testCompile "junit:junit:$junitVersion"
+}
