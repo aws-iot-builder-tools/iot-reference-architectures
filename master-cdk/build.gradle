@@ -26,7 +26,7 @@ distTar.enabled = shadowDistTar.enabled = false
 def awsCdkVersion = '1.15.0.DEVPREVIEW'
 def vavrVersion = '0.10.2'
 def slf4jVersion = '1.7.28'
-def jcabiVersion = '0.18'
+def jcabiVersion = '0.18.1'
 def commonsLangVersion = '3.9'
 def commonsIoVersion = '2.6'
 def ztZipVersion = '1.13'
