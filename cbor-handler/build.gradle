@@ -30,7 +30,7 @@ wrapper {
 }
 
 // Specify all of our dependency versions
-def slf4jVersion = '1.7.28'
+def slf4jVersion = '1.7.29'
 def gsonVersion = '2.8.6'
 def cborVersion = '4.0.1'
 def awsSdk2Version = '2.10.4'
