@@ -24,7 +24,7 @@ distTar.enabled = shadowDistTar.enabled = false
 // Specify all of our dependency versions
 def resultsIteratorVersion = 'results-iterator-0.1'
 def junitVersion = '4.12'
-def awsSdkVersion = '1.11.671'
+def awsSdkVersion = '1.11.674'
 
 group = 'com.awslabs.aws.iot.resultsiterator.jitpack.Example'
 version = '1.0-SNAPSHOT'
