@@ -10,6 +10,7 @@ def gradleDependencyVersion = '6.0.1'
 
 wrapper {
     gradleVersion = gradleDependencyVersion
+    distributionType = Wrapper.DistributionType.ALL
 }
 
 apply plugin: 'java'
