@@ -24,12 +24,6 @@ public class PythonSupport {
         return Try.of(() -> Files.list(directory).collect(Collectors.toList())).get();
     }
 
-    private static Void deleteDirectory(File directory) throws IOException {
-        FileUtils.deleteDirectory(directory);
-
-        return null;
-    }
-
     public static Path buildZip(File baseDirectory, String functionName) {
         // Determine the absolute path of the package directory
         File absolutePackageDirectory = new File(String.join("/", baseDirectory.getAbsolutePath(), PACKAGE_DIRECTORY));
@@ -84,7 +78,7 @@ public class PythonSupport {
 
     private static void cleanUpPackageDirectory(File absolutePackageDirectory) {
         // Delete any existing package directory
-        Try.of(() -> deleteDirectory(absolutePackageDirectory)).get();
+        Try.run(() -> FileUtils.deleteDirectory(absolutePackageDirectory)).get();
     }
 
     private static void copyToDirectory(Path path, File destination) {
