@@ -28,6 +28,7 @@ public class MasterApp {
         Constructor stackClassConstructor = stackClass.getConstructor(Construct.class, String.class);
 
         App app = new App();
+       
         Try.of(() -> stackClassConstructor.newInstance(app, stackName))
                 .onFailure(InvocationTargetException.class, MasterApp::logPossibleVersionIssue)
                 .onFailure(JsiiException.class, MasterApp::logPossibleVersionIssue);
