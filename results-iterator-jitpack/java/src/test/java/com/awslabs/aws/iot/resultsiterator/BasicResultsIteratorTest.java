@@ -1,7 +1,11 @@
 package com.awslabs.aws.iot.resultsiterator;
 
 import com.amazonaws.services.iot.AWSIotClient;
-import com.amazonaws.services.iot.model.*;
+import com.amazonaws.services.iot.model.CreateThingRequest;
+import com.amazonaws.services.iot.model.DeleteThingRequest;
+import com.amazonaws.services.iot.model.ListThingsRequest;
+import com.amazonaws.services.iot.model.ThingAttribute;
+import com.awslabs.aws.iot.resultsiterator.helpers.v1.V1ResultsIterator;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,7 +16,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class BasicResultsIteratorTest {
@@ -44,14 +50,14 @@ public class BasicResultsIteratorTest {
 
     @Test
     public void shouldGetAllDevicesWithDefaultList() {
-        List<ThingAttribute> thingAttributeList = new ResultsIterator<ThingAttribute>(awsIotClient, ListThingsRequest.class, ListThingsResult.class).iterateOverResults();
+        Stream<ThingAttribute> thingAttributeStream = new V1ResultsIterator<ThingAttribute>(awsIotClient, ListThingsRequest.class).stream();
 
-        List<String> thingNames = thingAttributeList.stream()
+        List<String> thingNames = thingAttributeStream
                 .map(ThingAttribute::getThingName)
                 .filter(thingName -> testThingNames.contains(thingName))
                 .sorted()
                 .collect(Collectors.toList());
 
-        Assert.assertThat(thingNames, is(testThingNames));
+        assertThat(thingNames, is(testThingNames));
     }
 }

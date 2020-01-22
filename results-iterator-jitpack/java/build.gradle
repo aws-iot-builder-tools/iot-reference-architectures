@@ -1,4 +1,8 @@
 plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+
     // Creates fat JAR
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 
@@ -6,15 +10,12 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.27.0'
 }
 
-def gradleDependencyVersion = '5.4.1'
+def gradleDependencyVersion = '6.1'
 
 wrapper {
     gradleVersion = gradleDependencyVersion
+    distributionType = Wrapper.DistributionType.ALL
 }
-
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'idea'
 
 mainClassName = 'com.awslabs.aws.iot.resultsiterator.Example'
 
@@ -22,7 +23,7 @@ distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
-def resultsIteratorVersion = 'results-iterator-0.1'
+def resultsIteratorForAwsJavaSdkVersion = '0.6.4'
 def junitVersion = '4.13'
 def awsSdkVersion = '1.11.711'
 
@@ -47,7 +48,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.github.aws-samples:iot-reference-architectures:$resultsIteratorVersion"
+    compile "com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion"
     compile "com.amazonaws:aws-java-sdk-iot:$awsSdkVersion"
 
     testCompile "junit:junit:$junitVersion"
