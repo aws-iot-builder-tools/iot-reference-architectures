@@ -1,4 +1,8 @@
 plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+
     // Creates fat JAR
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 
@@ -12,10 +16,6 @@ wrapper {
     gradleVersion = gradleDependencyVersion
     distributionType = Wrapper.DistributionType.ALL
 }
-
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'idea'
 
 // Use the MasterApp main class when the JAR is invoked directly
 mainClassName = 'com.awssamples.MasterApp'

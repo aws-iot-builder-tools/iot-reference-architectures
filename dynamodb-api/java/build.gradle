@@ -1,11 +1,18 @@
 plugins {
+    id 'java'
+    id 'application'
+    id 'idea'
+
     // Creates fat JAR
     id 'com.github.johnrengelman.shadow' version '5.2.0'
 }
 
-apply plugin: 'java'
-apply plugin: 'application'
-apply plugin: 'idea'
+def gradleDependencyVersion = '6.1.1'
+
+wrapper {
+    gradleVersion = gradleDependencyVersion
+    distributionType = Wrapper.DistributionType.ALL
+}
 
 distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
@@ -21,12 +28,6 @@ repositories {
 application {
     // Required for shadow JAR but not used
     mainClassName = 'not-applicable'
-}
-
-def gradleDependencyVersion = '5.5'
-
-wrapper {
-    gradleVersion = gradleDependencyVersion
 }
 
 // Specify all of our dependency versions
