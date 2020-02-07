@@ -14,7 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 public class MasterApp {
     private static final Logger log = LoggerFactory.getLogger(MasterApp.class);
 
-    public static void main(final String argv[]) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    public static void main(final String argv[]) {
         if (argv.length != 2) {
             throw new RuntimeException("Two arguments are required. The first argument is the class to use for the stack. The second argument is the name to use for the stack.");
         }
@@ -24,21 +24,50 @@ public class MasterApp {
 
         CdkHelper.setStackName(stackName);
 
-        Class stackClass = Class.forName(className);
-        Constructor stackClassConstructor = stackClass.getConstructor(Construct.class, String.class);
+        Try<? extends Class<?>> tryStackClass = Try.of(() -> Class.forName(className))
+                .onFailure(ClassNotFoundException.class, MasterApp::logThrowable);
+
+        if (tryStackClass.isFailure()) {
+            log.error("Failed to get the stack class, exiting.");
+            exitWithFailure();
+        }
+
+        Class stackClass = tryStackClass.get();
+
+        Try<Constructor> tryStackClassConstructor = Try.of(() -> stackClass.getConstructor(Construct.class, String.class))
+                .onFailure(NoSuchMethodException.class, MasterApp::logThrowable);
+
+        if (tryStackClassConstructor.isFailure()) {
+            log.error("Failed to get the stack class constructor, exiting.");
+            exitWithFailure();
+        }
+
+        Constructor stackClassConstructor = tryStackClassConstructor.get();
 
         App app = new App();
-       
-        Try.of(() -> stackClassConstructor.newInstance(app, stackName))
+
+        Try<Void> stackConstructorInvocation = Try.run(() -> stackClassConstructor.newInstance(app, stackName))
                 .onFailure(InvocationTargetException.class, MasterApp::logPossibleVersionIssue)
                 .onFailure(JsiiException.class, MasterApp::logPossibleVersionIssue);
+
+        if (stackConstructorInvocation.isFailure()) {
+            log.error("Failed to invoke the stack class constructor, exiting.");
+            log.error(stackConstructorInvocation.getCause().toString());
+            exitWithFailure();
+        }
 
         app.synth();
     }
 
-    private static void logPossibleVersionIssue(Exception exception) {
-        exception.printStackTrace();
+    private static void exitWithFailure() {
+        System.exit(1);
+    }
 
+    private static void logThrowable(Throwable throwable) {
+        log.error("Exception: " + throwable);
+    }
+
+    private static void logPossibleVersionIssue(Exception exception) {
         log.error("Failed to create a CDK stack, this may be due to CDK being out of date. Try running 'npm i -g aws-cdk' and then re-run the stack. The complete exception information is above.");
     }
 }
