@@ -5,9 +5,8 @@ import com.amazonaws.services.iot.model.CreateThingRequest;
 import com.amazonaws.services.iot.model.DeleteThingRequest;
 import com.amazonaws.services.iot.model.ListThingsRequest;
 import com.amazonaws.services.iot.model.ThingAttribute;
-import com.awslabs.aws.iot.resultsiterator.helpers.v1.V1ResultsIterator;
+import com.awslabs.resultsiterator.v1.implementations.V1ResultsIterator;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
