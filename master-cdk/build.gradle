@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'application'
     id 'idea'
 
@@ -31,28 +32,38 @@ def jcabiVersion = '0.18.1'
 def commonsLangVersion = '3.9'
 def commonsIoVersion = '2.6'
 def ztZipVersion = '1.14'
+def resultsIteratorForAwsJavaSdkVersion = '0.9.0'
+def daggerVersion = '2.26'
 
 repositories {
     mavenCentral()
 
     maven { url "https://repo.gradle.org/gradle/libs-releases-local/" }
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-    compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
-    compile "com.jcabi:jcabi-log:$jcabiVersion"
+    // Dagger code generation
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
 
-    compile "software.amazon.awscdk:core:$awsCdkVersion"
-    compile "software.amazon.awscdk:iam:$awsCdkVersion"
-    compile "software.amazon.awscdk:sqs:$awsCdkVersion"
-    compile "software.amazon.awscdk:iot:$awsCdkVersion"
-    compile "software.amazon.awscdk:lambda:$awsCdkVersion"
-    compile "software.amazon.awscdk:dynamodb:$awsCdkVersion"
-    compile "io.vavr:vavr:$vavrVersion"
-    compile "org.gradle:gradle-tooling-api:$gradleDependencyVersion"
-    compile "org.apache.commons:commons-lang3:$commonsLangVersion"
-    compile "commons-io:commons-io:$commonsIoVersion"
-    compile "org.zeroturnaround:zt-zip:$ztZipVersion"
+    // Dependency injection with Dagger
+    implementation "com.google.dagger:dagger:$daggerVersion"
+
+    implementation "org.slf4j:slf4j-log4j12:$slf4jVersion"
+    implementation "com.jcabi:jcabi-log:$jcabiVersion"
+
+    implementation "software.amazon.awscdk:core:$awsCdkVersion"
+    implementation "software.amazon.awscdk:iam:$awsCdkVersion"
+    implementation "software.amazon.awscdk:sqs:$awsCdkVersion"
+    implementation "software.amazon.awscdk:iot:$awsCdkVersion"
+    implementation "software.amazon.awscdk:lambda:$awsCdkVersion"
+    implementation "software.amazon.awscdk:dynamodb:$awsCdkVersion"
+    implementation "io.vavr:vavr:$vavrVersion"
+    implementation "org.gradle:gradle-tooling-api:$gradleDependencyVersion"
+    implementation "org.apache.commons:commons-lang3:$commonsLangVersion"
+    implementation "commons-io:commons-io:$commonsIoVersion"
+    implementation "org.zeroturnaround:zt-zip:$ztZipVersion"
+    implementation "com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion"
 }
 
 group = 'com.awssamples'
