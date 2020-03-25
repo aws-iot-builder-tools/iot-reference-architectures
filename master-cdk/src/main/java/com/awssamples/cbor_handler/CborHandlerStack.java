@@ -1,6 +1,12 @@
 package com.awssamples.cbor_handler;
 
-import com.awssamples.shared.*;
+import com.awslabs.general.helpers.interfaces.LambdaPackagingHelper;
+import com.awslabs.lambda.data.ImmutableJavaLambdaFunctionDirectory;
+import com.awssamples.MasterApp;
+import com.awssamples.shared.IotHelper;
+import com.awssamples.shared.LambdaHelper;
+import com.awssamples.shared.RoleHelper;
+import com.awssamples.shared.RulesEngineSqlHelper;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.services.iam.Role;
@@ -8,6 +14,7 @@ import software.amazon.awscdk.services.iot.CfnTopicRule;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.Runtime;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -32,14 +39,22 @@ public class CborHandlerStack extends software.amazon.awscdk.core.Stack {
     private static final String PROJECT_DIRECTORY = "../cbor-handler/";
     private static final List<File> PROJECT_DIRECTORY_FILES = singletonList(new File(PROJECT_DIRECTORY));
     private static final String BUILD_OUTPUT_DIRECTORY = "build/libs/";
-    private static final String OUTPUT_JAR = "java-1.0-SNAPSHOT-all.jar";
+    private static final String OUTPUT_JAR = "cbor-handler-1.0-SNAPSHOT-all.jar";
     private static final String ASSET_NAME = String.join("", PROJECT_DIRECTORY, BUILD_OUTPUT_DIRECTORY, OUTPUT_JAR);
+
+    @Inject
+    LambdaPackagingHelper lambdaPackagingHelper;
 
     public CborHandlerStack(final Construct parent, final String name) {
         super(parent, name);
 
+        // Inject dependencies
+        MasterApp.masterInjector.inject(this);
+
         // Build all of the necessary JARs
-        PROJECT_DIRECTORY_FILES.forEach(JavaSupport::buildJar);
+        PROJECT_DIRECTORY_FILES.stream()
+                .map(directory -> ImmutableJavaLambdaFunctionDirectory.builder().directory(directory).build())
+                .forEach(lambdaPackagingHelper::packageJavaFunction);
 
         // Resources to convert an Amazon Ion message to JSON
         Role cborMessageRole = RoleHelper.buildPublishToTopicIotEventRole(this, CBOR_MESSAGE, CBOR_OUTPUT_TOPIC, EMPTY_LIST);

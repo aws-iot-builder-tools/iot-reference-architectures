@@ -1,6 +1,9 @@
 package com.awssamples;
 
+import com.awslabs.general.helpers.data.ProcessOutput;
+import com.awslabs.general.helpers.interfaces.ProcessHelper;
 import com.awssamples.shared.CdkHelper;
+import io.vavr.collection.List;
 import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,13 +13,20 @@ import software.amazon.jsii.JsiiException;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
 
 public class MasterApp {
     private static final Logger log = LoggerFactory.getLogger(MasterApp.class);
+    public static final MasterInjector masterInjector = DaggerMasterInjector.create();
+    private static final ProcessHelper processHelper = masterInjector.processHelper();
 
     public static void main(final String argv[]) {
         if (argv.length != 2) {
             throw new RuntimeException("Two arguments are required. The first argument is the class to use for the stack. The second argument is the name to use for the stack.");
+        }
+
+        if (!isCorrectNodeJsVersion()) {
+            throw new RuntimeException("CDK requires NodeJS version must be 12.x. Change the default version of NodeJS to a 12.x version and try again. [https://github.com/aws/aws-cdk/issues/5187]");
         }
 
         String className = argv[0];
@@ -57,6 +67,23 @@ public class MasterApp {
         }
 
         app.synth();
+    }
+
+    private static boolean isCorrectNodeJsVersion() {
+        List<String> programAndArguments = List.of("node", "--version");
+
+        ProcessBuilder processBuilder = processHelper.getProcessBuilder(programAndArguments);
+
+        Optional<ProcessOutput> optionalProcessOutput = processHelper.getOutputFromProcess(processBuilder);
+
+        if (!optionalProcessOutput.isPresent()) {
+            return false;
+        }
+
+        List<String> stdoutStrings = optionalProcessOutput.get().getStandardOutStrings();
+
+        // We expect NodeJS 12.x only!
+        return stdoutStrings.getOrElse("").startsWith("v12.");
     }
 
     private static void exitWithFailure() {

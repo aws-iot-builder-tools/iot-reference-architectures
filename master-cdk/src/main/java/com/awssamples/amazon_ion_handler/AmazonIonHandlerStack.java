@@ -1,6 +1,15 @@
 package com.awssamples.amazon_ion_handler;
 
-import com.awssamples.shared.*;
+import com.awslabs.general.helpers.interfaces.LambdaPackagingHelper;
+import com.awslabs.lambda.data.FunctionName;
+import com.awslabs.lambda.data.ImmutableFunctionName;
+import com.awslabs.lambda.data.ImmutablePythonLambdaFunctionDirectory;
+import com.awslabs.lambda.data.PythonLambdaFunctionDirectory;
+import com.awssamples.MasterApp;
+import com.awssamples.shared.IotHelper;
+import com.awssamples.shared.LambdaHelper;
+import com.awssamples.shared.RoleHelper;
+import com.awssamples.shared.RulesEngineSqlHelper;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.services.iam.Role;
@@ -8,6 +17,7 @@ import software.amazon.awscdk.services.iot.CfnTopicRule;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.Runtime;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -26,7 +36,6 @@ public class AmazonIonHandlerStack extends software.amazon.awscdk.core.Stack {
     private static final String JSON_OUTPUT_TOPIC = String.join("/", "ion", "output");
     private static final String ION_HANDLER_SCRIPT_NAME = "Ion";
     private static final String JSON_HANDLER_SCRIPT_NAME = "Json";
-    private static final String DUAL_DEPLOYMENT_PACKAGE_NAME = "package";
     // Amazon Ion event handler
     private static final String ION_EVENT_HANDLER = String.join(".", ION_HANDLER_SCRIPT_NAME, "function_handler");
     // JSON event handler
@@ -35,11 +44,19 @@ public class AmazonIonHandlerStack extends software.amazon.awscdk.core.Stack {
     private static final String PROJECT_DIRECTORY = "../amazon-ion-handler/";
     private static final File PROJECT_DIRECTORY_FILE = new File(PROJECT_DIRECTORY);
 
+    @Inject
+    LambdaPackagingHelper lambdaPackagingHelper;
+
     public AmazonIonHandlerStack(final Construct parent, final String name) {
         super(parent, name);
 
+        // Inject dependencies
+        MasterApp.masterInjector.inject(this);
+
         // Build all of the necessary JARs
-        Path dualDeploymentPackage = PythonSupport.buildZip(PROJECT_DIRECTORY_FILE, DUAL_DEPLOYMENT_PACKAGE_NAME);
+        FunctionName functionName = ImmutableFunctionName.builder().name(name).build();
+        PythonLambdaFunctionDirectory pythonLambdaFunctionDirectory = ImmutablePythonLambdaFunctionDirectory.builder().directory(PROJECT_DIRECTORY_FILE).build();
+        Path dualDeploymentPackage = lambdaPackagingHelper.packagePythonFunction(functionName, pythonLambdaFunctionDirectory);
 
         // Resources to convert an Amazon Ion message to JSON
         Role ionMessageRole = RoleHelper.buildPublishToTopicIotEventRole(this, ION_MESSAGE, ION_OUTPUT_TOPIC, EMPTY_LIST);
