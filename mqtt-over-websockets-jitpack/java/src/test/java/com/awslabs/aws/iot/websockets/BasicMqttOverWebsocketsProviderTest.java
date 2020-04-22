@@ -1,5 +1,6 @@
 package com.awslabs.aws.iot.websockets;
 
+import com.awslabs.aws.iot.websockets.data.ImmutableClientId;
 import org.awaitility.core.ConditionTimeoutException;
 import org.eclipse.paho.client.mqttv3.*;
 import org.junit.Assert;
@@ -16,8 +17,8 @@ import static org.awaitility.Awaitility.await;
 import static org.hamcrest.core.Is.is;
 
 public class BasicMqttOverWebsocketsProviderTest {
-    private BasicMqttOverWebsocketsProvider basicMqttOverWebsocketsProvider;
-    private String clientId;
+    private MqttOverWebsocketsProvider mqttOverWebsocketsProvider;
+    private ImmutableClientId clientId;
     private MqttClient mqttClient;
     private MqttMessage randomMqttMessage;
     private String randomMqttTopic;
@@ -26,9 +27,10 @@ public class BasicMqttOverWebsocketsProviderTest {
 
     @Before
     public void setup() throws UnsupportedEncodingException, NoSuchAlgorithmException, InvalidKeyException, MqttException {
-        basicMqttOverWebsocketsProvider = new BasicMqttOverWebsocketsProvider();
-        clientId = UUID.randomUUID().toString();
-        mqttClient = basicMqttOverWebsocketsProvider.getMqttClient(clientId);
+        mqttOverWebsocketsProvider = new BasicMqttOverWebsocketsProvider();
+        String uuid = UUID.randomUUID().toString();
+        clientId = ImmutableClientId.builder().clientId(uuid).build();
+        mqttClient = mqttOverWebsocketsProvider.getMqttClient(clientId);
         setFlag(false);
 
         randomMqttTopic = UUID.randomUUID().toString();
