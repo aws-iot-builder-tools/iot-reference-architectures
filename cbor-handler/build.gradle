@@ -34,7 +34,7 @@ application {
 def slf4jVersion = '1.7.30'
 def gsonVersion = '2.8.6'
 def cborVersion = '4.1.3'
-def awsSdk2Version = '2.13.24'
+def awsSdk2Version = '2.13.27'
 def junitVersion = '4.13'
 def awsLambdaJavaCoreVersion = '1.2.1'
 
