@@ -25,7 +25,7 @@ distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
-def awsCdkVersion = '1.43.0'
+def awsCdkVersion = '1.44.0'
 def vavrVersion = '0.10.3'
 def slf4jVersion = '1.7.30'
 def jcabiVersion = '0.18.1'
