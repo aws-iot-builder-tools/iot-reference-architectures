@@ -29,27 +29,27 @@ SDK values should identify the name of the partner company along with the name o
 
 ##### Good
 
-- Partner name: `APNPartnerSoft`
+- Partner name: `PartnerSoft`
 - Partner software: N/A
 - Partner software version: N/A
 
-SDK value: `APNPartnerSoft`
+SDK value: `APN,PartnerSoft`
 
 ##### Better
 
-- Partner name: `APNPartnerSoft`
+- Partner name: `PartnerSoft`
 - Partner software: `Managed IoT`
 - Partner software version: N/A
 
-SDK value: `APNPartnerSoft,Managed IoT`
+SDK value: `APN,PartnerSoft,Managed IoT`
 
 ##### Best
 
-- Partner name: `APNPartnerSoft`
+- Partner name: `PartnerSoft`
 - Partner software: `Managed IoT`
 - Partner software version: `v1.2.1`
 
-SDK value: `APNPartnerSoft,Managed IoT,v1.2.1`
+SDK value: `APN,PartnerSoft,Managed IoT,v1.2.1`
 
 ### Platform values
 
