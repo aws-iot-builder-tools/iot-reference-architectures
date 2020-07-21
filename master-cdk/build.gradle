@@ -33,7 +33,7 @@ def commonsLangVersion = '3.11'
 def commonsIoVersion = '2.7'
 def ztZipVersion = '1.14'
 def resultsIteratorForAwsJavaSdkVersion = '0.9.0'
-def daggerVersion = '2.28.1'
+def daggerVersion = '2.28.3'
 
 repositories {
     mavenCentral()
