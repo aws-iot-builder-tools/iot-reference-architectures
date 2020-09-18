@@ -1,0 +1,1 @@
+$ion_1_0 {message:"Hello from a bash script 2"}

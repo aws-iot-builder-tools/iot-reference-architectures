@@ -9,8 +9,8 @@
 - [I ran into an issue with cdk deploy, what do I do?](#i-ran-into-an-issue-with-cdk-deploy-what-do-i-do)
 - [Is there a quick way to test it?](#is-there-a-quick-way-to-test-it)
   * [To send a canned JSON message and have it converted to Ion format (send-json-test-message.sh)](#to-send-a-canned-json-message-and-have-it-converted-to-ion-format-send-json-test-messagesh)
-  * [To send a canned Amazon Ion message in text format and have it converted to JSON format (send-ion-text-test-message.py)](#to-send-a-canned-amazon-ion-message-in-text-format-and-have-it-converted-to-json-format-send-ion-text-test-messagepy)
-  * [To send a canned Amazon Ion message in binary format and have it converted to JSON format (send-ion-binary-test-message.py)](#to-send-a-canned-amazon-ion-message-in-binary-format-and-have-it-converted-to-json-format-send-ion-binary-test-messagepy)
+  * [To send a canned Amazon Ion message in text format and have it converted to JSON format (send-ion-text-test-message.sh)](#to-send-a-canned-amazon-ion-message-in-text-format-and-have-it-converted-to-json-format-send-ion-text-test-messagesh)
+  * [To send a canned Amazon Ion message in binary format and have it converted to JSON format (send-ion-binary-test-message.sh)](#to-send-a-canned-amazon-ion-message-in-binary-format-and-have-it-converted-to-json-format-send-ion-binary-test-messagesh)
 - [How does the system work?](#how-does-the-system-work)
 
 <!-- tocstop -->
@@ -45,7 +45,7 @@ Open a Github issue and provide as much context as possible. `cdk deploy` in thi
 
 ## Is there a quick way to test it?
 
-Yes, there is a bash script to test converting from JSON to Ion and there are two Python scripts to test converting from Ion's text and binary formats to JSON. Python was chosen for the Ion messages since it is easier to send binary data to IoT Core using the Python SDK than it is using the command-line tools. The scripts don't receive the response via MQTT though so you'll need to use your own MQTT client to subscribe to the appropriate topics and see the responses.
+Yes, there are three bash scripts to test converting from JSON to Ion, from Ion's binary format to JSON, and from Ion's text format to JSON. The scripts don't receive the response via MQTT though so you'll need to use your own MQTT client to subscribe to the appropriate topics and see the responses.
 
 ### To send a canned JSON message and have it converted to Ion format (send-json-test-message.sh)
 
@@ -63,35 +63,35 @@ The output will show up on the `ion/output` topic in binary format. In the AWS I
 e00100eaee8e8183de8a87b8876d657373616765de9b8a8e9848656c6c6f2066726f6d2061206261736820736372697074
 ```
 
-### To send a canned Amazon Ion message in text format and have it converted to JSON format (send-ion-text-test-message.py)
+### To send a canned Amazon Ion message in text format and have it converted to JSON format (send-ion-text-test-message.sh)
 
-Run `./send-ion-text-test-message.py`. The following message will be sent to the `ion/input` topic:
+Run `./send-ion-text-test-message.sh`. The following message will be sent to the `ion/input` topic:
 
 ```
-$ion_1_0 {message:"Hello from a Python script"}
+$ion_1_0 {message:"Hello from a bash script 2"}
 ```
 
 The output will show up on the `json/output` topic and should look like this:
 
 ```json
 {
-  "message": "Hello from a Python script"
+  "message": "Hello from a bash script 2"
 }
 ```
 
-### To send a canned Amazon Ion message in binary format and have it converted to JSON format (send-ion-binary-test-message.py)
+### To send a canned Amazon Ion message in binary format and have it converted to JSON format (send-ion-binary-test-message.sh)
 
-Run `./send-ion-text-test-message.py`. A binary message will be sent to the `ion/input` topic. In the AWS IoT console's MQTT it should look like this:
+Run `./send-ion-binary-test-message.sh`. A binary message will be sent to the `ion/input` topic. In the AWS IoT console's MQTT it should look like this:
 
 ```
-e00100eaee8e8183de8a87b8876d657373616765de9d8a8e9a48656c6c6f2066726f6d206120507974686f6e20736372697074
+e00100eaee8e8183de8a87b8876d657373616765de9d8a8e9a48656c6c6f2066726f6d20612062617368207363726970742033
 ```
 
 The output will show up on the `json/output` topic and should look like this:
 
 ```json
 {
-  "message": "Hello from a Python script"
+  "message": "Hello from a bash script 3"
 }
 ```
 
