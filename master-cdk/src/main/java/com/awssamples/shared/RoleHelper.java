@@ -1,29 +1,42 @@
 package com.awssamples.shared;
 
 import com.awssamples.iam.policies.CloudWatchEventsPolicies;
+import com.awssamples.iam.policies.IotPolicies;
 import com.awssamples.iam.policies.LambdaPolicies;
-import software.amazon.awscdk.core.Fn;
+import org.jetbrains.annotations.NotNull;
+import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.services.iam.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static com.awssamples.shared.IotHelper.getPublishToTopicPolicyStatement;
 import static java.util.Collections.singletonList;
 
 public class RoleHelper {
-    public static Role buildPublishToTopicIotEventRole(Stack stack, String rolePrefix, String topic, List<PolicyStatement> additionalPolicyStatements) {
-        PolicyStatementProps iotPolicyStatementProps = PolicyStatementProps.builder()
-                .effect(Effect.ALLOW)
-                .resources(singletonList(Fn.join("", Arrays.asList("arn:aws:iot:", stack.getRegion(), ":", stack.getAccount(), ":topic/", topic))))
-                .actions(singletonList("iot:Publish"))
-                .build();
-        PolicyStatement iotPolicyStatement = new PolicyStatement(iotPolicyStatementProps);
+    public static Role buildPublishToTopicRole(Stack stack, String rolePrefix, String topic, List<PolicyStatement> additionalPolicyStatements, IPrincipal iPrincipal) {
+        PolicyStatement iotPolicyStatement = getPublishToTopicPolicyStatement(stack, topic);
 
-        List<PolicyStatement> basePolicyStatements = Arrays.asList(CloudWatchEventsPolicies.getMinimalCloudWatchEventsLoggingPolicy(), iotPolicyStatement);
+        return buildRoleAssumedByPrincipal(stack, rolePrefix + "Role", combinePolicyStatements(additionalPolicyStatements, iotPolicyStatement), iPrincipal);
+    }
+
+    public static Role buildRoleAssumedByLambda(Construct construct, String roleName, List<PolicyStatement> policyStatementList) {
+        return buildRoleAssumedByPrincipal(construct, roleName, policyStatementList, LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL);
+    }
+
+    public static Role buildRoleAssumedByIot(Construct construct, String roleName, List<PolicyStatement> policyStatementList) {
+        return buildRoleAssumedByPrincipal(construct, roleName, policyStatementList, IotPolicies.IOT_SERVICE_PRINCIPAL);
+    }
+
+    public static Role buildRoleAssumedByPrincipal(Construct construct, String roleName, List<PolicyStatement> policyStatementList, IPrincipal iPrincipal) {
+        List<PolicyStatement> basePolicyStatements = singletonList(CloudWatchEventsPolicies.getMinimalCloudWatchEventsLoggingPolicy());
 
         List<PolicyStatement> allPolicyStatements = new ArrayList<>();
         allPolicyStatements.addAll(basePolicyStatements);
-        allPolicyStatements.addAll(additionalPolicyStatements);
+        allPolicyStatements.addAll(policyStatementList);
 
         PolicyDocumentProps policyDocumentProps = PolicyDocumentProps.builder()
                 .statements(allPolicyStatements)
@@ -34,14 +47,22 @@ public class RoleHelper {
         policyDocuments.put("root", policyDocument);
 
         RoleProps roleProps = RoleProps.builder()
-                .assumedBy(LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL)
+                .assumedBy(iPrincipal)
                 .inlinePolicies(policyDocuments)
                 .build();
 
-        return new Role(stack, rolePrefix + "Role", roleProps);
+        return new Role(construct, roleName, roleProps);
     }
 
-    public static Role buildPublishToTopicPrefixIotEventRole(Stack stack, String rolePrefix, String topicPrefix, List<PolicyStatement> additionalPolicyStatements) {
-        return buildPublishToTopicIotEventRole(stack, rolePrefix, topicPrefix + "/*", additionalPolicyStatements);
+    @NotNull
+    public static List<PolicyStatement> combinePolicyStatements(List<PolicyStatement> policyStatementList, PolicyStatement policyStatement) {
+        List<PolicyStatement> allStatements = new ArrayList<>();
+        allStatements.addAll(policyStatementList);
+        allStatements.add(policyStatement);
+        return allStatements;
+    }
+
+    public static Role buildPublishToTopicPrefixIotEventRole(Stack stack, String rolePrefix, String topicPrefix, List<PolicyStatement> additionalPolicyStatements, IPrincipal iPrincipal) {
+        return buildPublishToTopicRole(stack, rolePrefix, topicPrefix + "/*", additionalPolicyStatements, iPrincipal);
     }
 }

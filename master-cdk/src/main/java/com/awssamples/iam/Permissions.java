@@ -9,4 +9,6 @@ public class Permissions {
     public static final String DYNAMODB_DELETE_ITEM_PERMISSION = String.join(PERMISSION_DELIMITER, DYNAMODB_PERMISSION_HEADER, "DeleteItem");
     public static final String LAMBDA_PERMISSION_HEADER = "lambda";
     public static final String LAMBDA_INVOKE_FUNCTION = String.join(PERMISSION_DELIMITER, LAMBDA_PERMISSION_HEADER, "InvokeFunction");
+    public static final String IOT_PERMISSION_PREFIX = "iot";
+    public static final String IOT_PUBLISH_PERMISSION = String.join(PERMISSION_DELIMITER, IOT_PERMISSION_PREFIX, "Publish");
 }

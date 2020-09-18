@@ -6,6 +6,7 @@ import com.awslabs.lambda.data.ImmutableFunctionName;
 import com.awslabs.lambda.data.ImmutablePythonLambdaFunctionDirectory;
 import com.awslabs.lambda.data.PythonLambdaFunctionDirectory;
 import com.awssamples.MasterApp;
+import com.awssamples.iam.policies.LambdaPolicies;
 import com.awssamples.shared.IotHelper;
 import com.awssamples.shared.LambdaHelper;
 import com.awssamples.shared.RoleHelper;
@@ -59,14 +60,14 @@ public class AmazonIonHandlerStack extends software.amazon.awscdk.core.Stack {
         Path dualDeploymentPackage = lambdaPackagingHelper.packagePythonFunction(functionName, pythonLambdaFunctionDirectory);
 
         // Resources to convert an Amazon Ion message to JSON
-        Role ionMessageRole = RoleHelper.buildPublishToTopicIotEventRole(this, ION_MESSAGE, ION_OUTPUT_TOPIC, EMPTY_LIST);
+        Role ionMessageRole = RoleHelper.buildPublishToTopicRole(this, ION_MESSAGE, ION_OUTPUT_TOPIC, EMPTY_LIST, LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL);
         Map<String, String> ionLambdaEnvironment = getIonLambdaEnvironment();
         Function ionMessageFunction = LambdaHelper.buildIotEventLambda(this, ION_MESSAGE, ionMessageRole, Runtime.PYTHON_3_7, emptyMap(), ionLambdaEnvironment, dualDeploymentPackage.toString(), ION_EVENT_HANDLER, LAMBDA_FUNCTION_TIMEOUT);
         CfnTopicRule ionMessageTopicRule = RulesEngineSqlHelper.buildSelectAllBinaryIotEventRule(this, ION_MESSAGE, ionMessageFunction, ION_INPUT_TOPIC);
         IotHelper.allowIotTopicRuleToInvokeLambdaFunction(this, ionMessageTopicRule, ionMessageFunction, ION_MESSAGE);
 
         // Resources to convert a JSON message to Amazon Ion
-        Role jsonMessageRole = RoleHelper.buildPublishToTopicIotEventRole(this, JSON_MESSAGE, JSON_OUTPUT_TOPIC, EMPTY_LIST);
+        Role jsonMessageRole = RoleHelper.buildPublishToTopicRole(this, JSON_MESSAGE, JSON_OUTPUT_TOPIC, EMPTY_LIST, LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL);
         Map<String, String> jsonLambdaEnvironment = getJsonLambdaEnvironment();
         Function jsonMessageFunction = LambdaHelper.buildIotEventLambda(this, JSON_MESSAGE, jsonMessageRole, Runtime.PYTHON_3_7, emptyMap(), jsonLambdaEnvironment, dualDeploymentPackage.toString(), JSON_EVENT_HANDLER, LAMBDA_FUNCTION_TIMEOUT);
         CfnTopicRule jsonMessageTopicRule = RulesEngineSqlHelper.buildSelectAllIotEventRule(this, JSON_MESSAGE, jsonMessageFunction, JSON_INPUT_TOPIC);
