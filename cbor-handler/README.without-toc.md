@@ -32,7 +32,7 @@ Open a Github issue and provide as much context as possible. `cdk deploy` in thi
 
 ## Is there a quick way to test it?
 
-Yes, there is a bash script to test converting from JSON to CBOR and there is a Python script to test converting from CBOR to JSON. Python was chosen for the CBOR messages since it is easier to send binary data to IoT Core using the Python SDK than it is using the command-line tools. The scripts don't receive the response via MQTT though so you'll need to use your own MQTT client to subscribe to the appropriate topics and see the responses.
+Yes, there are two bash scripts to test converting from JSON to CBOR and from CBOR to JSON. The scripts don't receive the response via MQTT though so you'll need to use your own MQTT client to subscribe to the appropriate topics and see the responses.
 
 ### To send a canned JSON message and have it converted to CBOR format (send-json-test-message.sh)
 
@@ -50,19 +50,19 @@ The output will show up on the `cbor/output` topic in binary format. In the AWS 
 a1676d657373616765781848656c6c6f2066726f6d2061206261736820736372697074
 ```
 
-### To send a canned CBOR message and have it converted to JSON format (send-cbor-test-message.py)
+### To send a canned CBOR message and have it converted to JSON format (send-cbor-test-message.sh)
 
-Run `./send-cbor-test-message.py`. A binary message will be sent to the `cbor/input` topic. In the AWS IoT console's MQTT it should look like this:
+Run `./send-cbor-test-message.sh`. A binary message will be sent to the `cbor/input` topic. In the AWS IoT console's MQTT it should look like this:
 
 ```
-a1676d657373616765781a48656c6c6f2066726f6d206120507974686f6e20736372697074
+a1676d657373616765781a48656c6c6f2066726f6d20612062617368207363726970742032
 ```
 
 The output will show up on the `json/output` topic and should look like this:
 
 ```json
 {
-  "message": "Hello from a Python script"
+  "message": "Hello from a bash script 2"
 }
 ```
 
