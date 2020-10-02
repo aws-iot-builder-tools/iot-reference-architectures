@@ -1,0 +1,37 @@
+version: 2
+updates:
+- package-ecosystem: nuget
+  directory: "/cross-account-publish/c-sharp/ConsoleApp1"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/mqtt-over-websockets-jitpack/java"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/results-iterator-jitpack/java"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/cbor-handler"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: pip
+  directory: "/amazon-ion-handler"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/dynamodb-api/java"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/master-cdk"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
