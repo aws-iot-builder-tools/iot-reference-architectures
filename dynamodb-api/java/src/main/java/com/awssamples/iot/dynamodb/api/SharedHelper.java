@@ -1,6 +1,9 @@
 package com.awssamples.iot.dynamodb.api;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.vavr.control.Try;
+import io.vavr.gson.VavrGson;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 
@@ -8,18 +11,27 @@ import java.nio.ByteBuffer;
 import java.util.AbstractMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
 import static software.amazon.awssdk.utils.CollectionUtils.toMap;
 
 public class SharedHelper {
+    public static final String IRIDIUM = "Iridium";
+    public static final String LAST_CONTACT = "lastContact";
     public static final String ERROR_KEY = "error";
-    public static final String UUID = "uuid";
-    public static final String MESSAGE_ID = "messageId";
+    public static final String UUID_DYNAMO_DB_COLUMN_NAME = "uuid";
+    public static final String MESSAGE_ID_DYNAMO_DB_COLUMN_NAME = "messageId";
+    public static final String UUID_VARIABLE = "{uuid}";
+    public static final String RECIPIENT_UUID_VARIABLE = "{recipientUuid}";
+    public static final String MESSAGE_ID_VARIABLE = "{messageId}";
+    public static final String TOKEN_VARIABLE = "{token}";
     public static final String BODY = "body";
     private static final String DYNAMODB_TABLE_ARN = getEnvironmentVariableOrThrow("dynamoDbTableArn", SharedHelper::dynamoDbTableArnMissingException);
+    public static final String UUID_KEY = SharedHelper.getEnvironmentVariableOrThrow("uuidKey", SharedHelper::missingUuidKeyException);
+    public static final String MESSAGE_ID_KEY = SharedHelper.getEnvironmentVariableOrThrow("messageIdKey", SharedHelper::missingMessageIdKeyException);
+    public static final String INBOUND_SQS_QUEUE_ARN = SharedHelper.getEnvironmentVariableOrThrow("inboundSqsQueueArn", SharedHelper::missingInboundSqsQueueArnException);
+    public static final String OUTBOUND_SQS_QUEUE_ARN = SharedHelper.getEnvironmentVariableOrThrow("outboundSqsQueueArn", SharedHelper::missingOutboundSqsQueueArnException);
 
     private static RuntimeException dynamoDbTableArnMissingException() {
         throw new RuntimeException("Missing the DynamoDB table ARN in the environment, can not continue");
@@ -77,7 +89,7 @@ public class SharedHelper {
      * @param attributeValue a DynamoDB attribute value
      * @return a normal Java object that represents input attribute value
      */
-    private static Object fromDynamoDbAttributeValue(AttributeValue attributeValue) {
+    public static Object fromDynamoDbAttributeValue(AttributeValue attributeValue) {
         if (attributeValue.s() != null) {
             return attributeValue.s();
         }
@@ -148,7 +160,7 @@ public class SharedHelper {
      * @return a JSON string representing the input object
      */
     public static String toJson(Object input) {
-        return new Gson().toJson(input);
+        return getGson().toJson(input);
     }
 
     /**
@@ -157,7 +169,7 @@ public class SharedHelper {
      * @return an object, with the specified class, created from the JSON string
      */
     public static <T> T fromJson(String input, Class<T> type) {
-        return new Gson().fromJson(input, type);
+        return getGson().fromJson(input, type);
     }
 
     /**
@@ -166,6 +178,41 @@ public class SharedHelper {
      * @return the value of the variable in the environment
      */
     public static String getEnvironmentVariableOrThrow(String name, Supplier<RuntimeException> runtimeExceptionSupplier) {
-        return Optional.ofNullable(System.getenv(name)).orElseThrow(runtimeExceptionSupplier);
+        return Try.of(() -> System.getenv(name)).onFailure(throwable -> runtimeExceptionSupplier.get()).get();
+    }
+
+    // Methods that throw exceptions so that the code fails fast when issues come up (values not specified in the environment, etc)
+    private static RuntimeException missingUuidKeyException() {
+        throw new RuntimeException("Missing the UUID key in the environment, can not continue");
+    }
+
+    private static RuntimeException missingMessageIdKeyException() {
+        throw new RuntimeException("Missing the message ID key in the environment, can not continue");
+    }
+
+    private static RuntimeException missingInboundSqsQueueArnException() {
+        throw new RuntimeException("Missing the inbound SQS queue ARN in the environment, can not continue");
+    }
+
+    private static RuntimeException missingOutboundSqsQueueArnException() {
+        throw new RuntimeException("Missing the outbound SQS queue ARN in the environment, can not continue");
+    }
+
+    public static String getInboundQueueName() {
+        return getQueueNameFromQueueArn(INBOUND_SQS_QUEUE_ARN);
+    }
+
+    public static String getOutboundQueueName() {
+        return getQueueNameFromQueueArn(OUTBOUND_SQS_QUEUE_ARN);
+    }
+
+    private static String getQueueNameFromQueueArn(String queueArn) {
+        return queueArn.substring(queueArn.lastIndexOf(":") + 1);
+    }
+
+    public static Gson getGson() {
+        GsonBuilder builder = new GsonBuilder();
+        VavrGson.registerAll(builder);
+        return builder.create();
     }
 }

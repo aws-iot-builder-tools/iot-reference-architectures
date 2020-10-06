@@ -17,14 +17,13 @@ public class HandleIotDeleteEvent implements HandleIotEvent {
     }
 
     @Override
-    public String innerHandle(String responseToken, Optional<String> optionalUuid, Optional<String> optionalMessageId) {
-        String uuid = optionalUuid.get();
+    public String innerHandle(String responseToken, final Map input, String uuid, Optional<String> optionalMessageId, Optional<String> optionalRecipientId) {
         String messageId = optionalMessageId.get();
 
         // Delete the row with the exact UUID and message ID values
         Map<String, AttributeValue> key = new HashMap<>();
-        key.put(SharedHelper.UUID, AttributeValue.builder().s(uuid).build());
-        key.put(SharedHelper.MESSAGE_ID, AttributeValue.builder().s(messageId).build());
+        key.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, AttributeValue.builder().s(uuid).build());
+        key.put(SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, AttributeValue.builder().s(messageId).build());
 
         DeleteItemRequest deleteItemRequest = DeleteItemRequest.builder()
                 .tableName(SharedHelper.getTableName())
@@ -36,10 +35,10 @@ public class HandleIotDeleteEvent implements HandleIotEvent {
         //   indicates that a record was deleted if it was present. If the record was not present then this the previous
         //   delete operation is a NOOP.
         Map<String, String> payloadMap = new HashMap<>();
-        payloadMap.put(SharedHelper.UUID, uuid);
-        payloadMap.put(SharedHelper.MESSAGE_ID, messageId);
+        payloadMap.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuid);
+        payloadMap.put(SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageId);
 
-        publishResponse(responseToken, payloadMap);
+        publishResponse(uuid, optionalMessageId, Optional.empty(), responseToken, payloadMap);
 
         return "done";
     }
@@ -51,8 +50,7 @@ public class HandleIotDeleteEvent implements HandleIotEvent {
     }
 
     @Override
-    public boolean isUuidRequired() {
-        // Yes, we need the UUID for a delete message request
-        return true;
+    public boolean isRecipientUuidRequired() {
+        return false;
     }
 }

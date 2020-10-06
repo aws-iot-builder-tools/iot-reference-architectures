@@ -4,9 +4,17 @@ import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.awssamples.iot.dynamodb.api.SharedHelper;
 import com.awssamples.iot.dynamodb.api.data.CookedMessage;
+import com.awssamples.iot.dynamodb.api.data.UuidAndMessageId;
+import com.google.gson.Gson;
+import io.vavr.control.Try;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
+import software.amazon.awssdk.services.iotdataplane.model.PublishRequest;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
 import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
@@ -16,26 +24,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static com.awssamples.iot.dynamodb.api.SharedHelper.*;
+
 public class HandleSqsEvent implements RequestHandler<Map, String> {
+    private static final Logger log = LoggerFactory.getLogger(HandleSqsEvent.class);
     private static final String RECORDS = "Records";
-    private static final String UUID_KEY = SharedHelper.getEnvironmentVariableOrThrow("uuidKey", HandleSqsEvent::missingUuidKeyException);
-    private static final String MESSAGE_ID_KEY = SharedHelper.getEnvironmentVariableOrThrow("messageIdKey", HandleSqsEvent::missingMessageIdKeyException);
-    private static final String SQS_QUEUE_ARN = SharedHelper.getEnvironmentVariableOrThrow("sqsQueueArn", HandleSqsEvent::missingSqsQueueArnException);
     private static final String ONLY_ONE_RECORD_MAY_BE_PROCESSED_AT_A_TIME = "Only one record may be processed at a time";
-
-    // Methods that throw exceptions so that the code fails fast when issues come up (values not specified in the environment, etc)
-
-    private static RuntimeException missingUuidKeyException() {
-        throw new RuntimeException("Missing the UUID key in the environment, can not continue");
-    }
-
-    private static RuntimeException missingMessageIdKeyException() {
-        throw new RuntimeException("Missing the message ID key in the environment, can not continue");
-    }
-
-    private static RuntimeException missingSqsQueueArnException() {
-        throw new RuntimeException("Missing the SQS queue ARN in the environment, can not continue");
-    }
+    private static final SdkBytes EMPTY_PAYLOAD = SdkBytes.fromByteArray("{}".getBytes());
 
     @Override
     public String handleRequest(final Map input, final Context context) {
@@ -51,7 +46,7 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
 
         // Get the SQS specific data from the message
         String receiptHandle = (String) rawRecord.get("receiptHandle");
-        String sqsMessageId = (String) rawRecord.get(SharedHelper.MESSAGE_ID);
+        String sqsMessageId = (String) rawRecord.get(MESSAGE_ID_DYNAMO_DB_COLUMN_NAME);
 
         // Get the SQS specific attributes from the message and then extract the sent timestamp
         Map attributes = (Map) rawRecord.get("attributes");
@@ -67,19 +62,33 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
         CookedMessage cookedMessage = new CookedMessage(sentTimestamp, body, sqsMessageId);
 
         // Store the cooked message in DynamoDB
-        addCookedMessageToDynamoDb(cookedMessage);
+        UuidAndMessageId uuidAndMessageId = addCookedMessageToDynamoDb(cookedMessage);
 
         // Remove the message from SQS once it is stored in DynamoDB
         removeFromSqs(receiptHandle);
 
+        // Publish notification to IoT Core
+        publishNotification(uuidAndMessageId);
+
         return "done";
     }
+
+    private void publishNotification(UuidAndMessageId uuidAndMessageId) {
+        PublishRequest publishRequest = PublishRequest.builder()
+                .topic(String.join("/", "notification", uuidAndMessageId.getUuid()))
+                .qos(1)
+                .payload(SdkBytes.fromByteArray(toJson(uuidAndMessageId).getBytes()))
+                .build();
+
+        IotDataPlaneClient.create().publish(publishRequest);
+    }
+
 
     private void removeFromSqs(String receiptHandle) {
         SqsClient sqsClient = SqsClient.create();
 
         GetQueueUrlRequest getQueueUrlRequest = GetQueueUrlRequest.builder()
-                .queueName(getQueueName())
+                .queueName(SharedHelper.getInboundQueueName())
                 .build();
 
         GetQueueUrlResponse getQueueUrlResponse = sqsClient.getQueueUrl(getQueueUrlRequest);
@@ -96,21 +105,31 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
         sqsClient.deleteMessage(deleteMessageRequest);
     }
 
-    private String getQueueName() {
-        return SQS_QUEUE_ARN.substring(SQS_QUEUE_ARN.lastIndexOf(":") + 1);
-    }
-
-    private void addCookedMessageToDynamoDb(CookedMessage cookedMessage) {
+    private UuidAndMessageId addCookedMessageToDynamoDb(CookedMessage cookedMessage) {
         Map<String, AttributeValue> body = cookedMessage.getBody().m();
+        log.info("Body: " + getGson().toJson(body));
 
         // The message ID in DynamoDB is the user specified message ID field, followed by the SQS sent timestamp, followed by the SQS message ID (UUID)
-        String messageId = body.get(MESSAGE_ID_KEY).s();
-        messageId = String.join("-", messageId, cookedMessage.getSentTimestamp(), cookedMessage.getSqsMessageId());
+        AttributeValue messageId = Try.of(() -> getField(MESSAGE_ID_KEY, body))
+                // Add some additional data to make sure it is unique
+                .map(value -> String.join("-", value, cookedMessage.getSentTimestamp(), cookedMessage.getSqsMessageId()))
+                // If the string starts with "null-" remove it
+                .map(value -> value.replaceFirst("null-", ""))
+                // Turn it into an attribute value
+                .map(value -> AttributeValue.builder().s(value).build())
+                .onFailure(NullPointerException.class, exception -> rethrowRuntimeExceptionForMissingMessageId())
+                .get();
+
+        AttributeValue uuid = Try.of(() -> getField(UUID_KEY, body))
+                // Turn it into an attribute value
+                .map(value -> AttributeValue.builder().s(value).build())
+                .onFailure(NullPointerException.class, exception -> rethrowRuntimeExceptionForMissingUUID())
+                .get();
 
         Map<String, AttributeValue> item = new HashMap<>();
-        item.put(SharedHelper.UUID, body.get(UUID_KEY));
-        item.put(SharedHelper.MESSAGE_ID, AttributeValue.builder().s(messageId).build());
-        item.put(SharedHelper.BODY, cookedMessage.getBody());
+        item.put(UUID_DYNAMO_DB_COLUMN_NAME, uuid);
+        item.put(MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageId);
+        item.put(BODY, cookedMessage.getBody());
 
         PutItemRequest putItemRequest = PutItemRequest.builder()
                 .item(item)
@@ -118,5 +137,37 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
                 .build();
 
         DynamoDbClient.create().putItem(putItemRequest);
+
+        return new UuidAndMessageId(uuid.s(), messageId.s());
+    }
+
+    private String getField(String fieldName, Map<String, AttributeValue> body) {
+        String[] fields = fieldName.split("\\.");
+
+        if (fields.length == 1) {
+            // Not a nested field, just return the string value
+            return body.get(fieldName).s();
+        }
+
+        Map<String, AttributeValue> currentMap = body;
+        log.info("currentMap: " + getGson().toJson(currentMap));
+
+        // Nested field. Loop through them until the last one.
+        for (int loop = 0; loop < fields.length - 1; loop++) {
+            log.info("loop, fields[loop]: " + loop + ", " + fields[loop]);
+            currentMap = currentMap.get(fields[loop]).m();
+            log.info("currentMap: " + getGson().toJson(currentMap));
+        }
+
+        // Last field, extract the string
+        return currentMap.get(fields[fields.length - 1]).s();
+    }
+
+    private void rethrowRuntimeExceptionForMissingUUID() {
+        throw new RuntimeException("UUID field [" + UUID_KEY + "] does not exist in payload");
+    }
+
+    private void rethrowRuntimeExceptionForMissingMessageId() {
+        throw new RuntimeException("Message key ID field [" + MESSAGE_ID_KEY + "] does not exist in payload");
     }
 }

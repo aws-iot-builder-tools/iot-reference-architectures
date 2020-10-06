@@ -14,4 +14,4 @@ if [ -z "$MESSAGE_ID" ]; then
 fi
 
 TOKEN=`uuidgen`
-aws iot-data publish --topic request/get/$UUID/$MESSAGE_ID --payload '{"token":"'$TOKEN'"}'
+aws iot-data publish --topic request/get/$UUID/$MESSAGE_ID --cli-binary-format raw-in-base64-out --payload '{"token":"'$TOKEN'"}'

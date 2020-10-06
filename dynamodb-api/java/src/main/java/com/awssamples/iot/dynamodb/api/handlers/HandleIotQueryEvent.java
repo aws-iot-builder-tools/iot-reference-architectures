@@ -21,9 +21,7 @@ public class HandleIotQueryEvent implements HandleIotEvent {
     }
 
     @Override
-    public String innerHandle(String responseToken, Optional<String> optionalUuid, Optional<String> optionalMessageId) {
-        String uuid = optionalUuid.get();
-
+    public String innerHandle(String responseToken, final Map input, String uuid, Optional<String> optionalMessageId, Optional<String> optionalRecipientId) {
         // Get the row with the exact UUID only, no message ID specified
         Map<String, Condition> keyConditions = new HashMap<>();
         AttributeValue uuidAttributeValue = AttributeValue.builder().s(uuid).build();
@@ -31,14 +29,14 @@ public class HandleIotQueryEvent implements HandleIotEvent {
                 .attributeValueList(uuidAttributeValue)
                 .comparisonOperator(ComparisonOperator.EQ)
                 .build();
-        keyConditions.put(SharedHelper.UUID, uuidCondition);
+        keyConditions.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuidCondition);
 
         // Find the oldest row with this UUID
         Optional<String> optionalOldestMessageId = getOldestMessageId(keyConditions);
 
         // Return a payload on the response topic that contains the UUID
         Map<String, String> payloadMap = new HashMap<>();
-        payloadMap.put(SharedHelper.UUID, uuid);
+        payloadMap.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuid);
 
         if (optionalOldestMessageId.isPresent()) {
             // There is an oldest message available, add the message ID to the payload
@@ -53,7 +51,7 @@ public class HandleIotQueryEvent implements HandleIotEvent {
             payloadMap.put(SharedHelper.ERROR_KEY, NO_MESSAGES_AVAILABLE);
         }
 
-        publishResponse(responseToken, payloadMap);
+        publishResponse(uuid, optionalMessageId, Optional.empty(), responseToken, payloadMap);
 
         return "done";
     }
@@ -64,7 +62,8 @@ public class HandleIotQueryEvent implements HandleIotEvent {
     }
 
     @Override
-    public boolean isUuidRequired() {
-        return true;
+    public boolean isRecipientUuidRequired() {
+        return false;
     }
 }
+

@@ -95,6 +95,7 @@ public class MasterApp {
     }
 
     private static void logPossibleVersionIssue(Exception exception) {
+        exception.printStackTrace();
         log.error("Failed to create a CDK stack, this may be due to CDK being out of date. Try running 'npm i -g aws-cdk' and then re-run the stack. The complete exception information is above.");
     }
 }

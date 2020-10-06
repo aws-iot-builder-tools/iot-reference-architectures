@@ -21,8 +21,7 @@ public class HandleIotNextEvent implements HandleIotEvent {
     }
 
     @Override
-    public String innerHandle(String responseToken, Optional<String> optionalUuid, Optional<String> optionalMessageId) {
-        String uuid = optionalUuid.get();
+    public String innerHandle(String responseToken, final Map input, String uuid, Optional<String> optionalMessageId, Optional<String> optionalRecipientId) {
         String messageId = optionalMessageId.get();
 
         // Get the row with the exact UUID and the next message ID (message ID greater than the value specified in the request)
@@ -33,20 +32,20 @@ public class HandleIotNextEvent implements HandleIotEvent {
                 .attributeValueList(uuidAttributeValue)
                 .comparisonOperator(ComparisonOperator.EQ)
                 .build();
-        keyConditions.put(SharedHelper.UUID, uuidCondition);
+        keyConditions.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuidCondition);
 
         AttributeValue messageIdAttributeValue = AttributeValue.builder().s(messageId).build();
         Condition messageIdCondition = Condition.builder()
                 .attributeValueList(messageIdAttributeValue)
                 .comparisonOperator(ComparisonOperator.GT)
                 .build();
-        keyConditions.put(SharedHelper.MESSAGE_ID, messageIdCondition);
+        keyConditions.put(SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageIdCondition);
 
         Optional<String> optionalOldestMessageId = getOldestMessageId(keyConditions);
 
         // Return a payload on the response topic that contains the UUID and specified message ID
         Map<String, String> payloadMap = new HashMap<>();
-        payloadMap.put(SharedHelper.UUID, uuid);
+        payloadMap.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuid);
         payloadMap.put(SPECIFIED_MESSAGE_ID_KEY, messageId);
 
         if (optionalOldestMessageId.isPresent()) {
@@ -58,7 +57,7 @@ public class HandleIotNextEvent implements HandleIotEvent {
             payloadMap.put(SharedHelper.ERROR_KEY, NO_MESSAGES_AVAILABLE);
         }
 
-        publishResponse(responseToken, payloadMap);
+        publishResponse(uuid, optionalMessageId, Optional.empty(), responseToken, payloadMap);
 
         return "done";
     }
@@ -70,8 +69,7 @@ public class HandleIotNextEvent implements HandleIotEvent {
     }
 
     @Override
-    public boolean isUuidRequired() {
-        // Yes, we need a UUID for a next message request
-        return true;
+    public boolean isRecipientUuidRequired() {
+        return false;
     }
 }

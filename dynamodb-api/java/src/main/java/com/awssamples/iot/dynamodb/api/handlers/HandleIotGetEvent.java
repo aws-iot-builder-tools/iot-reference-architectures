@@ -22,14 +22,13 @@ public class HandleIotGetEvent implements HandleIotEvent {
     }
 
     @Override
-    public String innerHandle(String responseToken, Optional<String> optionalUuid, Optional<String> optionalMessageId) {
-        String uuid = optionalUuid.get();
+    public String innerHandle(String responseToken, final Map input, String uuid, Optional<String> optionalMessageId, Optional<String> optionalRecipientId) {
         String messageId = optionalMessageId.get();
 
         // Get the row with the exact UUID and message ID values
         Map<String, AttributeValue> key = new HashMap<>();
-        key.put(SharedHelper.UUID, AttributeValue.builder().s(uuid).build());
-        key.put(SharedHelper.MESSAGE_ID, AttributeValue.builder().s(messageId).build());
+        key.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, AttributeValue.builder().s(uuid).build());
+        key.put(SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, AttributeValue.builder().s(messageId).build());
 
         DynamoDbClient dynamoDbClient = DynamoDbClient.create();
         GetItemRequest getItemRequest = GetItemRequest.builder()
@@ -40,8 +39,8 @@ public class HandleIotGetEvent implements HandleIotEvent {
 
         // Return a payload on the response topic that contains the UUID and message ID
         Map<String, Object> payloadMap = new HashMap<>();
-        payloadMap.put(SharedHelper.UUID, uuid);
-        payloadMap.put(SharedHelper.MESSAGE_ID, messageId);
+        payloadMap.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuid);
+        payloadMap.put(SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageId);
 
         Map<String, AttributeValue> item = getItemResponse.item();
 
@@ -55,7 +54,7 @@ public class HandleIotGetEvent implements HandleIotEvent {
                     .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
         }
 
-        publishResponse(responseToken, payloadMap);
+        publishResponse(uuid, optionalMessageId, Optional.empty(), responseToken, payloadMap);
 
         return "done";
     }
@@ -67,8 +66,7 @@ public class HandleIotGetEvent implements HandleIotEvent {
     }
 
     @Override
-    public boolean isUuidRequired() {
-        // Yes, we need the UUID for a get message request
-        return true;
+    public boolean isRecipientUuidRequired() {
+        return false;
     }
 }

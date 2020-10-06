@@ -14,7 +14,7 @@ import software.amazon.awscdk.services.lambda.Function;
 
 import java.util.Arrays;
 
-import static com.awssamples.iam.Permissions.IOT_PUBLISH_PERMISSION;
+import static com.awssamples.iam.Permissions.*;
 import static java.util.Collections.singletonList;
 
 public class IotHelper {
@@ -40,5 +40,25 @@ public class IotHelper {
                 .build();
 
         return new PolicyStatement(iotPolicyStatementProps);
+    }
+
+    @NotNull
+    public static PolicyStatement getCreateThingPolicyStatement() {
+        return getAllowAllPolicyStatement(IOT_CREATE_THING_PERMISSION);
+    }
+
+    @NotNull
+    public static PolicyStatement getCreateThingGroupPolicyStatement() {
+        return getAllowAllPolicyStatement(IOT_CREATE_THING_GROUP_PERMISSION);
+    }
+
+    @NotNull
+    public static PolicyStatement getUpdateThingGroupsForThingPolicyStatement() {
+        return getAllowAllPolicyStatement(IOT_UPDATE_THING_GROUPS_FOR_THING_PERMISSION);
+    }
+
+    @NotNull
+    public static PolicyStatement getUpdateThingShadowPolicyStatement() {
+        return getAllowAllPolicyStatement(IOT_UPDATE_THING_SHADOW_PERMISSION);
     }
 }

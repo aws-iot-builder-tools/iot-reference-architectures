@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'java-library'
     id 'application'
     id 'idea'
 
@@ -36,6 +37,11 @@ def gsonVersion = '2.8.6'
 def awsSdk2Version = '2.15.2'
 def junitVersion = '4.13'
 def awsLambdaJavaCoreVersion = '1.2.1'
+def vavrVersion = '0.10.3'
+def vavrGsonVersion = '0.10.2'
+def commonsCodecVersion = '1.14'
+def resultsIteratorForAwsJavaSdkVersion = '11.0.0'
+def xrayVersion = '2.7.1'
 
 group = 'com.awssamples.iot.dynamodb.Api'
 version = '1.0-SNAPSHOT'
@@ -49,6 +55,13 @@ tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'
 }
 
+repositories {
+    mavenCentral()
+    maven { url "https://plugins.gradle.org/m2/" }
+    maven { url "https://repo.gradle.org/gradle/libs-releases-local/" }
+    maven { url 'https://jitpack.io' }
+}
+
 dependencies {
     implementation "com.google.code.gson:gson:$gsonVersion"
 
@@ -57,8 +70,37 @@ dependencies {
     implementation "software.amazon.awssdk:sqs:$awsSdk2Version"
     implementation "software.amazon.awssdk:dynamodb:$awsSdk2Version"
     implementation "software.amazon.awssdk:iotdataplane:$awsSdk2Version"
+    implementation "software.amazon.awssdk:iot:$awsSdk2Version"
+
+    // For converting payloads to hex strings
+    implementation "commons-codec:commons-codec:$commonsCodecVersion"
+
+    // For profiling Lambda functions
+//    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk-v2-instrumentor:$xrayVersion"
 
     implementation "org.slf4j:slf4j-log4j12:$slf4jVersion"
 
+    implementation "io.vavr:vavr:$vavrVersion"
+    implementation "io.vavr:vavr-gson:$vavrGsonVersion"
+
+    implementation "com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion"
+
     testCompile "junit:junit:$junitVersion"
+}
+
+task depsize {
+    doLast {
+        final formatStr = "%,10.2f"
+        final conf = configurations.default
+        final size = conf.collect { it.length() / (1024 * 1024) }.sum()
+        final out = new StringBuffer()
+        out << 'Total dependencies size:'.padRight(45)
+        out << "${String.format(formatStr, size)} Mb\n\n"
+        conf.sort { -it.length() }
+                .each {
+                    out << "${it.name}".padRight(45)
+                    out << "${String.format(formatStr, (it.length() / 1024))} kb\n"
+                }
+        println(out)
+    }
 }
