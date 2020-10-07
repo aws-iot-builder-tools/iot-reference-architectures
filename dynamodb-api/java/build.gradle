@@ -39,7 +39,7 @@ def junitVersion = '4.13'
 def awsLambdaJavaCoreVersion = '1.2.1'
 def vavrVersion = '0.10.3'
 def vavrGsonVersion = '0.10.2'
-def commonsCodecVersion = '1.14'
+def commonsCodecVersion = '1.15'
 def resultsIteratorForAwsJavaSdkVersion = '11.0.0'
 def xrayVersion = '2.7.1'
 
