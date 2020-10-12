@@ -24,7 +24,7 @@ distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
 def awsIotCoreWebsockets = '0.8.1'
-def junitVersion = '4.13'
+def junitVersion = '4.13.1'
 def awaitilityVersion = '4.0.3'
 
 group = 'com.awslabs.aws.iot.websockets.jitpack.Example'
