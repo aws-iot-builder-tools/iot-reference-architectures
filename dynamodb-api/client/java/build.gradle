@@ -19,7 +19,7 @@ application {
     mainClassName = 'com.awslabs.iot.client.applications.DynamoDbApiClientConsole'
 }
 
-def daggerVersion = '2.28.3'
+def daggerVersion = '2.29.1'
 def jcommanderVersion = '1.80'
 def awsSdk2Version = '2.15.7'
 def gsonVersion = '2.8.6'
