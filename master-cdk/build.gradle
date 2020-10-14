@@ -34,7 +34,7 @@ def commonsIoVersion = '2.8.0'
 def ztZipVersion = '1.14'
 def resultsIteratorForAwsJavaSdkVersion = '0.9.0'
 def daggerVersion = '2.29.1'
-def junitVersion = '4.13'
+def junitVersion = '4.13.1'
 def awsLambdaServletVersion = '0.0.23'
 
 repositories {
