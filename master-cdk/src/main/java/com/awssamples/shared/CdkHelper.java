@@ -6,6 +6,7 @@ import java.util.Random;
 import java.util.UUID;
 
 public class CdkHelper {
+    public static final String NO_SEPARATOR = "";
     private static Optional<String> stackName = Optional.empty();
     private static Optional<Random> random = Optional.empty();
     private static Optional<Map<String, String>> arguments = Optional.ofNullable(System.getenv());

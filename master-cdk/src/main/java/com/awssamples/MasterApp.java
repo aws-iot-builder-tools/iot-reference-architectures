@@ -16,8 +16,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 
 public class MasterApp {
-    private static final Logger log = LoggerFactory.getLogger(MasterApp.class);
     public static final MasterInjector masterInjector = DaggerMasterInjector.create();
+    private static final Logger log = LoggerFactory.getLogger(MasterApp.class);
     private static final ProcessHelper processHelper = masterInjector.processHelper();
 
     public static void main(final String argv[]) {

@@ -34,6 +34,8 @@ def commonsIoVersion = '2.8.0'
 def ztZipVersion = '1.14'
 def resultsIteratorForAwsJavaSdkVersion = '0.9.0'
 def daggerVersion = '2.29.1'
+def junitVersion = '4.13'
+def awsLambdaServletVersion = '0.0.23'
 
 repositories {
     mavenCentral()
@@ -58,17 +60,22 @@ dependencies {
     implementation "software.amazon.awscdk:iot:$awsCdkVersion"
     implementation "software.amazon.awscdk:lambda:$awsCdkVersion"
     implementation "software.amazon.awscdk:dynamodb:$awsCdkVersion"
+    implementation "software.amazon.awscdk:apigateway:$awsCdkVersion"
     implementation "io.vavr:vavr:$vavrVersion"
     implementation "org.gradle:gradle-tooling-api:$gradleDependencyVersion"
     implementation "org.apache.commons:commons-lang3:$commonsLangVersion"
     implementation "commons-io:commons-io:$commonsIoVersion"
     implementation "org.zeroturnaround:zt-zip:$ztZipVersion"
     implementation "com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion"
+    implementation "com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion"
+
+    testImplementation "junit:junit:$junitVersion"
 }
 
 group = 'com.awssamples'
 version = '0.1'
-sourceCompatibility = '1.8'
+sourceCompatibility = 8
+targetCompatibility = 8
 
 tasks.withType(JavaCompile) {
     options.encoding = 'UTF-8'

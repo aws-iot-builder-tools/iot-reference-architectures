@@ -4,36 +4,33 @@ import com.awssamples.iam.Permissions;
 import com.awssamples.iam.policies.CloudWatchEventsPolicies;
 import com.awssamples.iam.policies.LambdaPolicies;
 import com.awssamples.shared.CdkHelper;
-import io.vavr.control.Try;
-import org.gradle.tooling.BuildLauncher;
-import org.gradle.tooling.GradleConnector;
-import org.gradle.tooling.ProjectConnection;
+import com.awssamples.stacktypes.JavaGradleStack;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
-import software.amazon.awscdk.core.Fn;
 import software.amazon.awscdk.core.RemovalPolicy;
 import software.amazon.awscdk.services.dynamodb.*;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.iot.CfnTopicRule;
-import software.amazon.awscdk.services.iot.CfnTopicRuleProps;
 import software.amazon.awscdk.services.lambda.Runtime;
 import software.amazon.awscdk.services.lambda.*;
 import software.amazon.awscdk.services.sqs.Queue;
 import software.amazon.awscdk.services.sqs.QueueProps;
 
-import java.io.File;
 import java.util.*;
 
+import static com.awssamples.gradle.GradleSupport.HANDLE_REQUEST;
 import static com.awssamples.iam.policies.IotPolicies.getSearchIndexPolicy;
+import static com.awssamples.shared.CdkHelper.NO_SEPARATOR;
 import static com.awssamples.shared.IotHelper.*;
 import static com.awssamples.shared.RoleHelper.buildRoleAssumedByLambda;
 import static com.awssamples.shared.RoleHelper.combinePolicyStatements;
+import static com.awssamples.shared.RulesEngineSqlHelper.buildIotEventRule;
 import static java.util.Collections.singletonList;
 
-public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
+public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack implements JavaGradleStack {
     public static final String AWS_IOT_SQL_VERSION = "2016-03-23";
     public static final Logger log = LoggerFactory.getLogger(SqsToIotCoreStack.class);
     public static final String INBOUND_SQS_QUEUE_ARN_ENVIRONMENT_VARIABLE = "INBOUND_SQS_QUEUE_ARN";
@@ -45,7 +42,6 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     public static final String OUTBOUND_SQS_QUEUE_ARN = "outboundSqsQueueArn";
     public static final String UUID_KEY = "uuidKey";
     public static final String MESSAGE_ID_KEY = "messageIdKey";
-    public static final String HANDLE_REQUEST = "handleRequest";
     public static final String MESSAGE_ID_DYNAMO_DB_COLUMN_NAME = "messageId";
     public static final String UUID_DYNAMO_DB_COLUMN_NAME = "uuid";
     public static final String HANDLER_PACKAGE = "com.awssamples.iot.dynamodb.api.handlers";
@@ -54,7 +50,6 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     public static final String RESPONSE = "response";
     public static final String LAMBDA_INVOCATION_PERMISSIONS_PREFIX = "LambdaInvocationPermissions";
     public static final String MQTT_TOPIC_SEPARATOR = "/";
-    public static final String NO_SEPARATOR = "";
     public static final String MESSAGE_ROLE = "MessageRole";
     public static final String MESSAGE_FUNCTION = "MessageFunction";
     public static final String MESSAGE_RULE = "MessageRule";
@@ -137,9 +132,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     public static final String RESPONSE_TOPIC_PREFIX_KEY = "ResponseTopicPrefix";
     public static final String DEFAULT_SELECT_CLAUSE = "select *, topic() as topic";
     public final String projectDirectory = "../dynamodb-api/java/";
-    public final List<File> projectDirectoryFiles = singletonList(new File(projectDirectory));
-    public final String buildOutputDirectory = "build/libs/";
-    public final String outputJar = "java-1.0-SNAPSHOT-all.jar";
+    public final String outputJarName = "java-1.0-SNAPSHOT-all.jar";
     public final Duration queueVisibilityTimeout = Duration.seconds(30);
     // Queue visibility timeout must be greater than Lambda timeout
     public final Duration lambdaFunctionTimeout = Duration.seconds((int) queueVisibilityTimeout.toSeconds() / 2);
@@ -150,7 +143,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         super(parent, name);
 
         // Build all of the necessary JARs
-        projectDirectoryFiles.forEach(this::buildJar);
+        build();
 
         Optional<Map<String, String>> optionalArguments = CdkHelper.getArguments();
 
@@ -187,7 +180,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         String getRequestTopicFilter = String.join(MQTT_TOPIC_SEPARATOR, GET_REQUEST_TOPIC_PREFIX, MULTI_LEVEL_MQTT_WILDCARD);
         Map<String, String> getMessageLambdaEnvironment = getGetMessageLambdaEnvironment();
         Function getLambda = buildIotEventLambda(GET_LAMBDA_FUNCTION_NAME, getRole, defaultEnvironment, getMessageLambdaEnvironment, GET_METHOD_NAME);
-        CfnTopicRule getRule = buildIotEventRule(GET_RULE_NAME, getLambda, getRequestTopicFilter);
+        CfnTopicRule getRule = buildIotEventRule(this, GET_RULE_NAME, getLambda, DEFAULT_SELECT_CLAUSE, getRequestTopicFilter);
         allowIotTopicRuleToInvokeLambdaFunction(this, getRule, getLambda, GET_LAMBDA_PERMISSIONS);
 
         // Resources to query for available messages from DynamoDB and publish to IoT Core
@@ -196,7 +189,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         String queryRequestTopicFilter = String.join(MQTT_TOPIC_SEPARATOR, QUERY_REQUEST_TOPIC_PREFIX, MULTI_LEVEL_MQTT_WILDCARD);
         Map<String, String> queryMessageLambdaEnvironment = getQueryMessageLambdaEnvironment();
         Function queryLambda = buildIotEventLambda(QUERY_LAMBDA_FUNCTION_NAME, queryRole, defaultEnvironment, queryMessageLambdaEnvironment, QUERY_METHOD_NAME);
-        CfnTopicRule queryRule = buildIotEventRule(QUERY_RULE_NAME, queryLambda, queryRequestTopicFilter);
+        CfnTopicRule queryRule = buildIotEventRule(this, QUERY_RULE_NAME, queryLambda, DEFAULT_SELECT_CLAUSE, queryRequestTopicFilter);
         allowIotTopicRuleToInvokeLambdaFunction(this, queryRule, queryLambda, QUERY_LAMBDA_PERMISSIONS);
 
         // Resources to delete messages from DynamoD0
@@ -205,7 +198,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         String deleteRequestTopicFilter = String.join(MQTT_TOPIC_SEPARATOR, DELETE_REQUEST_TOPIC_PREFIX, MULTI_LEVEL_MQTT_WILDCARD);
         Map<String, String> deleteMessageLambdaEnvironment = getDeleteMessageLambdaEnvironment();
         Function deleteLambda = buildIotEventLambda(DELETE_LAMBDA_FUNCTION_NAME, deleteRole, defaultEnvironment, deleteMessageLambdaEnvironment, DELETE_METHOD_NAME);
-        CfnTopicRule deleteRule = buildIotEventRule(DELETE_RULE_NAME, deleteLambda, deleteRequestTopicFilter);
+        CfnTopicRule deleteRule = buildIotEventRule(this, DELETE_RULE_NAME, deleteLambda, DEFAULT_SELECT_CLAUSE, deleteRequestTopicFilter);
         allowIotTopicRuleToInvokeLambdaFunction(this, deleteRule, deleteLambda, DELETE_LAMBDA_PERMISSIONS);
 
         // Resources to get the next message ID from DynamoDB
@@ -214,7 +207,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         String nextRequestTopicFilter = String.join(MQTT_TOPIC_SEPARATOR, NEXT_REQUEST_TOPIC_PREFIX, MULTI_LEVEL_MQTT_WILDCARD);
         Map<String, String> nextMessageLambdaEnvironment = getNextMessageLambdaEnvironment();
         Function nextLambda = buildIotEventLambda(NEXT_LAMBDA_FUNCTION_NAME, nextRole, defaultEnvironment, nextMessageLambdaEnvironment, NEXT_METHOD_NAME);
-        CfnTopicRule nextRule = buildIotEventRule(NEXT_RULE_NAME, nextLambda, nextRequestTopicFilter);
+        CfnTopicRule nextRule = buildIotEventRule(this, NEXT_RULE_NAME, nextLambda, DEFAULT_SELECT_CLAUSE, nextRequestTopicFilter);
         allowIotTopicRuleToInvokeLambdaFunction(this, nextRule, nextLambda, NEXT_LAMBDA_PERMISSIONS);
 
         // Resources to get the list of devices with unread messages from DynamoDB
@@ -234,7 +227,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
             devicesLambda = registryDevicesLambda;
         }
 
-        CfnTopicRule devicesRule = buildIotEventRule(DEVICES_RULE_NAME, devicesLambda, devicesRequestTopicFilter);
+        CfnTopicRule devicesRule = buildIotEventRule(this, DEVICES_RULE_NAME, devicesLambda, DEFAULT_SELECT_CLAUSE, devicesRequestTopicFilter);
         allowIotTopicRuleToInvokeLambdaFunction(this, devicesRule, devicesLambda, DEVICES_LAMBDA_PERMISSIONS);
 
         // Resources to send messages to SQS
@@ -243,7 +236,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         String sendRequestTopicFilter = String.join(MQTT_TOPIC_SEPARATOR, SEND_REQUEST_TOPIC_PREFIX, MULTI_LEVEL_MQTT_WILDCARD);
         Map<String, String> sendMessageLambdaEnvironment = getSendMessageLambdaEnvironment(outboundSqsQueueArn);
         Function sendLambda = buildIotEventLambda(SEND_LAMBDA_FUNCTION_NAME, sendRole, defaultEnvironment, sendMessageLambdaEnvironment, SEND_METHOD_NAME);
-        CfnTopicRule sendRule = buildIotEventRule(SEND_RULE_NAME, sendLambda, sendRequestTopicFilter);
+        CfnTopicRule sendRule = buildIotEventRule(this, SEND_RULE_NAME, sendLambda, DEFAULT_SELECT_CLAUSE, sendRequestTopicFilter);
         allowIotTopicRuleToInvokeLambdaFunction(this, sendRule, sendLambda, SEND_LAMBDA_PERMISSIONS);
 
         // Resources to receive notifications and add devices to the registry
@@ -253,7 +246,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
                 getCreateThingGroupPolicyStatement());
         Role notificationRole = buildRoleAssumedByLambda(this, NOTIFICATION_ROLE_NAME, notificationCreateThingPolicyStatements);
         Function notificationLambda = buildIotEventLambda(NOTIFICATION_LAMBDA_FUNCTION_NAME, notificationRole, defaultEnvironment, NOTIFICATION_METHOD_NAME);
-        CfnTopicRule notificationRule = buildIotEventRule(NOTIFICATION_RULE_NAME, notificationLambda, NOTIFICATION_TOPIC_FILTER);
+        CfnTopicRule notificationRule = buildIotEventRule(this, NOTIFICATION_RULE_NAME, notificationLambda, DEFAULT_SELECT_CLAUSE, NOTIFICATION_TOPIC_FILTER);
         allowIotTopicRuleToInvokeLambdaFunction(this, notificationRule, notificationLambda, NOTIFICATION_LAMBDA_PERMISSIONS);
     }
 
@@ -283,29 +276,6 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
 
     private Optional<String> getMessageId(Map<String, String> map) {
         return Optional.ofNullable(map.get(MESSAGE_ID_KEY_ENVIRONMENT_VARIABLE));
-    }
-
-    private CfnTopicRule buildIotEventRule(String topicRuleName, Function lambda, String topicFilter) {
-        CfnTopicRule.ActionProperty actionProperty = CfnTopicRule.ActionProperty.builder()
-                .lambda(CfnTopicRule.LambdaActionProperty.builder()
-                        .functionArn(lambda.getFunctionArn())
-                        .build())
-                .build();
-
-        String quotedTopicFilter = "'" + topicFilter + "'";
-
-        CfnTopicRule.TopicRulePayloadProperty topicRulePayloadProperty = CfnTopicRule.TopicRulePayloadProperty.builder()
-                .actions(singletonList(actionProperty))
-                .ruleDisabled(false)
-                .sql(String.join(" ", DEFAULT_SELECT_CLAUSE, "from", quotedTopicFilter))
-                .awsIotSqlVersion(AWS_IOT_SQL_VERSION)
-                .build();
-
-        CfnTopicRuleProps cfnTopicRuleProps = CfnTopicRuleProps.builder()
-                .topicRulePayload(topicRulePayloadProperty)
-                .build();
-
-        return new CfnTopicRule(this, topicRuleName, cfnTopicRuleProps);
     }
 
     private Queue buildInboundMessageQueue() {
@@ -394,7 +364,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     }
 
     private Function buildIotEventLambda(String functionName, Role role, Map<String, String> defaultEnvironment, String handlerClassName) {
-        return buildIotEventLambda(functionName, role, defaultEnvironment, new HashMap<String, String>(), handlerClassName);
+        return buildIotEventLambda(functionName, role, defaultEnvironment, new HashMap<>(), handlerClassName);
     }
 
     private Function buildIotEventLambda(String functionName, Role role, Map<String, String> defaultEnvironment, Map<String, String> additionalEnvironment, String handlerClassName) {
@@ -402,7 +372,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         environment.putAll(additionalEnvironment);
 
         FunctionProps functionProps = FunctionProps.builder()
-                .code(Code.fromAsset(String.join(NO_SEPARATOR, projectDirectory, buildOutputDirectory, outputJar)))
+                .code(getAssetCode())
                 .handler(String.join("::", handlerClassName, HANDLE_REQUEST))
                 .memorySize(1024)
                 .timeout(lambdaFunctionTimeout)
@@ -423,7 +393,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         environment.put(MESSAGE_ID_KEY, messageIdKey);
 
         FunctionProps functionProps = FunctionProps.builder()
-                .code(Code.fromAsset(String.join(NO_SEPARATOR, projectDirectory, buildOutputDirectory, outputJar)))
+                .code(getAssetCode())
                 .handler(String.join("::", SQS_EVENT_HANDLER, HANDLE_REQUEST))
                 .memorySize(1024)
                 .timeout(lambdaFunctionTimeout)
@@ -436,26 +406,6 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         return new Function(this, "MoveFromSqsToDynamoDbLambda", functionProps);
     }
 
-    private void buildJar(File projectDirectoryFile) {
-        ProjectConnection projectConnection = GradleConnector.newConnector()
-                .forProjectDirectory(projectDirectoryFile)
-                .connect();
-
-        Try.withResources(() -> projectConnection)
-                .of(this::runBuild)
-                .get();
-    }
-
-    private Void runBuild(ProjectConnection projectConnection) {
-        // Build with gradle and send the output to stderr
-        BuildLauncher build = projectConnection.newBuild();
-        build.forTasks("build");
-        build.setStandardOutput(System.err);
-        build.run();
-
-        return null;
-    }
-
     private Role buildMoveFromSqsToDynamoDbRole(String queueArn, Table table) {
         PolicyStatement sqsPolicyStatement = LambdaPolicies.getMinimalLambdaSqsQueueEventSourceMappingTargetPolicy(queueArn);
 
@@ -466,7 +416,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
                 .build();
         PolicyStatement dynamoDbPolicyStatement = new PolicyStatement(dynamoDbPolicyStatementProps);
 
-        PolicyStatement iotPolicyStatement = getPublishToTopicPrefixPolicyStatement("notification");
+        PolicyStatement iotPolicyStatement = getPublishToTopicPrefixPolicyStatement(this, "notification");
 
         PolicyDocumentProps policyDocumentProps = PolicyDocumentProps.builder()
                 .statements(Arrays.asList(sqsPolicyStatement,
@@ -498,19 +448,9 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     }
 
     private Role buildIotEventRoleForTopicPrefix(String roleName, String topicPrefix, List<PolicyStatement> additionalPolicyStatements) {
-        PolicyStatement iotPolicyStatement = getPublishToTopicPrefixPolicyStatement(topicPrefix);
+        PolicyStatement iotPolicyStatement = getPublishToTopicPrefixPolicyStatement(this, topicPrefix);
 
         return buildRoleAssumedByLambda(this, roleName, combinePolicyStatements(additionalPolicyStatements, iotPolicyStatement));
-    }
-
-    @NotNull
-    private PolicyStatement getPublishToTopicPrefixPolicyStatement(String topicPrefix) {
-        PolicyStatementProps iotPolicyStatementProps = PolicyStatementProps.builder()
-                .effect(Effect.ALLOW)
-                .resources(singletonList(Fn.join(NO_SEPARATOR, Arrays.asList("arn:aws:iot:", getRegion(), ":", getAccount(), ":topic/", topicPrefix, "/*"))))
-                .actions(singletonList(Permissions.IOT_PUBLISH_PERMISSION))
-                .build();
-        return new PolicyStatement(iotPolicyStatementProps);
     }
 
     private PolicyStatement getGetItemPolicyStatementForTable(Table table) {
@@ -561,5 +501,15 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
                 .build();
 
         return new Table(this, "DynamoDbTable", tableProps);
+    }
+
+    @Override
+    public String getProjectDirectory() {
+        return projectDirectory;
+    }
+
+    @Override
+    public String getOutputArtifactName() {
+        return outputJarName;
     }
 }
