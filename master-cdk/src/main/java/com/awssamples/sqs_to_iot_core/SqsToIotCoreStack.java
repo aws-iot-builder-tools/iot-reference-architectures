@@ -29,7 +29,8 @@ import java.util.*;
 
 import static com.awssamples.iam.policies.IotPolicies.getSearchIndexPolicy;
 import static com.awssamples.shared.IotHelper.*;
-import static com.awssamples.shared.RoleHelper.*;
+import static com.awssamples.shared.RoleHelper.buildRoleAssumedByLambda;
+import static com.awssamples.shared.RoleHelper.combinePolicyStatements;
 import static java.util.Collections.singletonList;
 
 public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
@@ -128,12 +129,6 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
     public static final String NOTIFICATION_LAMBDA_FUNCTION_NAME = String.join(NO_SEPARATOR, NOTIFICATION, MESSAGE_FUNCTION);
     public static final String NOTIFICATION_RULE_NAME = String.join(NO_SEPARATOR, NOTIFICATION, MESSAGE_RULE);
     public static final String NOTIFICATION_LAMBDA_PERMISSIONS = String.join(NO_SEPARATOR, LAMBDA_INVOCATION_PERMISSIONS_PREFIX, NOTIFICATION);
-
-    // REPUBLISH
-    public static final String REPUBLISH = "republish";
-    public static final String REPUBLISH_ROLE_NAME = String.join(NO_SEPARATOR, REPUBLISH, MESSAGE_ROLE);
-    public static final String POLLY_REPUBLISH_RULE_NAME = String.join(NO_SEPARATOR, REPUBLISH, "Polly", MESSAGE_RULE);
-    public static final String FAX_REPUBLISH_RULE_NAME = String.join(NO_SEPARATOR, REPUBLISH, "Fax", MESSAGE_RULE);
 
     public static final String DEFAULT_UUID_KEY = "thingName";
     public static final String DEFAULT_MESSAGE_ID_KEY = "epochTime";
@@ -260,39 +255,6 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
         Function notificationLambda = buildIotEventLambda(NOTIFICATION_LAMBDA_FUNCTION_NAME, notificationRole, defaultEnvironment, NOTIFICATION_METHOD_NAME);
         CfnTopicRule notificationRule = buildIotEventRule(NOTIFICATION_RULE_NAME, notificationLambda, NOTIFICATION_TOPIC_FILTER);
         allowIotTopicRuleToInvokeLambdaFunction(this, notificationRule, notificationLambda, NOTIFICATION_LAMBDA_PERMISSIONS);
-
-        PolicyStatement publishToPiCoreCddPolicyStatement = getPublishToTopicPolicyStatement(this, "pi_Core/cdd/*");
-
-        Role republishRole = buildRoleAssumedByIot(this, REPUBLISH_ROLE_NAME, Collections.singletonList(publishToPiCoreCddPolicyStatement));
-
-        CfnTopicRule.RepublishActionProperty pollyRepublishActionProperty = CfnTopicRule.RepublishActionProperty.builder()
-                .qos(0)
-                .topic("pi_Core/cdd/asteriskpolly/input")
-                .roleArn(republishRole.getRoleArn())
-                .build();
-
-        CfnTopicRule.RepublishActionProperty faxRepublishActionProperty = CfnTopicRule.RepublishActionProperty.builder()
-                .qos(0)
-                .topic("pi_Core/cdd/asteriskfax/input")
-                .roleArn(republishRole.getRoleArn())
-                .build();
-
-        String faxCaseStatement = "CASE regexp_replace(regexp_replace(regexp_replace(StackStatus, '^.*ROLLBACK.*$', 'FAIL'), '^.*FAILED.*$', 'FAIL'), '^.*COMPLETE.*$', 'PASS') WHEN 'FAIL' THEN false ELSE true END";
-        String callerIdMessageStatement = faxCaseStatement
-                .replaceAll("false", "'CFN FAIL'")
-                .replaceAll("true", "'CFN PASS'");
-        String faxFullSqlStatement = "SELECT StackName as stack, " + callerIdMessageStatement + " as callerId, " + faxCaseStatement + " as pass FROM 'cfn_watcher/were_done'";
-
-        String pollyFailMessage = "concat('We are sorry, the CloudFormation stack you attempted to launch, ', StackName, ' failed to launch. Please check the logs, fix your errors, and try again. We are sure it is just that simple. It is going to be OK. Do not cry. Do not fret. We will get through this together.')";
-        String pollyPassMessage = "concat('Congratulations, the CloudFormation stack you attempted to launch, ', StackName, ' launched successfully. You are amazing!')";
-        String pollyCaseMessageStatement = faxCaseStatement
-                .replaceAll("false", pollyFailMessage)
-                .replaceAll("true", pollyPassMessage);
-
-        String pollyFullSqlStatement = "SELECT " + pollyCaseMessageStatement + " as message, " + callerIdMessageStatement + " as callerId FROM 'cfn_watcher/were_done'";
-
-        buildIotEventRule(POLLY_REPUBLISH_RULE_NAME, pollyRepublishActionProperty, pollyFullSqlStatement);
-        buildIotEventRule(FAX_REPUBLISH_RULE_NAME, faxRepublishActionProperty, faxFullSqlStatement);
     }
 
     @NotNull
@@ -336,25 +298,6 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack {
                 .actions(singletonList(actionProperty))
                 .ruleDisabled(false)
                 .sql(String.join(" ", DEFAULT_SELECT_CLAUSE, "from", quotedTopicFilter))
-                .awsIotSqlVersion(AWS_IOT_SQL_VERSION)
-                .build();
-
-        CfnTopicRuleProps cfnTopicRuleProps = CfnTopicRuleProps.builder()
-                .topicRulePayload(topicRulePayloadProperty)
-                .build();
-
-        return new CfnTopicRule(this, topicRuleName, cfnTopicRuleProps);
-    }
-
-    private CfnTopicRule buildIotEventRule(String topicRuleName, CfnTopicRule.RepublishActionProperty republishActionProperty, String sql) {
-        CfnTopicRule.ActionProperty actionProperty = CfnTopicRule.ActionProperty.builder()
-                .republish(republishActionProperty)
-                .build();
-
-        CfnTopicRule.TopicRulePayloadProperty topicRulePayloadProperty = CfnTopicRule.TopicRulePayloadProperty.builder()
-                .actions(singletonList(actionProperty))
-                .ruleDisabled(false)
-                .sql(sql)
                 .awsIotSqlVersion(AWS_IOT_SQL_VERSION)
                 .build();
 
