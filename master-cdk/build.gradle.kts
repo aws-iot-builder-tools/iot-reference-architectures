@@ -26,7 +26,7 @@ tasks.distZip { enabled = false }
 tasks.distTar { enabled = false }
 
 // Specify all of our dependency versions
-val awsCdkVersion = "1.67.0"
+val awsCdkVersion = "1.68.0"
 val vavrVersion = "0.10.3"
 val slf4jVersion = "1.7.30"
 val jcabiVersion = "0.18.1"
