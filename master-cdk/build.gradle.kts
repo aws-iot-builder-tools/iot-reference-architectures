@@ -4,9 +4,6 @@ plugins {
     id("java")
     id("idea")
     id("java-library")
-
-    // Creates fat JAR
-    id("com.github.johnrengelman.shadow") version "6.0.0"
 }
 
 java {
@@ -27,8 +24,6 @@ application.mainClass.set("com.awssamples.MasterApp")
 
 tasks.distZip { enabled = false }
 tasks.distTar { enabled = false }
-tasks.shadowDistZip { enabled = false }
-tasks.shadowDistTar { enabled = false }
 
 // Specify all of our dependency versions
 val awsCdkVersion = "1.67.0"
