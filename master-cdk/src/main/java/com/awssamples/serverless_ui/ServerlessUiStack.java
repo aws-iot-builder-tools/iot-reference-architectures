@@ -246,7 +246,6 @@ public class ServerlessUiStack extends software.amazon.awscdk.core.Stack impleme
         return new Role(this, name + "Role", roleProps);
     }
 
-
     @Override
     public String getProjectDirectory() {
         return projectDirectory;
@@ -256,5 +255,4 @@ public class ServerlessUiStack extends software.amazon.awscdk.core.Stack impleme
     public String getOutputArtifactName() {
         return outputArtifactName;
     }
-
 }

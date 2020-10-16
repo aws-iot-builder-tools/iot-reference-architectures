@@ -13,7 +13,5 @@ import javax.inject.Singleton;
 public interface MasterInjector {
     void inject(AmazonIonHandlerStack amazonIonHandlerStack);
 
-    void inject(CborHandlerStack cborHandlerStack);
-
     ProcessHelper processHelper();
 }
