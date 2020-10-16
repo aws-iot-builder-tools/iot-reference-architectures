@@ -19,7 +19,6 @@ import static com.awssamples.shared.CdkHelper.NO_SEPARATOR;
 import static java.util.Collections.singletonList;
 
 public class IotHelper {
-
     public static final String TOPIC = ":topic/";
     public static final String ALL_SUFFIX = "/*";
     public static final String TOPICFILTER = ":topicfilter/";
@@ -90,20 +89,20 @@ public class IotHelper {
     }
 
     @NotNull
-    public static PolicyStatement getConnectPolicyStatement(Stack stack, String clientId) {
+    public static PolicyStatement getConnectAllPolicyStatement() {
         PolicyStatementProps iotPolicyStatementProps = PolicyStatementProps.builder()
                 .effect(Effect.ALLOW)
-                .resources(singletonList(Fn.join(NO_SEPARATOR, Arrays.asList("arn:aws:iot:", stack.getRegion(), ":", stack.getAccount(), "client/", clientId))))
+                .resources(singletonList(ALL_RESOURCES))
                 .actions(singletonList(IOT_CONNECT_PERMISSION))
                 .build();
         return new PolicyStatement(iotPolicyStatementProps);
     }
 
     @NotNull
-    public static PolicyStatement getConnectAllPolicyStatement() {
+    public static PolicyStatement getConnectPolicyStatement(Stack stack, String clientId) {
         PolicyStatementProps iotPolicyStatementProps = PolicyStatementProps.builder()
                 .effect(Effect.ALLOW)
-                .resources(singletonList(ALL_RESOURCES))
+                .resources(singletonList(Fn.join(NO_SEPARATOR, Arrays.asList("arn:aws:iot:", stack.getRegion(), ":", stack.getAccount(), "client/", clientId))))
                 .actions(singletonList(IOT_CONNECT_PERMISSION))
                 .build();
         return new PolicyStatement(iotPolicyStatementProps);
