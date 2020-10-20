@@ -21,7 +21,7 @@ application {
 
 def daggerVersion = '2.29.1'
 def jcommanderVersion = '1.80'
-def awsSdk2Version = '2.15.9'
+def awsSdk2Version = '2.15.10'
 def gsonVersion = '2.8.6'
 def slf4jVersion = '1.7.30'
 def vertxVersion = '3.9.4'
