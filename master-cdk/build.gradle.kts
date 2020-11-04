@@ -36,7 +36,7 @@ val ztZipVersion = "1.14"
 val resultsIteratorForAwsJavaSdkVersion = "0.9.0"
 val daggerVersion = "2.29.1"
 val junitVersion = "4.13.1"
-val awsLambdaServletVersion = "0.0.27"
+val awsLambdaServletVersion = "0.0.30"
 
 repositories {
     mavenCentral()
