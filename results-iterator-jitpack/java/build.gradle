@@ -7,7 +7,7 @@ plugins {
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 
     // Adds dependencyUpdates task
-    id 'com.github.ben-manes.versions' version '0.33.0'
+    id 'com.github.ben-manes.versions' version '0.34.0'
 }
 
 def gradleDependencyVersion = '6.7'
