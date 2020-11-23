@@ -32,7 +32,7 @@ def resultsIteratorForAwsJavaSdkVersion = '0.10.68'
 def awsIotCoreWebsocketsVersion = '0.6.3'
 def vavrVersion = '0.10.3'
 def jSerialCommVersion = '2.6.2'
-def immutablesValueVersion = '2.8.8'
+def immutablesValueVersion = '2.8.9-ea-1'
 def jbbpVersion = '2.0.2'
 
 distZip.enabled = shadowDistZip.enabled = false
