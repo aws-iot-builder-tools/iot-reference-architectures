@@ -34,7 +34,7 @@ val commonsLangVersion = "3.11"
 val commonsIoVersion = "2.8.0"
 val ztZipVersion = "1.14"
 val resultsIteratorForAwsJavaSdkVersion = "0.9.0"
-val daggerVersion = "2.29.1"
+val daggerVersion = "2.30.1"
 val junitVersion = "4.13.1"
 val awsLambdaServletVersion = "0.0.30"
 
