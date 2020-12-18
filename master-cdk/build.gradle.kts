@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.4.10"
+    kotlin("jvm") version "1.4.21"
     id("application")
     id("java")
     id("idea")
@@ -12,7 +12,7 @@ java {
     }
 }
 
-val gradleDependencyVersion = "6.7"
+val gradleDependencyVersion = "6.7.1"
 
 tasks.wrapper {
     gradleVersion = gradleDependencyVersion
@@ -33,7 +33,7 @@ val jcabiVersion = "0.19.0"
 val commonsLangVersion = "3.11"
 val commonsIoVersion = "2.8.0"
 val ztZipVersion = "1.14"
-val resultsIteratorForAwsJavaSdkVersion = "0.9.0"
+val resultsIteratorForAwsJavaSdkVersion = "11.0.7"
 val daggerVersion = "2.30.1"
 val junitVersion = "4.13.1"
 val awsLambdaServletVersion = "0.0.30"
