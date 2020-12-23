@@ -34,7 +34,7 @@ application {
 // Specify all of our dependency versions
 def slf4jVersion = '1.7.30'
 def gsonVersion = '2.8.6'
-def awsSdk2Version = '2.15.51'
+def awsSdk2Version = '2.15.52'
 def junitVersion = '4.13.1'
 def awsLambdaJavaCoreVersion = '1.2.1'
 def vavrVersion = '0.10.3'
