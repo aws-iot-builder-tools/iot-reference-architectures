@@ -33,7 +33,7 @@ def awsIotCoreWebsocketsVersion = '0.6.3'
 def vavrVersion = '0.10.3'
 def jSerialCommVersion = '2.6.2'
 def immutablesValueVersion = '2.8.9-ea-1'
-def jbbpVersion = '2.0.2'
+def jbbpVersion = '2.0.3'
 
 distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
