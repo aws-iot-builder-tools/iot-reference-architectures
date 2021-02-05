@@ -12,7 +12,7 @@ java {
     }
 }
 
-val gradleDependencyVersion = "6.7.1"
+val gradleDependencyVersion = "6.8.1"
 
 tasks.wrapper {
     gradleVersion = gradleDependencyVersion
