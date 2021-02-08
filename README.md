@@ -19,6 +19,9 @@ These reference architectures use [CDK](https://aws.amazon.com/cdk/)
     - [CBOR Handler](cbor-handler) - An example project that shows how to convert between CBOR and JSON. This uses the rules engine base64 encoding support to work with binary payloads in AWS Lambda.
   - Python
     - [Amazon Ion Handler](amazon-ion-handler) - An example project that shows how to convert between Amazon Ion and JSON. This uses the rules engine base64 encoding support to work with binary payloads in AWS Lambda.
+- JWT authentication for AWS IoT Core
+  - Java
+    - [Java custom authentication demo with JWT](serverless-ui/jwt-stack) - A stack that contains a serverless UI that shows how to use custom authentication with JWTs in AWS IoT Core
 
 ## CloudFormation reference architecture list
 
