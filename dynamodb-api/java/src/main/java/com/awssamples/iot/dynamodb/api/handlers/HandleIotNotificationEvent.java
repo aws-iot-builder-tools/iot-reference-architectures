@@ -46,21 +46,21 @@ public class HandleIotNotificationEvent implements RequestHandler<Map, String> {
                 .onFailure(throwable -> log.warn("Create thing failed for [" + uuid + "] [" + throwable.getMessage() + "]"));
 
         CreateThingGroupRequest createThingGroupRequest = CreateThingGroupRequest.builder()
-                .thingGroupName(IRIDIUM)
+                .thingGroupName(THING_GROUP)
                 .build();
 
         // Try to create the thing group but we don't care if it fails, we will just log it
         Try.of(() -> IotClient.create().createThingGroup(createThingGroupRequest))
-                .onFailure(throwable -> log.warn("Create thing group failed for [" + IRIDIUM + "] [" + throwable.getMessage() + "]"));
+                .onFailure(throwable -> log.warn("Create thing group failed for [" + THING_GROUP + "] [" + throwable.getMessage() + "]"));
 
         UpdateThingGroupsForThingRequest updateThingGroupsForThingRequest = UpdateThingGroupsForThingRequest.builder()
-                .thingGroupsToAdd(IRIDIUM)
+                .thingGroupsToAdd(THING_GROUP)
                 .thingName(uuid)
                 .build();
 
         // Try to create the thing group but we don't care if it fails, we will just log it
         Try.of(() -> IotClient.create().updateThingGroupsForThing(updateThingGroupsForThingRequest))
-                .onFailure(throwable -> log.warn("Adding thing [" + uuid + "] to group [" + IRIDIUM + "] failed [" + throwable.getMessage() + "]"));
+                .onFailure(throwable -> log.warn("Adding thing [" + uuid + "] to group [" + THING_GROUP + "] failed [" + throwable.getMessage() + "]"));
 
         String shadowJson = "{\"state\":{\"reported\":{\"" + LAST_CONTACT + "\":" + Instant.now().toEpochMilli() + "}}}";
 

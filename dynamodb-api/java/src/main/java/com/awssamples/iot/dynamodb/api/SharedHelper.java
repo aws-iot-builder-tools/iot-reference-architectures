@@ -2,6 +2,7 @@ package com.awssamples.iot.dynamodb.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import io.vavr.Tuple2;
 import io.vavr.control.Try;
 import io.vavr.gson.VavrGson;
 import software.amazon.awssdk.core.SdkBytes;
@@ -17,7 +18,7 @@ import static java.util.stream.Collectors.toList;
 import static software.amazon.awssdk.utils.CollectionUtils.toMap;
 
 public class SharedHelper {
-    public static final String IRIDIUM = "Iridium";
+    public static final String THING_GROUP = "ThingGroup";
     public static final String LAST_CONTACT = "lastContact";
     public static final String ERROR_KEY = "error";
     public static final String UUID_DYNAMO_DB_COLUMN_NAME = "uuid";
@@ -130,6 +131,16 @@ public class SharedHelper {
         }
 
         throw new IllegalArgumentException("Unsupported attribute value: " + attributeValue);
+    }
+
+    /**
+     * A helper function to convert a Vavr tuple with an attribute value to a normal Java key value pair
+     *
+     * @param tuple
+     * @return
+     */
+    public static Object fromDynamoDbAttributeValue(Tuple2<String, AttributeValue> tuple) {
+        return fromDynamoDbAttributeValue(tuple._1, tuple._2);
     }
 
     /**

@@ -1,33 +1,21 @@
 package com.awssamples.iot.dynamodb.api.handlers;
 
-import com.awssamples.iot.dynamodb.api.SharedHelper;
-import io.vavr.Tuple2;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
-import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
-import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
+import io.vavr.collection.List;
 import software.amazon.awssdk.services.iot.IotClient;
 import software.amazon.awssdk.services.iot.model.SearchIndexRequest;
 import software.amazon.awssdk.services.iot.model.SearchIndexResponse;
 import software.amazon.awssdk.services.iot.model.ThingDocument;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static com.awssamples.iot.dynamodb.api.SharedHelper.IRIDIUM;
-import static com.awssamples.iot.dynamodb.api.SharedHelper.getGson;
+import static com.awssamples.iot.dynamodb.api.SharedHelper.THING_GROUP;
 
 public class HandleIotDevicesRegistryEvent implements HandleIotDevicesEvent {
-
     public static final String DELIMITER = ":";
     public static final String THING_GROUP_NAMES = "thingGroupNames";
 
     @Override
     public List<String> getDevices() {
         SearchIndexRequest searchIndexRequest = SearchIndexRequest.builder()
-                .queryString(String.join(DELIMITER, THING_GROUP_NAMES, IRIDIUM))
+                .queryString(String.join(DELIMITER, THING_GROUP_NAMES, THING_GROUP))
                 .build();
 
         SearchIndexResponse searchIndexResponse = IotClient.create().searchIndex(searchIndexRequest);
@@ -38,8 +26,12 @@ public class HandleIotDevicesRegistryEvent implements HandleIotDevicesEvent {
                 .collect(Collectors.toMap(tuple2 -> tuple2._1, tuple2 -> tuple2._2));
          */
 
-        return searchIndexResponse.things().stream()
-                .map(ThingDocument::thingName)
-                .collect(Collectors.toList());
+        return List.ofAll(searchIndexResponse.things())
+                .map(ThingDocument::thingName);
+    }
+
+    @Override
+    public boolean isDeviceUuidRequired() {
+        return false;
     }
 }

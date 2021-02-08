@@ -1,13 +1,11 @@
 package com.awssamples.iot.dynamodb.api.handlers;
 
 import com.awssamples.iot.dynamodb.api.SharedHelper;
+import io.vavr.collection.List;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
 import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class HandleIotDevicesDynamoDbEvent implements HandleIotDevicesEvent {
     @Override
@@ -20,10 +18,14 @@ public class HandleIotDevicesDynamoDbEvent implements HandleIotDevicesEvent {
 
         ScanResponse scanResponse = dynamoDbClient.scan(scanRequest);
 
-        return scanResponse.items().stream()
+        return List.ofAll(scanResponse.items())
                 .map(item -> item.get(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME))
                 .map(AttributeValue::s)
-                .distinct()
-                .collect(Collectors.toList());
+                .distinct();
+    }
+
+    @Override
+    public boolean isDeviceUuidRequired() {
+        return false;
     }
 }

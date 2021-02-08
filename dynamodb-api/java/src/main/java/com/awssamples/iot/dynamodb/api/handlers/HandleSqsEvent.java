@@ -5,7 +5,7 @@ import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.awssamples.iot.dynamodb.api.SharedHelper;
 import com.awssamples.iot.dynamodb.api.data.CookedMessage;
 import com.awssamples.iot.dynamodb.api.data.UuidAndMessageId;
-import com.google.gson.Gson;
+import io.vavr.collection.HashMap;
 import io.vavr.control.Try;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,6 @@ import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
 import software.amazon.awssdk.services.sqs.model.GetQueueUrlRequest;
 import software.amazon.awssdk.services.sqs.model.GetQueueUrlResponse;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,13 +125,13 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
                 .onFailure(NullPointerException.class, exception -> rethrowRuntimeExceptionForMissingUUID())
                 .get();
 
-        Map<String, AttributeValue> item = new HashMap<>();
-        item.put(UUID_DYNAMO_DB_COLUMN_NAME, uuid);
-        item.put(MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageId);
-        item.put(BODY, cookedMessage.getBody());
+        HashMap<String, AttributeValue> item = HashMap.of(
+                UUID_DYNAMO_DB_COLUMN_NAME, uuid,
+                MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageId,
+                BODY, cookedMessage.getBody());
 
         PutItemRequest putItemRequest = PutItemRequest.builder()
-                .item(item)
+                .item(item.toJavaMap())
                 .tableName(SharedHelper.getTableName())
                 .build();
 
