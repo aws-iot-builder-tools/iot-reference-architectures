@@ -4,6 +4,7 @@ plugins {
     id("java")
     id("idea")
     id("java-library")
+    id("com.github.ben-manes.versions") version "0.36.0"
 }
 
 java {
@@ -12,7 +13,7 @@ java {
     }
 }
 
-val gradleDependencyVersion = "6.7.1"
+val gradleDependencyVersion = "6.8.1"
 
 tasks.wrapper {
     gradleVersion = gradleDependencyVersion
@@ -26,20 +27,22 @@ tasks.distZip { enabled = false }
 tasks.distTar { enabled = false }
 
 // Specify all of our dependency versions
-val awsCdkVersion = "1.85.0"
+val awsCdkVersion = "1.88.0"
 val vavrVersion = "0.10.3"
 val slf4jVersion = "2.0.0-alpha1"
 val jcabiVersion = "0.19.0"
 val commonsLangVersion = "3.11"
 val commonsIoVersion = "2.8.0"
 val ztZipVersion = "1.14"
-val resultsIteratorForAwsJavaSdkVersion = "11.0.7"
+val resultsIteratorForAwsJavaSdkVersion = "11.0.8"
 val daggerVersion = "2.31.1"
 val junitVersion = "4.13.1"
-val awsLambdaServletVersion = "0.0.30"
+val awsLambdaServletVersion = "0.2.4"
+val awsCdkConstructsForJavaVersion = "0.5.6"
 
 repositories {
     mavenCentral()
+    mavenLocal()
     maven(url = "https://repo.gradle.org/gradle/libs-releases-local/")
     maven(url = "https://jitpack.io")
 }
@@ -49,25 +52,30 @@ dependencies {
     annotationProcessor("com.google.dagger:dagger-compiler:$daggerVersion")
 
     // Dependency injection with Dagger
-    implementation("com.google.dagger:dagger:$daggerVersion")
+    api("com.google.dagger:dagger:$daggerVersion")
 
     implementation("org.slf4j:slf4j-log4j12:$slf4jVersion")
     implementation("com.jcabi:jcabi-log:$jcabiVersion")
 
-    implementation("software.amazon.awscdk:core:$awsCdkVersion")
-    implementation("software.amazon.awscdk:iam:$awsCdkVersion")
-    implementation("software.amazon.awscdk:sqs:$awsCdkVersion")
-    implementation("software.amazon.awscdk:iot:$awsCdkVersion")
-    implementation("software.amazon.awscdk:lambda:$awsCdkVersion")
-    implementation("software.amazon.awscdk:dynamodb:$awsCdkVersion")
-    implementation("software.amazon.awscdk:apigateway:$awsCdkVersion")
+    api("software.amazon.awscdk:core:$awsCdkVersion")
+    api("software.amazon.awscdk:iam:$awsCdkVersion")
+    api("software.amazon.awscdk:sqs:$awsCdkVersion")
+    api("software.amazon.awscdk:iot:$awsCdkVersion")
+    api("software.amazon.awscdk:lambda:$awsCdkVersion")
+    api("software.amazon.awscdk:dynamodb:$awsCdkVersion")
+    api("software.amazon.awscdk:apigateway:$awsCdkVersion")
     implementation("io.vavr:vavr:$vavrVersion")
-    implementation("org.gradle:gradle-tooling-api:$gradleDependencyVersion")
+    api("org.gradle:gradle-tooling-api:$gradleDependencyVersion")
     implementation("org.apache.commons:commons-lang3:$commonsLangVersion")
     implementation("commons-io:commons-io:$commonsIoVersion")
-    implementation("org.zeroturnaround:zt-zip:$ztZipVersion")
-    implementation("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
-    implementation("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
+    api("org.zeroturnaround:zt-zip:$ztZipVersion")
+    api("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
+
+//    api("local:aws-lambda-servlet:1.0-SNAPSHOT")
+    api("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
+
+    api("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJavaVersion")
+//    api("local:aws-cdk-constructs-for-java:1.0-SNAPSHOT")
 
     testImplementation("junit:junit:$junitVersion")
 }

@@ -12,3 +12,9 @@ build
 target
 cdk.out
 generated
+war
+node_modules
+master-cdk-temp
+fixed-public.key
+fixed-private.key
+aws-iot-sdk-browser-bundle-min.js

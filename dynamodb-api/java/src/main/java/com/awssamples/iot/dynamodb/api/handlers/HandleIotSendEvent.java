@@ -2,7 +2,8 @@ package com.awssamples.iot.dynamodb.api.handlers;
 
 import com.awssamples.iot.dynamodb.api.SharedHelper;
 import com.awssamples.iot.dynamodb.api.handlers.interfaces.HandleIotEvent;
-import com.google.gson.Gson;
+import io.vavr.collection.HashMap;
+import io.vavr.control.Option;
 import org.apache.commons.codec.binary.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +13,9 @@ import software.amazon.awssdk.services.sqs.model.GetQueueUrlResponse;
 import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 import software.amazon.awssdk.services.sqs.model.SendMessageResponse;
 
-import java.util.*;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import static com.awssamples.iot.dynamodb.api.SharedHelper.getGson;
 
@@ -25,18 +28,18 @@ public class HandleIotSendEvent implements HandleIotEvent {
     }
 
     @Override
-    public String innerHandle(String responseToken, final Map input, String uuid, Optional<String> optionalMessageId, Optional<String> optionalRecipientId) {
+    public String innerHandle(String responseToken, final Map input, Option<String> uuidOption, Option<String> messageIdOption, Option<String> recipientIdOption) {
         byte[] payload = getPayload(input);
-        String recipientUuid = optionalRecipientId.get();
+        String recipientUuid = recipientIdOption.get();
 
         String sqsMessageId = putInSqs(recipientUuid, payload);
 
         // Return a payload on the response topic that contains the UUID and confirmation that the message was put in SQS
-        Map<String, Object> payloadMap = new HashMap<>();
-        payloadMap.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuid);
-        payloadMap.put("sqs_message_id", sqsMessageId);
+        HashMap<String, Object> payloadMap = HashMap.of(
+                SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuidOption,
+                "sqs_message_id", sqsMessageId);
 
-        publishResponse(uuid, optionalMessageId, optionalRecipientId, responseToken, payloadMap);
+        publishResponse(uuidOption, messageIdOption, recipientIdOption, responseToken, payloadMap);
 
         return "done";
     }
@@ -55,10 +58,10 @@ public class HandleIotSendEvent implements HandleIotEvent {
 
         String encodedPayload = Hex.encodeHexString(payload);
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("client_message_id", Math.abs(new Random().nextInt()));
-        body.put("message", encodedPayload);
-        body.put("imei", uuid);
+        HashMap<String, Object> body = HashMap.of(
+                "client_message_id", Math.abs(new Random().nextInt()),
+                "message", encodedPayload,
+                "imei", uuid);
 
         String encodedBody = getGson().toJson(body);
 
@@ -83,6 +86,11 @@ public class HandleIotSendEvent implements HandleIotEvent {
 
     @Override
     public boolean isRecipientUuidRequired() {
+        return true;
+    }
+
+    @Override
+    public boolean isDeviceUuidRequired() {
         return true;
     }
 }

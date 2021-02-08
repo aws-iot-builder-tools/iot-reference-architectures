@@ -1,23 +1,20 @@
 package com.awssamples.cbor_handler;
 
-import com.awssamples.iam.policies.LambdaPolicies;
-import com.awssamples.shared.IotHelper;
-import com.awssamples.shared.LambdaHelper;
-import com.awssamples.shared.RoleHelper;
-import com.awssamples.shared.RulesEngineSqlHelper;
+import com.aws.samples.cdk.constructs.iam.policies.LambdaPolicies;
+import com.aws.samples.cdk.helpers.IotHelper;
+import com.aws.samples.cdk.helpers.LambdaHelper;
+import com.aws.samples.cdk.helpers.RoleHelper;
+import com.aws.samples.cdk.helpers.RulesEngineSqlHelper;
 import com.awssamples.stacktypes.JavaGradleStack;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.List;
+import io.vavr.collection.Map;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.services.iam.Role;
 import software.amazon.awscdk.services.iot.CfnTopicRule;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.Runtime;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static java.util.Collections.EMPTY_LIST;
-import static java.util.Collections.emptyMap;
 
 public class CborHandlerStack extends software.amazon.awscdk.core.Stack implements JavaGradleStack {
     public static final String CBOR_MESSAGE = "CborMessage";
@@ -46,32 +43,26 @@ public class CborHandlerStack extends software.amazon.awscdk.core.Stack implemen
         build();
 
         // Resources to convert an Amazon Ion message to JSON
-        Role cborMessageRole = RoleHelper.buildPublishToTopicRole(this, CBOR_MESSAGE, CBOR_OUTPUT_TOPIC, EMPTY_LIST, LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL);
+        Role cborMessageRole = RoleHelper.buildPublishToTopicRole(this, CBOR_MESSAGE, CBOR_OUTPUT_TOPIC, List.empty(), List.empty(), LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL);
         Map<String, String> cborLambdaEnvironment = getCborLambdaEnvironment();
-        Function cborMessageFunction = LambdaHelper.buildIotEventLambda(this, CBOR_MESSAGE, cborMessageRole, Runtime.JAVA_8, emptyMap(), cborLambdaEnvironment, getAssetCode(), CBOR_EVENT_HANDLER, LAMBDA_FUNCTION_TIMEOUT);
+        Function cborMessageFunction = LambdaHelper.buildIotEventLambda(this, CBOR_MESSAGE, cborMessageRole, Runtime.JAVA_8, HashMap.empty(), cborLambdaEnvironment, getAssetCode(), CBOR_EVENT_HANDLER, LAMBDA_FUNCTION_TIMEOUT);
         CfnTopicRule cborMessageTopicRule = RulesEngineSqlHelper.buildSelectAllBinaryIotEventRule(this, CBOR_MESSAGE, cborMessageFunction, CBOR_INPUT_TOPIC);
         IotHelper.allowIotTopicRuleToInvokeLambdaFunction(this, cborMessageTopicRule, cborMessageFunction, CBOR_MESSAGE);
 
         // Resources to convert a JSON message to Amazon Ion
-        Role jsonMessageRole = RoleHelper.buildPublishToTopicRole(this, JSON_MESSAGE, JSON_OUTPUT_TOPIC, EMPTY_LIST, LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL);
+        Role jsonMessageRole = RoleHelper.buildPublishToTopicRole(this, JSON_MESSAGE, JSON_OUTPUT_TOPIC, List.empty(), List.empty(), LambdaPolicies.LAMBDA_SERVICE_PRINCIPAL);
         Map<String, String> jsonLambdaEnvironment = getJsonLambdaEnvironment();
-        Function jsonMessageFunction = LambdaHelper.buildIotEventLambda(this, JSON_MESSAGE, jsonMessageRole, Runtime.JAVA_8, emptyMap(), jsonLambdaEnvironment, getAssetCode(), JSON_EVENT_HANDLER, LAMBDA_FUNCTION_TIMEOUT);
+        Function jsonMessageFunction = LambdaHelper.buildIotEventLambda(this, JSON_MESSAGE, jsonMessageRole, Runtime.JAVA_8, HashMap.empty(), jsonLambdaEnvironment, getAssetCode(), JSON_EVENT_HANDLER, LAMBDA_FUNCTION_TIMEOUT);
         CfnTopicRule jsonMessageTopicRule = RulesEngineSqlHelper.buildSelectAllIotEventRule(this, JSON_MESSAGE, jsonMessageFunction, JSON_INPUT_TOPIC);
         IotHelper.allowIotTopicRuleToInvokeLambdaFunction(this, jsonMessageTopicRule, jsonMessageFunction, JSON_MESSAGE);
     }
 
     private Map<String, String> getCborLambdaEnvironment() {
-        Map<String, String> environment = new HashMap<>();
-        environment.put(OUTPUT_TOPIC, CBOR_OUTPUT_TOPIC);
-
-        return environment;
+        return HashMap.of(OUTPUT_TOPIC, CBOR_OUTPUT_TOPIC);
     }
 
     private Map<String, String> getJsonLambdaEnvironment() {
-        Map<String, String> environment = new HashMap<>();
-        environment.put(OUTPUT_TOPIC, JSON_OUTPUT_TOPIC);
-
-        return environment;
+        return HashMap.of(OUTPUT_TOPIC, JSON_OUTPUT_TOPIC);
     }
 
     @Override

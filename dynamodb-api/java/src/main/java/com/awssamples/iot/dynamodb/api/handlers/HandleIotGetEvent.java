@@ -2,16 +2,14 @@ package com.awssamples.iot.dynamodb.api.handlers;
 
 import com.awssamples.iot.dynamodb.api.SharedHelper;
 import com.awssamples.iot.dynamodb.api.handlers.interfaces.HandleIotEvent;
+import io.vavr.collection.HashMap;
+import io.vavr.control.Option;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
 import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
 
-import java.util.AbstractMap;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class HandleIotGetEvent implements HandleIotEvent {
     private static final String MESSAGE_NOT_AVAILABLE = "Message not available";
@@ -22,39 +20,39 @@ public class HandleIotGetEvent implements HandleIotEvent {
     }
 
     @Override
-    public String innerHandle(String responseToken, final Map input, String uuid, Optional<String> optionalMessageId, Optional<String> optionalRecipientId) {
-        String messageId = optionalMessageId.get();
+    public String innerHandle(String responseToken, final Map input, Option<String> uuidOption, Option<String> messageIdOption, Option<String> recipientIdOption) {
+        String messageId = messageIdOption.get();
+        String uuid = uuidOption.get();
 
         // Get the row with the exact UUID and message ID values
-        Map<String, AttributeValue> key = new HashMap<>();
-        key.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, AttributeValue.builder().s(uuid).build());
-        key.put(SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, AttributeValue.builder().s(messageId).build());
+        HashMap<String, AttributeValue> key = HashMap.of(
+                SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, AttributeValue.builder().s(uuid).build(),
+                SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, AttributeValue.builder().s(messageId).build());
 
         DynamoDbClient dynamoDbClient = DynamoDbClient.create();
+
         GetItemRequest getItemRequest = GetItemRequest.builder()
                 .tableName(SharedHelper.getTableName())
-                .key(key)
+                .key(key.toJavaMap())
                 .build();
         GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
 
-        // Return a payload on the response topic that contains the UUID and message ID
-        Map<String, Object> payloadMap = new HashMap<>();
-        payloadMap.put(SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuid);
-        payloadMap.put(SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageId);
+        HashMap<String, AttributeValue> item = HashMap.ofAll(getItemResponse.item());
 
-        Map<String, AttributeValue> item = getItemResponse.item();
+        // Return a payload on the response topic that contains the UUID and message ID
+        HashMap<String, Object> payloadMap = HashMap.of(
+                SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuidOption,
+                SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageId);
 
         if (item.isEmpty()) {
             // The message was not found, include an error message
-            payloadMap.put(SharedHelper.ERROR_KEY, MESSAGE_NOT_AVAILABLE);
+            payloadMap = payloadMap.put(SharedHelper.ERROR_KEY, MESSAGE_NOT_AVAILABLE);
         } else {
-            // The message was found, include the body converted to a normal value from a DynamoDB AttributeValue
-            payloadMap.putAll(item.entrySet().stream()
-                    .map(SharedHelper::fromDynamoDbAttributeValue)
-                    .collect(Collectors.toMap(AbstractMap.SimpleEntry::getKey, AbstractMap.SimpleEntry::getValue)));
+            // The message was found, merge it into our payload
+            payloadMap = payloadMap.merge(item);
         }
 
-        publishResponse(uuid, optionalMessageId, Optional.empty(), responseToken, payloadMap);
+        publishResponse(uuidOption, messageIdOption, Option.none(), responseToken, payloadMap);
 
         return "done";
     }
@@ -68,5 +66,10 @@ public class HandleIotGetEvent implements HandleIotEvent {
     @Override
     public boolean isRecipientUuidRequired() {
         return false;
+    }
+
+    @Override
+    public boolean isDeviceUuidRequired() {
+        return true;
     }
 }

@@ -3,9 +3,14 @@ package com.awssamples.iot.dynamodb.api.handlers.interfaces;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.awssamples.iot.dynamodb.api.SharedHelper;
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.vavr.collection.HashMap;
+import io.vavr.collection.List;
+import io.vavr.collection.Stream;
+import io.vavr.control.Option;
 import io.vavr.control.Try;
 import org.apache.commons.codec.binary.Hex;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
@@ -17,10 +22,7 @@ import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
 import software.amazon.awssdk.services.iotdataplane.model.PublishRequest;
 
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
@@ -34,6 +36,10 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
     String HEX_PAYLOAD_KEY = "hex_payload";
     String REQUEST_TOPIC_PREFIX = "RequestTopicPrefix";
     String RESPONSE_TOPIC_TEMPLATE = "ResponseTopicPrefix";
+
+    default Logger getLogger() {
+        return LoggerFactory.getLogger(HandleIotEvent.class);
+    }
 
     // Methods that throw exceptions so that the code fails fast when issues come up (values not specified in the environment, etc)
     default RuntimeException missingHexPayloadException() {
@@ -99,7 +105,11 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
      * @return the request topic template, for this specific operation type, from the environment or throws an exception
      */
     default String getRequestTopicTemplate() {
-        return SharedHelper.getEnvironmentVariableOrThrow(getOperationType() + REQUEST_TOPIC_PREFIX, this::missingRequestTopicTemplateException);
+        String topicTemplate = getOperationType() + REQUEST_TOPIC_PREFIX;
+        getLogger().info("topic template: " + topicTemplate);
+        String result = SharedHelper.getEnvironmentVariableOrThrow(topicTemplate, this::missingRequestTopicTemplateException);
+        LoggerFactory.getLogger(HandleIotEvent.class).info("topic template result: " + result);
+        return result;
     }
 
     /**
@@ -154,7 +164,7 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
 
     default byte[] getPayload(Map input) {
         String rawHexPayload = (String) input.get(HEX_PAYLOAD_KEY);
-        String hexEncodedPayload = Optional.ofNullable(rawHexPayload).orElseThrow(this::missingHexPayloadException);
+        String hexEncodedPayload = Option.of(rawHexPayload).getOrElseThrow(this::missingHexPayloadException);
 
         return Try.of(() -> Hex.decodeHex(hexEncodedPayload)).get();
     }
@@ -165,7 +175,7 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
      * @throws RuntimeException if the topic key is not found in the input map
      */
     default String getTopic(Map input) {
-        return Optional.ofNullable((String) input.get(TOPIC_INPUT_KEY)).orElseThrow(this::missingTopicException);
+        return Option.of((String) input.get(TOPIC_INPUT_KEY)).getOrElseThrow(this::missingTopicException);
     }
 
     /**
@@ -180,39 +190,46 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
     default String handleRequest(final Map input, final Context context) {
         // Get the input topic so we can extract the UUID and message ID, if necessary
         String topic = getTopic(input);
+        getLogger().info("input: " + Try.of(() -> new ObjectMapper().writeValueAsString(input)).get());
+        getLogger().info("topic: " + Option.of(topic));
 
         // Split the input topic so we can find the UUID and message ID by index, if necessary
         String[] topicComponents = topic.split("/");
 
         // Get the UUID
-        String uuid = getUuid(topicComponents);
+        Option<String> uuidOption = getUuid(topicComponents);
 
         // Get the message ID, if necessary
-        Optional<String> optionalMessageId = getMessageId(topicComponents);
+        Option<String> messageIdOption = getMessageId(topicComponents);
 
         // Get the recipient UUID, if necessary
-        Optional<String> optionalRecipientUuid = getRecipientUuid(topicComponents);
+        Option<String> recipientUuidOption = getRecipientUuid(topicComponents);
 
         // Get the token
-        String responseToken = getResponseToken(topicComponents);
+        String responseToken = getResponseToken(input);
 
         // Call the inner handler so the implementations can finish servicing the request
-        return innerHandle(responseToken, input, uuid, optionalMessageId, optionalRecipientUuid);
+        return innerHandle(responseToken, input, uuidOption, messageIdOption, recipientUuidOption);
     }
 
     /**
      * The inner handler that must be implemented for each operation (e.g. get, query, delete, next)
      *
-     * @param responseToken         the response token extracted from the inbound message
+     * @param responseToken       the response token extracted from the inbound message
      * @param input
-     * @param uuid                  the device UUID
-     * @param optionalMessageId     the message ID, if necessary
-     * @param optionalRecipientUuid the recipient UUID, if necessary
+     * @param uuidOption          the device UUID
+     * @param messageIdOption     the message ID, if necessary
+     * @param recipientUuidOption the recipient UUID, if necessary
      * @return "done" when complete
      */
-    String innerHandle(String responseToken, final Map input, String uuid, Optional<String> optionalMessageId, Optional<String> optionalRecipientUuid);
+    String innerHandle(String responseToken, final Map input, Option<String> uuidOption, Option<String> messageIdOption, Option<String> recipientUuidOption);
 
-    default String getUuid(String[] topicComponents) {
+    default Option<String> getUuid(String[] topicComponents) {
+        if (!isDeviceUuidRequired()) {
+            // This implementation does not need the device ID, just return none
+            return Option.none();
+        }
+
         // Get the UUID index
         int uuidIndex = getUuidRequestTemplateIndex();
 
@@ -222,18 +239,18 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
             throw new RuntimeException("Topic is too short to provide the UUID at the expected index");
         }
 
-        // Return the UUID wrapped in an optional
-        return topicComponents[uuidIndex];
+        // Return the UUID
+        return Option.of(topicComponents[uuidIndex]);
     }
 
     /**
      * @param topicComponents
      * @return the message ID in this topic, if necessary
      */
-    default Optional<String> getMessageId(String[] topicComponents) {
+    default Option<String> getMessageId(String[] topicComponents) {
         if (!isMessageIdRequired()) {
-            // This implementation does not need the message ID, just return empty
-            return Optional.empty();
+            // This implementation does not need the message ID, just return none
+            return Option.none();
         }
 
         // Get the message ID index
@@ -245,18 +262,18 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
             throw new RuntimeException("Topic is too short to provide the message ID at the expected index");
         }
 
-        // Return the message ID wrapped in an optional
-        return Optional.of(topicComponents[messageIdIndex]);
+        // Return the message ID wrapped in an option
+        return Option.of(topicComponents[messageIdIndex]);
     }
 
     /**
      * @param topicComponents
      * @return the message ID in this topic, if necessary
      */
-    default Optional<String> getRecipientUuid(String[] topicComponents) {
+    default Option<String> getRecipientUuid(String[] topicComponents) {
         if (!isRecipientUuidRequired()) {
-            // This implementation does not need the recipient UUID, just return empty
-            return Optional.empty();
+            // This implementation does not need the recipient UUID, just return none
+            return Option.none();
         }
 
         // Get the recipient UUID index
@@ -268,26 +285,18 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
             throw new RuntimeException("Topic is too short to provide the recipient UUID at the expected index");
         }
 
-        // Return the recipient UUID wrapped in an optional
-        return Optional.of(topicComponents[recipientUuidIndex]);
+        // Return the recipient UUID wrapped in an option
+        return Option.of(topicComponents[recipientUuidIndex]);
     }
 
     /**
-     * @param topicComponents
-     * @return the token this topic, if necessary
+     * @param input
+     * @return the token for this event
      */
-    default String getResponseToken(String[] topicComponents) {
-        // Get the response token index
-        int responseTokenIndex = getResponseTokenRequestTopicIndex();
-
-        // Sanity check: Does the topic have enough entries?
-        if (topicComponents.length < responseTokenIndex) {
-            // No, throw an exception
-            throw new RuntimeException("Topic is too short to provide the response token at the expected index");
-        }
-
-        // Return the message ID wrapped in an optional
-        return topicComponents[responseTokenIndex];
+    default String getResponseToken(Map input) {
+        // Get the response token
+        return Option.of((String) input.get("token"))
+                .getOrElseThrow(() -> new RuntimeException("The input payload does not contain a response token is too short to provide the response token at the expected index"));
     }
 
     /**
@@ -301,19 +310,39 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
     boolean isRecipientUuidRequired();
 
     /**
-     * @param responseToken the response token from the caller, used to build the topic
-     * @param payloadMap    the payload, specified as a map, to convert to JSON and publish
+     * @return true if a device UUID ID is required for this operation, otherwise false
      */
-    default void publishResponse(String uuid, Optional<String> optionalMessageId, Optional<String> optionalRecipientId, String responseToken, Map payloadMap) {
-        // Build the topic from this implementation's response topic prefix and the user provided response token
-        List<String> dynamicArguments = new ArrayList<>();
-        dynamicArguments.add(uuid);
-        optionalRecipientId.ifPresent(dynamicArguments::add);
-        optionalMessageId.ifPresent(dynamicArguments::add);
-        dynamicArguments.add(responseToken);
-        String dynamicArgumentString = String.join("/", dynamicArguments);
+    boolean isDeviceUuidRequired();
 
-        String topic = String.join("/", getResponseTopicTemplate(), dynamicArgumentString);
+    /**
+     * @param payloadMap the payload, specified as a map, to convert to JSON and publish
+     */
+    default void publishResponse(Option<String> uuidOption, Option<String> messageIdOption, Option<String> recipientIdOption, String responseToken, HashMap payloadMap) {
+        // Add the response token
+        payloadMap = payloadMap.put("token", responseToken);
+
+        // Build the topic from this implementation's response topic prefix and the user provided response token
+        getLogger().info("In publish response 1");
+        List<String> dynamicArguments = List.of(
+                uuidOption,
+                recipientIdOption,
+                messageIdOption)
+                .flatMap(Option::toStream);
+        getLogger().info("In publish response 2");
+
+        String topic = getResponseTopicTemplate();
+        getLogger().info("In publish response 3");
+
+        if (!dynamicArguments.isEmpty()) {
+            getLogger().info("Dynamic arguments not empty [" + dynamicArguments + "]");
+            // There are additional arguments, add them on
+            String dynamicArgumentString = String.join("/", dynamicArguments);
+
+            topic = String.join("/", topic, dynamicArgumentString);
+        } else {
+            getLogger().info("Dynamic arguments empty, topic [" + topic + "]");
+        }
+        getLogger().info("In publish response 4");
 
         // Convert the payload map to JSON and then to an SdkBytes object
         SdkBytes payload = SdkBytes.fromString(SharedHelper.toJson(payloadMap), Charset.defaultCharset());
@@ -324,9 +353,9 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
                 .payload(payload)
                 .build();
 
-        LoggerFactory.getLogger(HandleIotEvent.class).info("LOGGING PUBLISH REQUEST");
-        LoggerFactory.getLogger(HandleIotEvent.class).info(getGson().toJson(publishRequest));
-        LoggerFactory.getLogger(HandleIotEvent.class).info("LOGGED PUBLISH REQUEST");
+        getLogger().info("LOGGING PUBLISH REQUEST");
+        getLogger().info(getGson().toJson(publishRequest));
+        getLogger().info("LOGGED PUBLISH REQUEST");
 
         // Publish with the IoT data plane client
         IotDataPlaneClient.create().publish(publishRequest);
@@ -336,7 +365,7 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
      * @param keyConditions conditions on the row (typically UUID exact match and optionally message ID exact match or relative match)
      * @return the oldest message ID that matches the specified conditions
      */
-    default Optional<String> getOldestMessageId(Map<String, Condition> keyConditions) {
+    default Option<String> getOldestMessageId(HashMap<String, Condition> keyConditions) {
         // Scan forward to get the oldest result first
         QueryResponse oldestMessageResponse = getQueryResponse(keyConditions, true);
 
@@ -347,7 +376,7 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
      * @param keyConditions conditions on the row (typically UUID exact match and optionally message ID exact match or relative match)
      * @return the newest message ID that matches the specified conditions
      */
-    default Optional<String> getNewestMessageId(Map<String, Condition> keyConditions) {
+    default Option<String> getNewestMessageId(HashMap<String, Condition> keyConditions) {
         // Scan backwards to get the newest result first
         QueryResponse newestMessageResponse = getQueryResponse(keyConditions, false);
 
@@ -358,10 +387,11 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
      * @param queryResponse a query response from DynamoDB
      * @return the message ID field from the first returned row, additional rows are ignored
      */
-    default Optional<String> getMessageIdFieldFromDynamoDbRecord(QueryResponse queryResponse) {
-        return queryResponse.items().stream().findFirst()
+    default Option<String> getMessageIdFieldFromDynamoDbRecord(QueryResponse queryResponse) {
+        return Option.of(List.ofAll(queryResponse.items())
                 .map(map -> map.get(SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME))
-                .map(AttributeValue::s);
+                .map(AttributeValue::s)
+                .getOrNull());
     }
 
     /**
@@ -369,9 +399,9 @@ public interface HandleIotEvent extends RequestHandler<Map, String> {
      * @param isScanIndexForward true if the results should be returned in ascending order, false if the results should be returned in descending order
      * @return a query response object with 0 or 1 rows that match the key conditions
      */
-    default QueryResponse getQueryResponse(Map<String, Condition> keyConditions, boolean isScanIndexForward) {
+    default QueryResponse getQueryResponse(HashMap<String, Condition> keyConditions, boolean isScanIndexForward) {
         QueryRequest queryRequest = QueryRequest.builder()
-                .keyConditions(keyConditions)
+                .keyConditions(keyConditions.toJavaMap())
                 .tableName(SharedHelper.getTableName())
                 .limit(1)
                 .scanIndexForward(isScanIndexForward)
