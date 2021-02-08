@@ -6,11 +6,10 @@ import os
 import boto3
 import base64
 
-client = boto3.client('iot-data')
-
+iot_data_client = boto3.client('iot-data')
 output_topic = os.environ['OutputTopic']
 
 def function_handler(event, context): 
   decoded = base64.b64decode(event['data'])
   obj = ion.loads(decoded)
-  return client.publish(topic = output_topic, qos = 0, payload = json.dumps(dict(obj.items())))
+  return iot_data_client.publish(topic = output_topic, qos = 0, payload = json.dumps(dict(obj.items())))
