@@ -31,11 +31,6 @@ updates:
     interval: daily
   open-pull-requests-limit: 10
 - package-ecosystem: gradle
-  directory: "/dynamodb-api/client/java"
-  schedule:
-    interval: daily
-  open-pull-requests-limit: 10
-- package-ecosystem: gradle
   directory: "/master-cdk"
   schedule:
     interval: daily
