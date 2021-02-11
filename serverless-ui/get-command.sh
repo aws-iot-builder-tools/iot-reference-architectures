@@ -39,6 +39,7 @@ elif command -v docker &>/dev/null; then
     -e AWS_REGION=$REGION \
     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
+    -e AWS_SESSION_TOKEN=$AWS_SESSION_TOKEN \
     $BUILD_TAG \
     cdk"
 else
