@@ -44,7 +44,7 @@ RUN curl -L https://raw.githubusercontent.com/tj/n/master/bin/n -o n
 RUN bash n lts
 
 # Install CDK
-RUN npm install -g aws-cdk@1.88.0
+RUN npm install -g aws-cdk@1.89.0
 
 COPY build.gradle.kts /serverless-ui/jwt-stack/
 COPY Dockerfile /serverless-ui/jwt-stack/
@@ -60,8 +60,8 @@ COPY src /serverless-ui/jwt-stack/src
 COPY --from=awsIotDeviceSdk node_modules/aws-iot-device-sdk/browser/aws-iot-sdk-browser-bundle-min-uglifyjs.js /serverless-ui/jwt-stack/src/main/webapp/aws-iot-sdk-browser-bundle-min.js
 COPY cdk.json /serverless-ui/jwt-stack
 
-# Build the code here so we can cache it before we run "cdk deploy"
-RUN ./gradlew build --no-daemon
+# Build the GWT code here so we can cache it before we run "cdk deploy"
+RUN ./gradlew compileGwt --no-daemon
 
 # Copy the master-cdk project and build it so it is cached
 COPY master-cdk-temp /master-cdk
