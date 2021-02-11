@@ -35,6 +35,7 @@ elif command -v docker &>/dev/null; then
   rm -rf master-cdk-temp
   mkdir -p build/libs
   echo "time docker run --rm \
+    -v /var/run/docker.sock:/var/run/docker.sock \
     -e AWS_REGION=$REGION \
     -e AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID \
     -e AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY \
