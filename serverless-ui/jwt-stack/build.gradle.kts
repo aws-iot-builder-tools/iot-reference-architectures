@@ -244,20 +244,50 @@ tasks.shadowJar {
 }
 
 val validateDockerIsAvailable by tasks.registering(Exec::class) {
-    commandLine("bash", "-c", "(docker &> /dev/null) || (echo Docker is required for this build && exit 1)")
+    isIgnoreExitValue = true
+    commandLine("bash", "-c", "docker &> /dev/null")
+
+    doLast {
+        if (execResult!!.exitValue != 0) {
+            throw GradleException("Docker is required for this build")
+        }
+    }
+}
+
+val validateUserHasPermissionsToRunDocker by tasks.registering(Exec::class) {
+    isIgnoreExitValue = true
+    dependsOn += validateDockerIsAvailable
+    commandLine("bash", "-c", "docker ps &> /dev/null")
+
+    doLast {
+        if (execResult!!.exitValue != 0) {
+            throw GradleException("This user does not have permission to use Docker or Docker is not running. " +
+                    "If you recently added this user to the Docker group try logging out and logging back in again. " +
+                    "If you are still unable to run this script but can run 'docker ps' in your shell try killing any existing Gradle daemons that were started before the user was added to the Docker group.")
+
+        }
+    }
 }
 
 val buildDockerImageForBrowserBundle by tasks.registering(Exec::class) {
-    dependsOn += validateDockerIsAvailable
+    isIgnoreExitValue = true
+    dependsOn += validateUserHasPermissionsToRunDocker
     commandLine("docker", "build", "--target", "awsIotDeviceSdk", "-t", "aws-iot-device-sdk-js-build", ".")
+
+    doLast {
+        if (execResult!!.exitValue != 0) {
+            throw GradleException("The docker build of the Javascript IoT device SDK failed")
+        }
+    }
 }
 
 val removeBrowserBundleContainerBefore by tasks.registering(Exec::class) {
-    setIgnoreExitValue(true)
+    isIgnoreExitValue = true
     commandLine("docker", "rm", "-f", "aws-iot-device-sdk-js-container")
 }
 
 val createDockerContainerForBrowserBundle by tasks.registering(Exec::class) {
+    isIgnoreExitValue = true
     dependsOn += buildDockerImageForBrowserBundle
     dependsOn += removeBrowserBundleContainerBefore
 
@@ -270,6 +300,12 @@ val createDockerContainerForBrowserBundle by tasks.registering(Exec::class) {
         "aws-iot-device-sdk-js-build:latest",
         "bash"
     )
+
+    doLast {
+        if (execResult!!.exitValue != 0) {
+            throw GradleException("Creating the container to extract the Javascript IoT device SDK failed")
+        }
+    }
 }
 
 val serverCode by tasks.registering(Exec::class) {
