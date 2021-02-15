@@ -22,8 +22,6 @@ import org.jboss.elemento.EventType;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static com.awslabs.iatt.spe.serverless.gwt.client.BrowserHelper.danger;
@@ -152,17 +150,6 @@ public class CreateAndValidateViewImpl extends BaseElementView<HTMLDivElement> i
         updateFakeIccid(deviceIdBox, iccidBox);
     }
 
-    // From https://stackoverflow.com/a/3760193
-    private List<String> splitEqually(String text, int size) {
-        List<String> ret = new ArrayList<>((text.length() + size - 1) / size);
-
-        for (int start = 0; start < text.length(); start += size) {
-            ret.add(text.substring(start, Math.min(text.length(), start + size)));
-        }
-
-        return ret;
-    }
-
     private void buildJwtCard() {
         jwtCodeCard = CodeCard.createCodeCard("")
                 .setTitle("JWT data")
@@ -203,9 +190,7 @@ public class CreateAndValidateViewImpl extends BaseElementView<HTMLDivElement> i
         optionalJwtResponse = Optional.of(jwtResponse);
         validateJwtButton.show();
 
-        String formattedToken = String.join("\n", splitEqually(Helpers.getTokenWithSignature(optionalJwtResponse.get()), 80));
-
-        jwtCodeCard.setCode(formattedToken);
+        jwtCodeCard.setCode(Helpers.getTokenWithSignature(jwtResponse));
     }
 
     @Override

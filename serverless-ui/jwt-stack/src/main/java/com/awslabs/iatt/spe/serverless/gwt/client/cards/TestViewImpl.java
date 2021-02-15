@@ -21,7 +21,6 @@ import java.util.*;
 
 import static com.awslabs.iatt.spe.serverless.gwt.client.SharedWithServer.topicMqttWildcard;
 import static com.awslabs.iatt.spe.serverless.gwt.client.shared.Helpers.getTokenWithSignature;
-import static com.awslabs.iatt.spe.serverless.gwt.client.shared.Helpers.wrapString;
 import static com.awslabs.iatt.spe.serverless.gwt.client.shared.JwtResponse.TOKEN_KEY_NAME;
 import static org.jboss.elemento.Elements.h;
 
@@ -171,7 +170,7 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
             username = username.replaceFirst("&", "?");
         }
 
-        stringBuilder.append(wrapString(username));
+        stringBuilder.append(username);
         stringBuilder.append("' \\\n");
         stringBuilder.append("  --cafile " + GET_CACERT_VIA_CURL + "\"");
 
@@ -200,7 +199,7 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
         // Escape ampersands otherwise bash tries to run a partial command in the background
         url = url.replace("&", "\\&");
 
-        stringBuilder.append(wrapString(url));
+        stringBuilder.append(url);
         stringBuilder.append("\\\n");
         stringBuilder.append("  --data 'Message from " + jwtResponse.iccid + " via HTTPS' \\\n");
         stringBuilder.append("  --cacert " + GET_CACERT_VIA_CURL + "\"");
@@ -247,7 +246,7 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
         commandStringBuilder.append(" --authorizer-name ");
         commandStringBuilder.append(optionalAuthorizerName.get().value);
 
-        testInvokeWithMqttContextCommandCard.setCode(wrapString(commandStringBuilder.toString()));
+        testInvokeWithMqttContextCommandCard.setCode(commandStringBuilder.toString());
     }
 
     @NotNull
@@ -286,7 +285,7 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
         commandStringBuilder.append(" --authorizer-name ");
         commandStringBuilder.append(optionalAuthorizerName.get().value);
 
-        testInvokeWithHttpContextCommandCard.setCode(wrapString(commandStringBuilder.toString()));
+        testInvokeWithHttpContextCommandCard.setCode(commandStringBuilder.toString());
     }
 
     // Card update section END
@@ -318,7 +317,7 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
         commandStringBuilder.append(" --authorizer-name ");
         commandStringBuilder.append(optionalAuthorizerName.get().value);
 
-        testInvokeWithSignatureVerificationCommandCard.setCode(wrapString(commandStringBuilder.toString()));
+        testInvokeWithSignatureVerificationCommandCard.setCode(commandStringBuilder.toString());
     }
 
     @NotNull

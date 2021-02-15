@@ -10,7 +10,9 @@ import org.dominokit.domino.ui.utils.DominoElement;
 import org.jboss.elemento.Elements;
 
 public class CodeCard extends BaseDominoElement<HTMLDivElement, CodeCard> {
-    private final HTMLPreElement codeBlock = Elements.pre().css("prettyprint").element();
+    private final HTMLPreElement codeBlock = Elements.pre()
+            .css("prettyprint")
+            .element();
     private final Card card = Card.create("Source Code")
             .setCollapsible()
             .collapse()
