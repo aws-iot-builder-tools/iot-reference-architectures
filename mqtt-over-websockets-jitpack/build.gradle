@@ -10,24 +10,27 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.36.0'
 }
 
-def gradleDependencyVersion = '6.7'
+def gradleDependencyVersion = '6.8.2'
 
 wrapper {
     gradleVersion = gradleDependencyVersion
     distributionType = Wrapper.DistributionType.ALL
 }
 
-mainClassName = 'com.awslabs.aws.iot.resultsiterator.Example'
+mainClassName = 'com.awslabs.aws.iot.websockets.Example'
 
 distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
-def resultsIteratorForAwsJavaSdkVersion = '0.10.54'
+def awsIotCoreWebsockets = '1.0.1'
 def junitVersion = '4.13.2'
-def awsSdkVersion = '1.11.956'
+def awaitilityVersion = '4.0.3'
 
-group = 'com.awslabs.aws.iot.resultsiterator.jitpack.Example'
+// NOTE: Do not use 1.2.3 or you will get null pointer exceptions
+def pahoVersion = '1.2.5'
+
+group = 'com.awslabs.aws.iot.websockets.jitpack.Example'
 version = '1.0-SNAPSHOT'
 
 description = """"""
@@ -48,10 +51,11 @@ repositories {
 }
 
 dependencies {
-    compile "com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion"
-    compile "com.amazonaws:aws-java-sdk-iot:$awsSdkVersion"
+    implementation "com.github.awslabs:aws-iot-core-websockets:$awsIotCoreWebsockets"
+    implementation "org.eclipse.paho:org.eclipse.paho.client.mqttv3:$pahoVersion"
 
-    testCompile "junit:junit:$junitVersion"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.awaitility:awaitility:$awaitilityVersion"
 }
 
 // From: https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a

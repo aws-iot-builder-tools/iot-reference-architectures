@@ -10,24 +10,26 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.36.0'
 }
 
-def gradleDependencyVersion = '6.7'
+def gradleDependencyVersion = '6.8.2'
 
 wrapper {
     gradleVersion = gradleDependencyVersion
     distributionType = Wrapper.DistributionType.ALL
 }
 
-mainClassName = 'com.awslabs.aws.iot.websockets.Example'
+mainClassName = 'com.awslabs.aws.iot.resultsiterator.Example'
 
 distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
-def awsIotCoreWebsockets = '0.8.1'
+def resultsIteratorForAwsJavaSdkVersion = '13.0.2'
 def junitVersion = '4.13.2'
-def awaitilityVersion = '4.0.3'
+def awsSdk2Version = '2.16.0'
+def vavrVersion = '0.10.3'
+def jcabiVersion = '0.19.0'
 
-group = 'com.awslabs.aws.iot.websockets.jitpack.Example'
+group = 'com.awslabs.aws.iot.resultsiterator.jitpack.Example'
 version = '1.0-SNAPSHOT'
 
 description = """"""
@@ -48,10 +50,12 @@ repositories {
 }
 
 dependencies {
-    compile "com.github.awslabs:aws-iot-core-websockets:$awsIotCoreWebsockets"
+    implementation "com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion"
+    implementation "software.amazon.awssdk:iot:$awsSdk2Version"
+    implementation "io.vavr:vavr:$vavrVersion"
 
-    testCompile "junit:junit:$junitVersion"
-    testCompile "org.awaitility:awaitility:$awaitilityVersion"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "com.jcabi:jcabi-log:$jcabiVersion"
 }
 
 // From: https://gist.github.com/matthiasbalke/3c9ecccbea1d460ee4c3fbc5843ede4a

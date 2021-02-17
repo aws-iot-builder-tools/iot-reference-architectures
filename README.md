@@ -37,10 +37,10 @@ These reference architectures use CloudFormation, not CDK
 
 - MQTT over WebSockets
   - Java
-    - [Example with Jitpack](mqtt-over-websockets-jitpack/java) - An example project that shows how to use the MQTT over WebSocketsJava library with Jitpack and includes tests to validate that the library is working as expected. This example demonstrates how a customer can use the library as a Gradle dependency without duplicating the code.
+    - [Example with Jitpack](mqtt-over-websockets-jitpack) - An example project that shows how to use the MQTT over WebSocketsJava library with Jitpack and includes tests to validate that the library is working as expected. This example demonstrates how a customer can use the library as a Gradle dependency without duplicating the code.
 - Results iterator
   - Java
-    - [Example with Jitpack](results-iterator-jitpack/java) - An example project that shows how to use the results iterator library with Jitpack and includes tests to validate that the library is working as expected. This example demonstrates how a customer can use the library as a Gradle dependency without duplicating the code.
+    - [Example with Jitpack](results-iterator-jitpack) - An example project that shows how to use the results iterator library with Jitpack and includes tests to validate that the library is working as expected. This example demonstrates how a customer can use the library as a Gradle dependency without duplicating the code.
 
 ## License Summary
 
