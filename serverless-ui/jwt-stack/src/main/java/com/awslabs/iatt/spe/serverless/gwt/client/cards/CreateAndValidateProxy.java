@@ -10,6 +10,7 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 import org.dominokit.domino.api.client.annotations.presenter.*;
 import org.dominokit.domino.api.client.mvp.presenter.ViewBaseClientPresenter;
 import org.dominokit.domino.api.shared.extension.EventContext;
+import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.loaders.Loader;
 
 import static com.awslabs.iatt.spe.serverless.gwt.client.BrowserHelper.danger;
@@ -24,17 +25,21 @@ import static com.awslabs.iatt.spe.serverless.gwt.client.JwtEntryPoint.JWT_SERVI
 @DependsOn(@EventsGroup(ShellEvent.class))
 public class CreateAndValidateProxy extends ViewBaseClientPresenter<CreateAndValidateView> implements CreateAndValidateView.CreateAndValidateUiHandlers {
     @Override
-    public void requestJwt(Loader loader, String iccid, int expirationTimeMs) {
+    public void requestJwt(Loader loader, Button generateJwtButton, String iccid, int expirationTimeMs) {
+        generateJwtButton.disable();
+
         JWT_SERVICE_ASYNC.getJwtResponse(iccid, expirationTimeMs, new AsyncCallback<JwtResponse>() {
                     @Override
                     public void onFailure(Throwable caught) {
                         loader.stop();
+                        generateJwtButton.enable();
                         danger("Something went wrong: [" + caught + "]");
                     }
 
                     @Override
                     public void onSuccess(JwtResponse jwtResponse) {
                         loader.stop();
+                        generateJwtButton.enable();
                         fireEvent(JwtChangedEvent.class, new JwtChangedEvent(jwtResponse));
                     }
                 }

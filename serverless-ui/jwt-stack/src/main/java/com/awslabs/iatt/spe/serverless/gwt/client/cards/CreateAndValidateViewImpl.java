@@ -177,7 +177,10 @@ public class CreateAndValidateViewImpl extends BaseElementView<HTMLDivElement> i
                 .setLoadingText("Generating ...")
                 .start();
 
-        uiHandlers.requestJwt(loader, iccidBox.getStringValue(), expirationTimeMs);
+        generateJwtButton.disable();
+        validateJwtButton.disable();
+
+        uiHandlers.requestJwt(loader, generateJwtButton, iccidBox.getStringValue(), expirationTimeMs);
     }
 
     @Override
@@ -189,6 +192,7 @@ public class CreateAndValidateViewImpl extends BaseElementView<HTMLDivElement> i
     public void onJwtChanged(JwtResponse jwtResponse) {
         optionalJwtResponse = Optional.of(jwtResponse);
         validateJwtButton.show();
+        validateJwtButton.enable();
 
         jwtCodeCard.setCode(Helpers.getTokenWithSignature(jwtResponse));
     }

@@ -4,6 +4,7 @@ import com.awslabs.iatt.spe.serverless.gwt.client.shared.JwtResponse;
 import org.dominokit.domino.api.client.mvp.view.ContentView;
 import org.dominokit.domino.api.client.mvp.view.HasUiHandlers;
 import org.dominokit.domino.api.client.mvp.view.UiHandlers;
+import org.dominokit.domino.ui.button.Button;
 import org.dominokit.domino.ui.loaders.Loader;
 
 public interface CreateAndValidateView extends ContentView, HasUiHandlers<CreateAndValidateView.CreateAndValidateUiHandlers> {
@@ -12,7 +13,7 @@ public interface CreateAndValidateView extends ContentView, HasUiHandlers<Create
     void onInvalidatedEvent();
 
     interface CreateAndValidateUiHandlers extends UiHandlers {
-        void requestJwt(Loader loader, String stringValue, int expirationTimeMs);
+        void requestJwt(Loader loader, Button generateJwtButton, String stringValue, int expirationTimeMs);
 
         void validateJwt(Loader loader, String token);
 
