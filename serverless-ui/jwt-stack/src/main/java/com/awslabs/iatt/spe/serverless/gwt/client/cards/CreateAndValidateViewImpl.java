@@ -23,6 +23,7 @@ import org.jboss.elemento.EventType;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Optional;
+import java.util.Random;
 
 import static com.awslabs.iatt.spe.serverless.gwt.client.BrowserHelper.danger;
 import static com.awslabs.iatt.spe.serverless.gwt.client.shared.Helpers.bytesToHex;
@@ -129,12 +130,15 @@ public class CreateAndValidateViewImpl extends BaseElementView<HTMLDivElement> i
     }
 
     private void getDeviceIdBox() {
+        // Get a four digit numeric value that is (hopefully) different for each user so they don't collide with each other
+        String randomId = String.valueOf(new Random().nextInt(9000) + 1000);
+
         deviceIdBox = TextBox.create("Device ID")
                 .setFieldStyle(FieldStyle.ROUNDED)
                 .setMaxLength(50)
                 .addLeftAddOn(Icons.ALL.antenna_mdi())
                 .setHelperText("Can be any value, this value is hashed to generate a repeatable ICCID value")
-                .value("device001")
+                .value(String.join("", "device", randomId))
                 .setReadOnly(false)
                 .addEventListener(EventType.keyup, value -> updateFakeIccid(deviceIdBox, iccidBox));
     }
