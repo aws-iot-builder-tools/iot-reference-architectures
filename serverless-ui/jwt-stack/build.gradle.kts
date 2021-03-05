@@ -71,16 +71,14 @@ val awsLambdaJavaLog4jVersion = "1.0.1"
 val jacksonVersion = "2.12.1"
 val vavrVersion = "0.10.3"
 val awsSdk2Version = "2.16.3"
-val gwtServletVersion = "2.9.0"
+val gwtServletVersion = "2.8.2"
 val junitVersion = "4.13.2"
 val jettyVersion = "11.0.0"
 val slf4jSimpleVersion = "1.7.30"
 val bouncyCastleVersion = "1.68"
 val vertxVersion = "4.0.2"
 val jjwtVersion = "3.13.0"
-val dominoKitVersion = "1.0-SNAPSHOT"
-val dominoKitApiVersion1 = "1.0-rc.4-SNAPSHOT"
-val dominoKitApiVersion2 = "1.0-rc.5-SNAPSHOT"
+val dominoKitVersion = "1.0-alpha-gwt2.8.2-SNAPSHOT"
 val awsCdkConstructsForJava = "0.5.6"
 val awsLambdaServletVersion = "0.2.4"
 
@@ -108,12 +106,12 @@ dependencies {
     api("org.dominokit:domino-ui:$dominoKitVersion") { setChanging(true) }
 
     // 1.0-rc.4-SNAPSHOT
-    api("org.dominokit:domino-rest-gwt:$dominoKitApiVersion1") { setChanging(true) }
-    annotationProcessor("org.dominokit:domino-rest-apt:$dominoKitApiVersion1") { setChanging(true) }
+    api("org.dominokit:domino-rest-gwt:$dominoKitVersion") { setChanging(true) }
+    annotationProcessor("org.dominokit:domino-rest-apt:$dominoKitVersion") { setChanging(true) }
 
     // 1.0-rc.5-SNAPSHOT
-    api("org.dominokit.domino:domino-gwt-view:$dominoKitApiVersion2") { setChanging(true) }
-    annotationProcessor("org.dominokit.domino.apt:apt-client:$dominoKitApiVersion2") { setChanging(true) }
+    api("org.dominokit.domino:domino-gwt-view:$dominoKitVersion") { setChanging(true) }
+    annotationProcessor("org.dominokit.domino.apt:apt-client:$dominoKitVersion") { setChanging(true) }
 
     api("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
     annotationProcessor("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
@@ -145,7 +143,7 @@ configure<GrettyExtension> {
 }
 
 configure<GwtPluginExtension> {
-    gwtVersion = "2.9.0"
+    gwtVersion = "2.8.2"
     maxHeapSize = "2048M"
 
     modules("com.awslabs.iatt.spe.serverless.gwt.Jwt")
