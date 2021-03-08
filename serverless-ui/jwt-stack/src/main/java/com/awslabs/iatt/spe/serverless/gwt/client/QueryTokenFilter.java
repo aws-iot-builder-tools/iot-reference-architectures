@@ -20,7 +20,7 @@ public class QueryTokenFilter implements TokenFilter {
     }
 
     @Override
-    public NormalizedToken normalizeToken(String token) {
+    public NormalizedToken normalizeToken(String rootPath, String token) {
         return new DefaultNormalizedToken(token);
     }
 }
