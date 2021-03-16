@@ -79,7 +79,7 @@ val bouncyCastleVersion = "1.68"
 val vertxVersion = "4.0.2"
 val jjwtVersion = "3.14.0"
 val dominoKitVersion = "1.0-alpha-gwt2.8.2-SNAPSHOT"
-val dominoMvpVersion = "1.0-rc.5-SNAPSHOT"
+val dominoMvpVersion = "1.0-ps-SNAPSHOT"
 val awsCdkConstructsForJava = "0.5.6"
 val awsLambdaServletVersion = "0.2.4"
 
