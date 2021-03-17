@@ -6,13 +6,17 @@ import com.aws.samples.cdk.helpers.data.AwsLambdaServlet;
 import com.awssamples.stacktypes.JavaGradleStack;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
+import io.vavr.control.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awscdk.core.CfnOutput;
 import software.amazon.awscdk.core.CfnOutputProps;
 import software.amazon.awscdk.core.Construct;
+import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.services.apigateway.LambdaRestApi;
 import software.amazon.awscdk.services.iot.CfnAuthorizer;
+import software.amazon.awscdk.services.lambda.FunctionProps;
+import software.amazon.awscdk.services.lambda.Runtime;
 
 import java.util.stream.Collectors;
 
@@ -23,8 +27,8 @@ public class ServerlessUiStack extends software.amazon.awscdk.core.Stack impleme
 
     private final String projectDirectory;
     private final String outputArtifactName;
-    private HashMap<String, String> lambdaEnvironment = HashMap.empty();
     private final List<CfnAuthorizer> iotCustomAuthorizers;
+    private HashMap<String, String> lambdaEnvironment = HashMap.empty();
 
     public ServerlessUiStack(final Construct parent, final String name) {
         super(parent, name);
@@ -41,7 +45,14 @@ public class ServerlessUiStack extends software.amazon.awscdk.core.Stack impleme
 
         addAuthorizerNamesToLambdaEnvironment();
 
-        List<AwsLambdaServlet> awsLambdaServlets = ServerlessHelper.getAwsLambdaServlets(this, getOutputArtifactFile(), lambdaEnvironment);
+        // Build the properties required for the servlets
+        FunctionProps.Builder lambdaFunctionPropsBuilder = FunctionProps.builder()
+                .runtime(Runtime.JAVA_11)
+                .memorySize(1024)
+                .environment(lambdaEnvironment.toJavaMap())
+                .timeout(Duration.seconds(10));
+
+        List<AwsLambdaServlet> awsLambdaServlets = ServerlessHelper.getAwsLambdaServlets(this, getOutputArtifactFile(), Option.of(lambdaFunctionPropsBuilder));
         logCount("servlets", awsLambdaServlets);
 
         LambdaRestApi lambdaRestApi = ServerlessHelper.buildLambdaRestApiIfPossible(this, awsLambdaServlets);

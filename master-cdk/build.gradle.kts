@@ -7,11 +7,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.38.0"
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
-    }
-}
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 
 val gradleDependencyVersion = "6.8.3"
 
@@ -30,19 +26,21 @@ tasks.distTar { enabled = false }
 val awsCdkVersion = "1.94.1"
 val vavrVersion = "0.10.3"
 val slf4jVersion = "2.0.0-alpha1"
-val jcabiVersion = "0.19.0"
 val commonsLangVersion = "3.12.0"
 val commonsIoVersion = "2.8.0"
 val ztZipVersion = "1.14"
-val resultsIteratorForAwsJavaSdkVersion = "11.0.8"
+val resultsIteratorForAwsJavaSdkVersion = "16.0.0"
 val daggerVersion = "2.33"
 val junitVersion = "4.13.2"
 val awsLambdaServletVersion = "0.2.4"
-val awsCdkConstructsForJavaVersion = "0.5.6"
+val awsCdkConstructsForJavaVersion = "0.7.7"
+val googleGuavaVersion = "30.1-jre"
+val awsSdk2Version = "2.16.3"
+val bouncyCastleVersion = "1.68"
+val log4jVersion = "2.13.0"
 
 repositories {
     mavenCentral()
-    mavenLocal()
     maven(url = "https://repo.gradle.org/gradle/libs-releases-local/")
     maven(url = "https://jitpack.io")
 }
@@ -54,8 +52,9 @@ dependencies {
     // Dependency injection with Dagger
     api("com.google.dagger:dagger:$daggerVersion")
 
-    implementation("org.slf4j:slf4j-log4j12:$slf4jVersion")
-    implementation("com.jcabi:jcabi-log:$jcabiVersion")
+    implementation("org.apache.logging.log4j:log4j-api:$log4jVersion")
+    implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
+    api("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion")
 
     api("software.amazon.awscdk:core:$awsCdkVersion")
     api("software.amazon.awscdk:iam:$awsCdkVersion")
@@ -69,13 +68,20 @@ dependencies {
     implementation("org.apache.commons:commons-lang3:$commonsLangVersion")
     implementation("commons-io:commons-io:$commonsIoVersion")
     api("org.zeroturnaround:zt-zip:$ztZipVersion")
-    api("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
+    implementation("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
+    implementation("com.google.guava:guava:$googleGuavaVersion")
+    implementation("software.amazon.awssdk:apache-client:$awsSdk2Version")
 
-//    api("local:aws-lambda-servlet:1.0-SNAPSHOT")
     api("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
 
     api("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJavaVersion")
-//    api("local:aws-cdk-constructs-for-java:1.0-SNAPSHOT")
+
+    // For certificates
+    implementation("org.bouncycastle:bcprov-jdk15on:$bouncyCastleVersion")
+    implementation("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
 
     testImplementation("junit:junit:$junitVersion")
+
+    // To force dependabot to update the Gradle wrapper dependency
+    testImplementation("org.gradle:gradle-tooling-api:$gradleDependencyVersion")
 }

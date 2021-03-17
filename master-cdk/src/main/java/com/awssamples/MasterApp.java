@@ -6,10 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awscdk.core.App;
 import software.amazon.awscdk.core.Construct;
-import software.amazon.jsii.JsiiException;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
+
+import static io.vavr.API.*;
+import static io.vavr.Predicates.instanceOf;
 
 public class MasterApp {
     public static final MasterInjector masterInjector = DaggerMasterInjector.create();
@@ -47,29 +48,30 @@ public class MasterApp {
 
         App app = new App();
 
-        Try<Void> stackConstructorInvocation = Try.run(() -> stackClassConstructor.newInstance(app, stackName))
-                .onFailure(InvocationTargetException.class, MasterApp::logPossibleVersionIssue)
-                .onFailure(JsiiException.class, MasterApp::logPossibleVersionIssue);
+        Try<Void> stackConstructorInvocation = Try.run(() -> stackClassConstructor.newInstance(app, stackName));
 
-        if (stackConstructorInvocation.isFailure()) {
-            log.error("Failed to invoke the stack class constructor, exiting.");
-            log.error(stackConstructorInvocation.getCause().toString());
-            exitWithFailure();
+        if (stackConstructorInvocation.isSuccess()) {
+            app.synth();
+            return;
         }
 
-        app.synth();
+        Match(stackConstructorInvocation.getCause()).of(
+                Case($(instanceOf(RuntimeException.class)), MasterApp::logThrowable),
+                Case($(), MasterApp::logThrowable));
+
+        exitWithFailure();
     }
 
     private static void exitWithFailure() {
         System.exit(1);
     }
 
-    private static void logThrowable(Throwable throwable) {
-        log.error("Exception: " + throwable);
+    private static Void logThrowable(Throwable throwable) {
+        log.error("Exception: " + throwable.getCause());
+        return null;
     }
 
     private static void logPossibleVersionIssue(Exception exception) {
-        exception.printStackTrace();
         log.error("Failed to create a CDK stack. Check the logs to determine the root cause.");
     }
 }
