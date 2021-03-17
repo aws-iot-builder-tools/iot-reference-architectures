@@ -9,7 +9,6 @@ import com.aws.samples.cdk.constructs.iam.permissions.SharedPermissions;
 import com.aws.samples.cdk.constructs.iam.permissions.iot.IotActions;
 import com.aws.samples.cdk.constructs.iam.permissions.iot.IotResources;
 import com.aws.samples.lambda.servlet.LambdaWebServlet;
-import com.awslabs.iatt.spe.serverless.gwt.client.JwtEntryPoint;
 import com.awslabs.iatt.spe.serverless.gwt.client.mqtt.ClientConfig;
 import com.awslabs.iatt.spe.serverless.gwt.client.shared.JwtResponse;
 import com.awslabs.iatt.spe.serverless.gwt.client.shared.JwtService;
@@ -35,7 +34,6 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Date;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 import static com.awslabs.iatt.spe.serverless.gwt.client.SharedWithServer.topicPrefix;
 import static com.awslabs.iatt.spe.serverless.gwt.server.Authorizer.*;
@@ -50,7 +48,6 @@ public class BasicJwtService extends RemoteServiceServlet implements JwtService,
     public static final String APN = "APN";
     public static final String AUTHORIZERS = "AUTHORIZERS";
     public static final String DELIMITER = "/";
-    private static final Logger log = Logger.getLogger(JwtEntryPoint.class.getName());
     private static final String ICCID_KEY = "iccid";
     private static final int EXPIRATION_IN_MS_MIN = 10000;
     private static final int EXPIRATION_IN_MS_MAX = 120000;
@@ -125,7 +122,7 @@ public class BasicJwtService extends RemoteServiceServlet implements JwtService,
             return true;
         }
 
-        log.warning("Token is not valid, cause: " + decodedJWTTry.getCause().getMessage());
+        log("Token is not valid, cause: " + decodedJWTTry.getCause().getMessage());
 
         return false;
     }
@@ -162,7 +159,7 @@ public class BasicJwtService extends RemoteServiceServlet implements JwtService,
 
             return clientConfig;
         } catch (Exception e) {
-            log.info("e: " + e.getMessage());
+            log("e: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
