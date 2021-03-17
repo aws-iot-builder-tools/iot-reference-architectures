@@ -8,7 +8,7 @@ let endpointAddress = process.env.endpointAddress;
 process.env.AWS_SDK_LOAD_CONFIG = true;
 
 module.exports = {
-    publish: async function(sdk, platform, topic, payload, qos, callback) {
+    publish: async function(platform, topic, payload, qos, callback) {
         // Discover the endpoint address if necessary
         if (typeof endpointAddress === "undefined") {
             // Wait for the endpoint value to be returned
@@ -26,8 +26,7 @@ module.exports = {
 
         // Add the attribution information to the headers
         headers = request.httpRequest.headers;
-        headers['SDK'] = sdk;
-        headers['Platform'] = platform;
+        headers['x-amzn-platform'] = platform;
 
         // Send the request with the user specified callback
         request.send(callback);

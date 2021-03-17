@@ -9,20 +9,17 @@ def _send_request_with_attribution(self, request_dict, operation_model):
         request_dict[headers_key] = {}
 
     # Add SDK and Platform to the headers
-    request_dict[headers_key]['SDK'] = _attribution_sdk
-    request_dict[headers_key]['Platform'] = _attribution_platform
+    request_dict[headers_key]['x-amzn-platform'] = _attribution_platform
 
     # Make the call with the original _send_request method
     return _original_send_request(self, request_dict, operation_model)
 
 
-def init(sdk, platform):
-    global _attribution_sdk
+def init(platform):
     global _attribution_platform
     global _original_send_request
 
-    # Store the SDK and Platform values from the caller
-    _attribution_sdk = sdk
+    # Store the Platform value from the caller
     _attribution_platform = platform
 
     # Keep a reference to the original _send_request method

@@ -21,11 +21,14 @@ Do:
 Do not:
 - Include PII in the attribution fields
 
-### SDK values
+### Platform value
 
-SDK values should identify the name of the partner company along with the name of the partner software. If the software has a version number that could be useful that value should be included as well.
+Platform values should identify the name of the partner company along with the name of the partner software. If the software has a version number that could be useful that value should be included as well.
 
-#### Example SDK values
+#### Example platform values
+
+NOTE: The only characters allowed in the partner name and partner software fields are `A-Z`, `a-z`, and `0-9`
+NOTE: The only characters allowed in the partner software version field `A-Z`, `a-z`, `0-9`, and `.`
 
 ##### Good
 
@@ -33,54 +36,23 @@ SDK values should identify the name of the partner company along with the name o
 - Partner software: N/A
 - Partner software version: N/A
 
-SDK value: `APN,PartnerSoft`
+Platform value: `APN/1 PartnerSoft`
 
 ##### Better
 
 - Partner name: `PartnerSoft`
-- Partner software: `Managed IoT`
+- Partner software: `Managed IoT` -> `ManagedIoT` (no spaces allowed)
 - Partner software version: N/A
 
-SDK value: `APN,PartnerSoft,Managed IoT`
+Platform value: `APN/1 PartnerSoft,Managed IoT`
 
 ##### Best
 
 - Partner name: `PartnerSoft`
-- Partner software: `Managed IoT`
+- Partner software: `Managed IoT` -> `ManagedIoT` (no spaces allowed)
 - Partner software version: `v1.2.1`
 
-SDK value: `APN,PartnerSoft,Managed IoT,v1.2.1`
-
-### Platform values
-
-Platform values should identify devices (virtual or physical) as specifically as possible utilizing values such as a device type, unique serial number, MAC address, etc. If the device software has a version number that could be useful that value should be included as well.
-
-#### Example Platform values
-
-##### Good
-
-- Device type: `Temperature sensor`
-- Device serial number: `ABC12345`
-
-Platform value: `Temperature sensor,ABC12345`
-
-##### Better
-
-- Device type: `Temperature sensor`
-- Device serial number: `ABC12345`
-- MAC address: `00:11:22:33:44:55`
-
-Platform value: `Temperature sensor,ABC12345,00:11:22:33:44:55`
-
-##### Best
-
-- Device type: `Temperature sensor`
-- Device serial number: `ABC12345`
-- MAC address: `00:11:22:33:44:55`
-- Device software name: `Temperature Master`
-- Device software version: `v7.1-20190522`
-
-Platform value: `Temperature sensor,ABC12345,00:11:22:33:44:55,Temperature Master,v7.1-20190522`
+Platform value: `APN/1 PartnerSoft,ManagedIoT,v1.2.1`
 
 ## Samples 
 
