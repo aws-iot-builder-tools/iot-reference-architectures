@@ -13,7 +13,7 @@ import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 
 public class SampleV2SDK {
-    private static final String PLATFORM = "Platform";
+    private static final String PLATFORM = "x-amzn-platform";
 
     public static void main(String[] args) throws URISyntaxException {
         IotClient iotClient = IotClient.create();

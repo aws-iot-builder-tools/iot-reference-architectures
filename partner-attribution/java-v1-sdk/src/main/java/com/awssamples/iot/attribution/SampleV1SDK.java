@@ -13,8 +13,7 @@ import com.amazonaws.services.iotdata.model.PublishRequest;
 import java.nio.ByteBuffer;
 
 public class SampleV1SDK {
-    private static final String SDK = "SDK";
-    private static final String PLATFORM = "Platform";
+    private static final String PLATFORM = "x-amzn-platform";
 
     public static void main(String[] args) {
         AWSIot awsIot = AWSIotClientBuilder.defaultClient();
