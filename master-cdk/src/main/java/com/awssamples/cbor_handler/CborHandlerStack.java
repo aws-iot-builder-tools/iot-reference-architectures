@@ -46,7 +46,7 @@ public class CborHandlerStack extends software.amazon.awscdk.core.Stack implemen
 
         // Build the properties required for both Lambda functions
         FunctionProps.Builder lambdaFunctionPropsBuilder = FunctionProps.builder()
-                .runtime(Runtime.JAVA_8_CORRETTO)
+                .runtime(Runtime.JAVA_11)
                 .memorySize(1024)
                 .timeout(Duration.seconds(10));
 

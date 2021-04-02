@@ -1,9 +1,14 @@
 package com.awssamples.iot.cbor.handler.handlers.interfaces;
 
+import io.vavr.Lazy;
+import io.vavr.control.Try;
 import software.amazon.awssdk.core.SdkBytes;
+import software.amazon.awssdk.services.iot.IotClient;
+import software.amazon.awssdk.services.iot.model.DescribeEndpointRequest;
 import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
 import software.amazon.awssdk.services.iotdataplane.model.PublishRequest;
 
+import java.net.URI;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -12,6 +17,10 @@ import java.util.function.Supplier;
  */
 public interface HandleIotEvent {
     String OUTPUT_TOPIC_KEY = "OutputTopic";
+    DescribeEndpointRequest DESCRIBE_ENDPOINT_REQUEST = DescribeEndpointRequest.builder().endpointType("iot:Data-ATS").build();
+    Lazy<String> ENDPOINT_ADDRESS = Lazy.of(() -> IotClient.create().describeEndpoint(DESCRIBE_ENDPOINT_REQUEST).endpointAddress());
+    Lazy<URI> ENDPOINT_URI = Lazy.of(() -> Try.of(() -> new URI(String.join("://", "https", ENDPOINT_ADDRESS.get()))).get());
+    Lazy<IotDataPlaneClient> IOT_DATA_PLANE_CLIENT = Lazy.of(() -> IotDataPlaneClient.builder().endpointOverride(ENDPOINT_URI.get()).build());
 
     // Methods that throw exceptions so that the code fails fast when issues come up (values not specified in the environment, etc)
 
@@ -40,7 +49,7 @@ public interface HandleIotEvent {
                 .build();
 
         // Publish with the IoT data plane client
-        IotDataPlaneClient.create().publish(publishRequest);
+        IOT_DATA_PLANE_CLIENT.get().publish(publishRequest);
     }
 
     /**
