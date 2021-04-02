@@ -82,7 +82,7 @@ val dominoKitVersion = "1.0-alpha-gwt2.8.2-SNAPSHOT"
 val dominoMvpVersion = "1.0-ps-SNAPSHOT"
 val awsCdkConstructsForJava = "0.7.5"
 val awsLambdaServletVersion = "0.3.1"
-val log4jVersion = "2.13.0"
+val log4jVersion = "2.14.1"
 
 dependencies {
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
