@@ -37,7 +37,7 @@ val awsCdkConstructsForJavaVersion = "0.7.7"
 val googleGuavaVersion = "30.1-jre"
 val awsSdk2Version = "2.16.3"
 val bouncyCastleVersion = "1.68"
-val log4jVersion = "2.13.0"
+val log4jVersion = "2.14.1"
 
 repositories {
     mavenCentral()
