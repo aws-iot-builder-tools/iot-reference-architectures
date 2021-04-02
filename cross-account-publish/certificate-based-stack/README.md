@@ -122,6 +122,8 @@ Second, the stack must be deleted. This can be done via the CloudFormation conso
 $ DESTROY=1 cdk destroy
 ```
 
+`destroy.sh` has been provided as a convenience script to do this.
+
 The temporary environment variable `DESTROY=1` is required. This prevents CDK from looking for a CSR file since it is
 only required to synthesize and deploy the stack.
 
