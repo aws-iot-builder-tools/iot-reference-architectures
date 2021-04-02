@@ -22,6 +22,8 @@ These reference architectures use [CDK](https://aws.amazon.com/cdk/)
 - JWT authentication for AWS IoT Core
   - Java
     - [Java custom authentication demo with JWT](serverless-ui/jwt-stack) - A stack that contains a serverless UI that shows how to use custom authentication with JWTs in AWS IoT Core
+- Cross-account publish
+  - [Certificate based stack](cross-account-publish/certificate-based-stack) - A stack that simplifies onboarding an AWS IoT data producer to an account using a certificate to allow cross-account publishing
 
 ## CloudFormation reference architecture list
 
