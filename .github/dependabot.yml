@@ -6,12 +6,12 @@ updates:
     interval: daily
   open-pull-requests-limit: 10
 - package-ecosystem: gradle
-  directory: "/mqtt-over-websockets-jitpack/java"
+  directory: "/mqtt-over-websockets-jitpack"
   schedule:
     interval: daily
   open-pull-requests-limit: 10
 - package-ecosystem: gradle
-  directory: "/results-iterator-jitpack/java"
+  directory: "/results-iterator-jitpack"
   schedule:
     interval: daily
   open-pull-requests-limit: 10
@@ -37,6 +37,11 @@ updates:
   open-pull-requests-limit: 10
 - package-ecosystem: gradle
   directory: "/serverless-ui/jwt-stack"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+- package-ecosystem: gradle
+  directory: "/cross-account-publish/certificate-based-stack"
   schedule:
     interval: daily
   open-pull-requests-limit: 10
