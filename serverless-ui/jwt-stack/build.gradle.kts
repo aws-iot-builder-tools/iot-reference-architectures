@@ -26,8 +26,8 @@ extensions.findByName("buildScan")?.withGroovyBuilder {
     setProperty("termsOfServiceAgree", "yes")
 }
 
-idea.module.setDownloadSources(true)
-idea.module.setDownloadJavadoc(true)
+idea.module.isDownloadSources = true
+idea.module.isDownloadJavadoc = true
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 
@@ -40,7 +40,7 @@ sourceSets {
 // Required for shadow JAR but we don't use it. Can not be replaced with application.mainClass.set.
 application.mainClassName = "not-necessary"
 
-val gradleDependencyVersion = "6.8.1"
+val gradleDependencyVersion = "6.8.3"
 
 tasks.wrapper {
     gradleVersion = gradleDependencyVersion
@@ -74,13 +74,13 @@ val vavrVersion = "0.10.3"
 val awsSdk2Version = "2.16.33"
 val gwtServletVersion = "2.9.0"
 val junitVersion = "4.13.2"
-val jettyVersion = "11.0.2"
+val jettyVersion = "9.4.39.v20210325"
 val bouncyCastleVersion = "1.68"
 val vertxVersion = "4.0.3"
 val jjwtVersion = "3.14.0"
 val dominoKitVersion = "1.0-alpha-gwt2.8.2-SNAPSHOT"
 val dominoMvpVersion = "1.0-ps-SNAPSHOT"
-val awsCdkConstructsForJava = "0.7.5"
+val awsCdkConstructsForJava = "0.8.1"
 val awsLambdaServletVersion = "0.3.1"
 val log4jVersion = "2.14.1"
 

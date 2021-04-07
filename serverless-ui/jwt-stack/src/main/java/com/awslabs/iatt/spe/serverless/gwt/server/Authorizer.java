@@ -220,7 +220,7 @@ public class Authorizer implements IotCustomAuthorizer, HasIamPermissions {
         authorizationResponse.isAuthenticated = true;
         authorizationResponse.principalId = clientId;
         authorizationResponse.disconnectAfterInSeconds = 86400;
-        authorizationResponse.refreshAfterInSeconds = 300;
+        authorizationResponse.refreshAfterInSecs = 300;
         authorizationResponse.policyDocuments = policyDocuments.asJava();
 
         return authorizationResponse;

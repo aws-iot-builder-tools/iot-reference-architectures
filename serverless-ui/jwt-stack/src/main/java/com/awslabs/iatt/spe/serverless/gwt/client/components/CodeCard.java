@@ -41,6 +41,10 @@ public class CodeCard extends BaseDominoElement<HTMLDivElement, CodeCard> {
         return this;
     }
 
+    public String getCode() {
+        return this.code;
+    }
+
     public CodeCard setTitle(String title) {
         card.setTitle(title);
         return this;

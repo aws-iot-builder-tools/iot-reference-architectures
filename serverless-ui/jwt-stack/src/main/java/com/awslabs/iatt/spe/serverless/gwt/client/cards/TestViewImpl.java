@@ -5,6 +5,7 @@ import com.awslabs.iatt.spe.serverless.gwt.client.events.AttributionData;
 import com.awslabs.iatt.spe.serverless.gwt.client.events.AuthorizerName;
 import com.awslabs.iatt.spe.serverless.gwt.client.mqtt.MqttClient;
 import com.awslabs.iatt.spe.serverless.gwt.client.shared.JwtResponse;
+import com.google.gwt.core.client.JsonUtils;
 import com.google.gwt.json.client.JSONObject;
 import com.google.gwt.json.client.JSONString;
 import elemental2.dom.HTMLDivElement;
@@ -35,7 +36,10 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
     private MqttClient mqttClient;
     private ListGroup<Map.Entry<String, String>> messages;
     private List<Map.Entry<String, String>> messageList;
+    private List<CodeCard> parameterList;
     private Card mqttBufferCard;
+    private Card mqttParametersCard;
+    private ListGroup<CodeCard> parameters;
     private CodeCard mosquittoCommandCard;
     private CodeCard curlCommandCard;
     private CodeCard testInvokeWithMqttContextCommandCard;
@@ -45,6 +49,11 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
     private Optional<AttributionData> optionalAttributionData = Optional.empty();
     private Optional<JwtResponse> optionalJwtResponse = Optional.empty();
     private TestUiHandlers uiHandlers;
+    private CodeCard jsonCard;
+    private CodeCard hostCard;
+    private CodeCard usernameCard;
+    private CodeCard topicCard;
+    private CodeCard clientIdCard;
 
     private static String uriEscape(String input) {
         return input.replaceAll("\\+", "%2B").replaceAll("\\/", "%2F");
@@ -62,9 +71,11 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
         buildTestInvokeWithSignatureVerificationCommandCard();
         getMessagesListGroup();
         buildMqttBufferCard();
+        buildMqttParametersCard();
 
         return Card.create("Test", "You can test JWTs on this tab")
                 .appendChild(mqttBufferCard)
+                .appendChild(mqttParametersCard)
                 .appendChild(mosquittoCommandCard)
                 .appendChild(curlCommandCard)
                 .appendChild(testInvokeWithMqttContextCommandCard)
@@ -110,6 +121,25 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
     private void buildMqttBufferCard() {
         mqttBufferCard = Card.create("Messages", "Live messages will show up here")
                 .appendChild(messages);
+    }
+
+    private void buildMqttParametersCard() {
+        jsonCard = new CodeCard().setTitle("JSON config");
+        hostCard = new CodeCard().setTitle("Host");
+        usernameCard = new CodeCard().setTitle("Username");
+        topicCard = new CodeCard().setTitle("Topic");
+        clientIdCard = new CodeCard().setTitle("Client ID");
+
+        mqttParametersCard = Card.create("Parameters", "Use this to configure a third party MQTT client")
+                .appendChild(jsonCard)
+                .appendChild(hostCard)
+                .appendChild(usernameCard)
+                .appendChild(topicCard)
+                .appendChild(clientIdCard)
+                .setCollapsible()
+                .collapse();
+
+        invalidateMqttParameters();
     }
 
     private void buildTestInvokeWithMqttContextCard() {
@@ -374,9 +404,7 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
         fieldMap.forEach((key, value) -> fieldList.add(key + "=" + value));
 
         // Separate the fields with ampersands
-        String output = String.join("&", fieldList);
-
-        return output;
+        return String.join("&", fieldList);
     }
 
     private String getString(JwtResponse jwtResponse) {
@@ -409,6 +437,14 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
 
     private void invalidateTestInvokeWithSignatureVerificationCommandLine() {
         testInvokeWithSignatureVerificationCommandCard.setCode("Not generated yet");
+    }
+
+    private void invalidateMqttParameters() {
+        jsonCard.setCode("{}");
+        hostCard.setCode("N/A");
+        usernameCard.setCode("N/A");
+        topicCard.setCode("N/A");
+        clientIdCard.setCode("N/A");
     }
 
     private void addRowAndUpdate(String topic, Object payload) {
@@ -448,6 +484,7 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
         updateCurlCommandLine();
         updateTestInvokeWithMqttContextCommandLine();
         updateTestInvokeWithHttpContextCommandLine();
+        updateMqttParameters();
 
         if (optionalJwtResponse.isPresent()) {
             JwtResponse jwtResponse = optionalJwtResponse.get();
@@ -459,6 +496,32 @@ public class TestViewImpl extends BaseElementView<HTMLDivElement> implements Tes
                 testInvokeWithSignatureVerificationCommandCard.show();
             }
         }
+    }
+
+    private void updateMqttParameters() {
+        if (!optionalAuthorizerName.isPresent()) {
+            // Can't update this without the authorizer name
+            return;
+        }
+
+        if (!optionalJwtResponse.isPresent()) {
+            // Can't update this without the JWT response
+            return;
+        }
+
+        JwtResponse jwtResponse = optionalJwtResponse.get();
+
+        hostCard.setCode(jwtResponse.endpoint);
+        clientIdCard.setCode(jwtResponse.iccid);
+        usernameCard.setCode("?" + getMqttAndCurlUsernameField(jwtResponse));
+        topicCard.setCode("clients/jwt/" + jwtResponse.iccid);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("USERNAME", new JSONString(usernameCard.getCode()));
+        jsonObject.put("CLIENT_ID", new JSONString(clientIdCard.getCode()));
+        jsonObject.put("TOPIC", new JSONString(topicCard.getCode()));
+        jsonObject.put("HOST", new JSONString(hostCard.getCode()));
+        jsonCard.setCode(JsonUtils.stringify(jsonObject.getJavaScriptObject()));
     }
 
     @Override
