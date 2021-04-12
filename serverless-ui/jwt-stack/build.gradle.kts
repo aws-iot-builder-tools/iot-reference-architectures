@@ -316,3 +316,11 @@ val createDockerContainerForBrowserBundle by tasks.registering(Exec::class) {
 val serverCode by tasks.registering(Exec::class) {
     inputs.files(fileTree(""))
 }
+
+configurations.all {
+    resolutionStrategy.dependencySubstitution {
+        // This library is not yet in the Maven repositories
+        substitute(module("org.dominokit:domino-aggregator-shared:1.0.1-SNAPSHOT"))
+            .using(module("org.dominokit:domino-aggregator-shared:1.0.2"))
+    }
+}
