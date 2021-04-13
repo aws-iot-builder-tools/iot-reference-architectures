@@ -60,7 +60,7 @@ Platform value: `APN/1 PartnerSoft`
 - Partner software: `Managed IoT` -> `ManagedIoT` (no spaces allowed)
 - Partner software version: N/A
 
-Platform value: `APN/1 PartnerSoft,Managed IoT`
+Platform value: `APN/1 PartnerSoft,ManagedIoT`
 
 ##### Best
 
