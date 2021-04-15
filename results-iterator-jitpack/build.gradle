@@ -25,7 +25,7 @@ distTar.enabled = shadowDistTar.enabled = false
 // Specify all of our dependency versions
 def resultsIteratorForAwsJavaSdkVersion = '13.0.2'
 def junitVersion = '4.13.2'
-def awsSdk2Version = '2.16.33'
+def awsSdk2Version = '2.16.42'
 def vavrVersion = '0.10.3'
 def jcabiVersion = '0.19.0'
 
