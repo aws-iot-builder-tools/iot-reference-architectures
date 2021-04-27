@@ -20,9 +20,9 @@ $ npm i -g aws-cdk
 
 Then run `cdk deploy`.
 
-If you have an existing SQS queue that you want to use instead of creating a new one simply pass the SQS queue's ARN as an environment variable to `cdk deploy` and the deployment will hook the reference architecture up to the existing queue. Assuming your SQS queue's ARN is `SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:5xxxxxxxxxx7:existing-queue` simply run (in bash) `SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:5xxxxxxxxxx7:existing-queue cdk deploy`.
+If you have an existing SQS queue that you want to use instead of creating a new one simply pass the SQS queue's ARN as an environment variable to `cdk deploy` and the deployment will hook the reference architecture up to the existing queue. Assuming your inbound SQS queue's ARN is `arn:aws:sqs:us-east-1:5xxxxxxxxxx7:inbound-queue` and your outbound SQS queue's ARN is `arn:aws:sqs:us-east-1:5xxxxxxxxxx7:outbound-queue` simply run (in bash) `INBOUND_SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:5xxxxxxxxxx7:inbound-queue OUTBOUND_SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:5xxxxxxxxxx7:outbound-queue cdk deploy`.
 
-If you'd like to see the CloudFormation template that will be launched when you do this you can first do `cdk synth` and review it. If you have an existing queue, as mentioned above, you can run (in bash) `SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:5xxxxxxxxxx7:existing-queue cdk synth`.
+If you'd like to see the CloudFormation template that will be launched when you do this you can first do `cdk synth` and review it. If you have an existing queue, as mentioned above, you can run (in bash) `INBOUND_SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:5xxxxxxxxxx7:inbound-queue OUTBOUND_SQS_QUEUE_ARN=arn:aws:sqs:us-east-1:5xxxxxxxxxx7:outbound-queue cdk synth`.
 
 ## I ran into an issue with cdk deploy, what do I do?
 
