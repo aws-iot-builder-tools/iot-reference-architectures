@@ -7,7 +7,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.38.0"
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 
 val gradleDependencyVersion = "7.0"
 
@@ -30,10 +30,10 @@ val commonsLangVersion = "3.12.0"
 val commonsIoVersion = "2.8.0"
 val ztZipVersion = "1.14"
 val resultsIteratorForAwsJavaSdkVersion = "16.0.0"
-val daggerVersion = "2.34.1"
+val daggerVersion = "2.35.1"
 val junitVersion = "4.13.2"
-val awsLambdaServletVersion = "0.2.4"
-val awsCdkConstructsForJavaVersion = "0.8.0"
+val awsLambdaServletVersion = "0.3.3"
+val awsCdkConstructsForJavaVersion = "0.8.3"
 val googleGuavaVersion = "30.1.1-jre"
 val awsSdk2Version = "2.16.42"
 val bouncyCastleVersion = "1.68"
