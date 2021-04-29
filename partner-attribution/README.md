@@ -6,7 +6,7 @@ This section of the repository is for partners, running IoT platforms on AWS, th
 
 - [Partner attribution terminology](#partner-attribution-terminology)
 - [Best practices for partner attribution](#best-practices-for-partner-attribution)
-  * [General best practices](#general-best-practices)
+  * [Requirements](#requirements)
   * [Platform value](#platform-value)
     + [Example platform values](#example-platform-values)
       - [Good](#good)
@@ -28,11 +28,7 @@ The mechanism Amazon FreeRTOS uses for attribution is different from the mechani
 
 ## Best practices for partner attribution
 
-### General best practices
-
-Do:
-- Allow your customers to turn this feature off
-- Allow your customers to add data to these fields in the form of additional comma separated values
+### Requirements
 
 Do not:
 - Include PII in the attribution fields

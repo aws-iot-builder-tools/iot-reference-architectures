@@ -12,11 +12,7 @@ The mechanism Amazon FreeRTOS uses for attribution is different from the mechani
 
 ## Best practices for partner attribution
 
-### General best practices
-
-Do:
-- Allow your customers to turn this feature off
-- Allow your customers to add data to these fields in the form of additional comma separated values
+### Requirements
 
 Do not:
 - Include PII in the attribution fields
