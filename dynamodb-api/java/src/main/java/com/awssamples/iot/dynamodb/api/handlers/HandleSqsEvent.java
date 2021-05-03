@@ -13,7 +13,6 @@ import software.amazon.awssdk.core.SdkBytes;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
-import software.amazon.awssdk.services.iotdataplane.IotDataPlaneClient;
 import software.amazon.awssdk.services.iotdataplane.model.PublishRequest;
 import software.amazon.awssdk.services.sqs.SqsClient;
 import software.amazon.awssdk.services.sqs.model.DeleteMessageRequest;
@@ -79,7 +78,8 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
                 .payload(SdkBytes.fromByteArray(toJson(uuidAndMessageId).getBytes()))
                 .build();
 
-        IotDataPlaneClient.create().publish(publishRequest);
+        // Publish with the IoT data plane client
+        IOT_DATA_PLANE_CLIENT.get().publish(publishRequest);
     }
 
 
