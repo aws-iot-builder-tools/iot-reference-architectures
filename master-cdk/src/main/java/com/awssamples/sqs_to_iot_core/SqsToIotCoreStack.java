@@ -352,7 +352,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack impleme
                 .memorySize(1024)
                 .timeout(lambdaFunctionTimeout)
                 .environment(environment.toJavaMap())
-                .runtime(Runtime.JAVA_8)
+                .runtime(Runtime.JAVA_11)
                 .role(role)
                 .tracing(Tracing.ACTIVE)
                 .build();
@@ -373,7 +373,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack impleme
                 .memorySize(1024)
                 .timeout(lambdaFunctionTimeout)
                 .environment(environment.toJavaMap())
-                .runtime(Runtime.JAVA_8)
+                .runtime(Runtime.JAVA_11)
                 .role(role)
                 .tracing(Tracing.ACTIVE)
                 .build();
