@@ -23,7 +23,7 @@ distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
-def awsIotCoreWebsockets = '1.0.1'
+def awsIotCoreWebsockets = '1.0.2'
 def junitVersion = '4.13.2'
 def awaitilityVersion = '4.0.3'
 
