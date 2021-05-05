@@ -21,3 +21,4 @@ aws-iot-sdk-browser-bundle-min.js
 *.key
 *.csr
 *.pem
+*.pyc
