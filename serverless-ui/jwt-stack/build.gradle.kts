@@ -80,7 +80,7 @@ val vertxVersion = "4.0.3"
 val jjwtVersion = "3.15.0"
 val dominoKitVersion = "1.0-alpha-gwt2.8.2-SNAPSHOT"
 val dominoMvpVersion = "1.0-ps-SNAPSHOT"
-val awsCdkConstructsForJava = "0.8.3"
+val awsCdkConstructsForJava = "0.8.4"
 val awsLambdaServletVersion = "0.3.3"
 val log4jVersion = "2.14.1"
 
