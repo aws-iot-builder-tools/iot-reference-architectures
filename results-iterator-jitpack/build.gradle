@@ -23,7 +23,7 @@ distZip.enabled = shadowDistZip.enabled = false
 distTar.enabled = shadowDistTar.enabled = false
 
 // Specify all of our dependency versions
-def resultsIteratorForAwsJavaSdkVersion = '27.0.0'
+def resultsIteratorForAwsJavaSdkVersion = '28.0.0'
 def junitVersion = '4.13.2'
 def awsSdk2Version = '2.16.56'
 def vavrVersion = '0.10.3'
