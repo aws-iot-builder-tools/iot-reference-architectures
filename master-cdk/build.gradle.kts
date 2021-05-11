@@ -9,7 +9,7 @@ plugins {
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 
-val gradleDependencyVersion = "7.0"
+val gradleDependencyVersion = "7.0.1"
 
 tasks.wrapper {
     gradleVersion = gradleDependencyVersion
