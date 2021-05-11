@@ -63,7 +63,7 @@ val jjwtVersion = "3.13.0"
 val awsCdkConstructsForJava = "0.8.4"
 val awsLambdaServletVersion = "0.2.4"
 val daggerVersion = "2.35.1"
-val resultsIteratorForAwsJavaSdkVersion = "27.0.0"
+val resultsIteratorForAwsJavaSdkVersion = "28.0.2"
 val bouncyCastleVersion = "1.68"
 
 dependencies {
