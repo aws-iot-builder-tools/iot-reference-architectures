@@ -10,7 +10,7 @@ plugins {
     id 'com.github.ben-manes.versions' version '0.38.0'
 }
 
-def gradleDependencyVersion = '6.8.2'
+def gradleDependencyVersion = '7.0.2'
 
 wrapper {
     gradleVersion = gradleDependencyVersion
