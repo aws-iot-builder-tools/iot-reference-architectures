@@ -1,6 +1,6 @@
 package com.awslabs.aws.iot.resultsiterator;
 
-import com.awslabs.resultsiterator.v2.implementations.V2ResultsIterator;
+import com.awslabs.resultsiterator.implementations.ResultsIterator;
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;
 import org.junit.After;
@@ -46,7 +46,7 @@ public class BasicResultsIteratorTest {
 
     @Test
     public void shouldGetAllDevicesWithDefaultList() {
-        Stream<ThingAttribute> thingAttributeStream = new V2ResultsIterator<ThingAttribute>(iotClient, ListThingsRequest.class).stream();
+        Stream<ThingAttribute> thingAttributeStream = new ResultsIterator<ThingAttribute>(iotClient, ListThingsRequest.class).stream();
 
         List<String> thingNames = thingAttributeStream
                 .map(ThingAttribute::thingName)
