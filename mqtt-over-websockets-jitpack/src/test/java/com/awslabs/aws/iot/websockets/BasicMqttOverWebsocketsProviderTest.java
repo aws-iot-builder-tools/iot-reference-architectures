@@ -3,7 +3,6 @@ package com.awslabs.aws.iot.websockets;
 import com.awslabs.aws.iot.websockets.data.ImmutableClientId;
 import org.awaitility.core.ConditionTimeoutException;
 import org.eclipse.paho.client.mqttv3.*;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -14,6 +13,7 @@ import java.util.UUID;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 
 public class BasicMqttOverWebsocketsProviderTest {
@@ -78,8 +78,8 @@ public class BasicMqttOverWebsocketsProviderTest {
 
             @Override
             public void messageArrived(String topic, MqttMessage message) {
-                Assert.assertThat(topic, is(randomMqttTopic));
-                Assert.assertThat(message.getPayload(), is(randomMqttPayload));
+                assertThat(topic, is(randomMqttTopic));
+                assertThat(message.getPayload(), is(randomMqttPayload));
                 setFlag(true);
             }
 
@@ -93,7 +93,7 @@ public class BasicMqttOverWebsocketsProviderTest {
 
         await().atMost(5, SECONDS).until(this::getFlag);
 
-        Assert.assertThat(flag, is(true));
+        assertThat(flag, is(true));
     }
 
     /**
