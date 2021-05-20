@@ -5,6 +5,8 @@ import org.awaitility.core.ConditionTimeoutException;
 import org.eclipse.paho.client.mqttv3.*;
 import org.junit.Before;
 import org.junit.Test;
+import software.amazon.awssdk.regions.Region;
+import software.amazon.awssdk.regions.providers.DefaultAwsRegionProviderChain;
 
 import java.io.UnsupportedEncodingException;
 import java.security.InvalidKeyException;
@@ -19,7 +21,8 @@ import static org.hamcrest.core.Is.is;
 public class BasicMqttOverWebsocketsProviderTest {
     private MqttOverWebsocketsProvider mqttOverWebsocketsProvider;
     private ImmutableClientId clientId;
-    private MqttClient mqttClient;
+    private MqttClient defaultRegionMqttClient;
+    private MqttClient nonDefaultRegionMqttClient;
     private MqttMessage randomMqttMessage;
     private String randomMqttTopic;
     private byte[] randomMqttPayload;
@@ -30,7 +33,21 @@ public class BasicMqttOverWebsocketsProviderTest {
         mqttOverWebsocketsProvider = new BasicMqttOverWebsocketsProvider();
         String uuid = UUID.randomUUID().toString();
         clientId = ImmutableClientId.builder().clientId(uuid).build();
-        mqttClient = mqttOverWebsocketsProvider.getMqttClient(clientId);
+        defaultRegionMqttClient = mqttOverWebsocketsProvider.getMqttClient(clientId);
+
+        // Get the default region
+        Region defaultRegion = new DefaultAwsRegionProviderChain().getRegion();
+
+        // Use us-east-1 as our non-default region by default
+        Region nonDefaultRegion = Region.US_EAST_1;
+
+        if (defaultRegion.equals(Region.US_EAST_1)) {
+            // Use us-east-2 as our non-default region if the default is us-east-1
+            nonDefaultRegion = Region.US_EAST_2;
+        }
+
+        nonDefaultRegionMqttClient = mqttOverWebsocketsProvider.getMqttClient(clientId, nonDefaultRegion);
+
         setFlag(false);
 
         randomMqttTopic = UUID.randomUUID().toString();
@@ -44,8 +61,13 @@ public class BasicMqttOverWebsocketsProviderTest {
      * @throws MqttException
      */
     @Test(expected = MqttException.class)
-    public void shouldThrowClientIsNotConnectedException() throws MqttException {
-        mqttClient.publish(randomMqttTopic, randomMqttMessage);
+    public void shouldThrowClientIsNotConnectedException1() throws MqttException {
+        defaultRegionMqttClient.publish(randomMqttTopic, randomMqttMessage);
+    }
+
+    @Test(expected = MqttException.class)
+    public void shouldThrowClientIsNotConnectedException2() throws MqttException {
+        nonDefaultRegionMqttClient.publish(randomMqttTopic, randomMqttMessage);
     }
 
     /**
@@ -54,9 +76,15 @@ public class BasicMqttOverWebsocketsProviderTest {
      * @throws MqttException
      */
     @Test
-    public void shouldPublishMessage() throws MqttException {
-        mqttClient.connect();
-        mqttClient.publish(randomMqttTopic, randomMqttMessage);
+    public void shouldPublishMessage1() throws MqttException {
+        defaultRegionMqttClient.connect();
+        defaultRegionMqttClient.publish(randomMqttTopic, randomMqttMessage);
+    }
+
+    @Test
+    public void shouldPublishMessage2() throws MqttException {
+        nonDefaultRegionMqttClient.connect();
+        nonDefaultRegionMqttClient.publish(randomMqttTopic, randomMqttMessage);
     }
 
     /**
@@ -65,7 +93,16 @@ public class BasicMqttOverWebsocketsProviderTest {
      * @throws MqttException
      */
     @Test
-    public void shouldReceiveMessage() throws MqttException {
+    public void shouldReceiveMessage1() throws MqttException {
+        innerShouldReceiveMessage(defaultRegionMqttClient);
+    }
+
+    @Test
+    public void shouldReceiveMessage2() throws MqttException {
+        innerShouldReceiveMessage(nonDefaultRegionMqttClient);
+    }
+
+    private void innerShouldReceiveMessage(MqttClient mqttClient) throws MqttException {
         mqttClient.connect();
 
         mqttClient.subscribe(randomMqttTopic);
@@ -102,7 +139,16 @@ public class BasicMqttOverWebsocketsProviderTest {
      * @throws MqttException
      */
     @Test(expected = ConditionTimeoutException.class)
-    public void shouldNotReceiveMessage() throws MqttException {
+    public void shouldNotReceiveMessage1() throws MqttException {
+        innerShouldNotReceiveMessage(defaultRegionMqttClient);
+    }
+
+    @Test(expected = ConditionTimeoutException.class)
+    public void shouldNotReceiveMessage2() throws MqttException {
+        innerShouldNotReceiveMessage(nonDefaultRegionMqttClient);
+    }
+
+    private void innerShouldNotReceiveMessage(MqttClient mqttClient) throws MqttException {
         mqttClient.connect();
 
         String otherRandomMqttTopic = UUID.randomUUID().toString();

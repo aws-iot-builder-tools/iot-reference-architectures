@@ -26,7 +26,8 @@ tasks.shadowDistZip { enabled = false }
 tasks.shadowDistTar { enabled = false }
 
 // Specify all of our dependency versions
-val awsIotCoreWebsockets = "1.0.2"
+val awsIotCoreWebsockets = "1.0.4"
+val awsSdkV2Version = "2.16.66"
 val junitVersion = "4.13.2"
 val awaitilityVersion = "4.1.0"
 
@@ -48,6 +49,7 @@ dependencies {
     implementation("com.github.awslabs:aws-iot-core-websockets:$awsIotCoreWebsockets")
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:$pahoVersion")
 
+    testImplementation("software.amazon.awssdk:regions:$awsSdkV2Version")
     testImplementation("junit:junit:$junitVersion")
     testImplementation("org.awaitility:awaitility:$awaitilityVersion")
 }
