@@ -148,13 +148,10 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
         }
 
         Map<String, AttributeValue> currentMap = body;
-        log.info("currentMap: " + getGson().toJson(currentMap));
 
         // Nested field. Loop through them until the last one.
         for (int loop = 0; loop < fields.length - 1; loop++) {
-            log.info("loop, fields[loop]: " + loop + ", " + fields[loop]);
             currentMap = currentMap.get(fields[loop]).m();
-            log.info("currentMap: " + getGson().toJson(currentMap));
         }
 
         // Last field, extract the string
