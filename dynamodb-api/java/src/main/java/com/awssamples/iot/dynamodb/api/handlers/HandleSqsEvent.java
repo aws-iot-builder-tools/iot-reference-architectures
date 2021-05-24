@@ -3,7 +3,7 @@ package com.awssamples.iot.dynamodb.api.handlers;
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import com.awssamples.iot.dynamodb.api.SharedHelper;
-import com.awssamples.iot.dynamodb.api.data.CookedMessage;
+import com.awssamples.iot.dynamodb.api.data.DynamoDBMessage;
 import com.awssamples.iot.dynamodb.api.data.UuidAndMessageId;
 import io.vavr.collection.HashMap;
 import io.vavr.control.Try;
@@ -56,11 +56,11 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
         // Convert the map to a DynamoDB attribute value so it can be stored
         AttributeValue body = SharedHelper.toDynamoDbAttributeValue(map);
 
-        // Create a "cooked message" that has all the fields we want to store
-        CookedMessage cookedMessage = new CookedMessage(sentTimestamp, body, sqsMessageId);
+        // Create a "DynamoDB message" that has all the fields we want to store
+        DynamoDBMessage dynamoDBMessage = new DynamoDBMessage(sentTimestamp, body, sqsMessageId);
 
-        // Store the cooked message in DynamoDB
-        UuidAndMessageId uuidAndMessageId = addCookedMessageToDynamoDb(cookedMessage);
+        // Store the message in DynamoDB
+        UuidAndMessageId uuidAndMessageId = addMessageToDynamoDb(dynamoDBMessage);
 
         // Remove the message from SQS once it is stored in DynamoDB
         removeFromSqs(receiptHandle);
@@ -104,14 +104,13 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
         sqsClient.deleteMessage(deleteMessageRequest);
     }
 
-    private UuidAndMessageId addCookedMessageToDynamoDb(CookedMessage cookedMessage) {
-        Map<String, AttributeValue> body = cookedMessage.getBody().m();
-        log.info("Body: " + getGson().toJson(body));
+    private UuidAndMessageId addMessageToDynamoDb(DynamoDBMessage dynamoDBMessage) {
+        Map<String, AttributeValue> body = dynamoDBMessage.getBody().m();
 
         // The message ID in DynamoDB is the user specified message ID field, followed by the SQS sent timestamp, followed by the SQS message ID (UUID)
         AttributeValue messageId = Try.of(() -> getField(MESSAGE_ID_KEY, body))
                 // Add some additional data to make sure it is unique
-                .map(value -> String.join("-", value, cookedMessage.getSentTimestamp(), cookedMessage.getSqsMessageId()))
+                .map(value -> String.join("-", value, dynamoDBMessage.getSentTimestamp(), dynamoDBMessage.getSqsMessageId()))
                 // If the string starts with "null-" remove it
                 .map(value -> value.replaceFirst("null-", ""))
                 // Turn it into an attribute value
@@ -128,7 +127,7 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
         HashMap<String, AttributeValue> item = HashMap.of(
                 UUID_DYNAMO_DB_COLUMN_NAME, uuid,
                 MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageId,
-                BODY, cookedMessage.getBody());
+                BODY, dynamoDBMessage.getBody());
 
         PutItemRequest putItemRequest = PutItemRequest.builder()
                 .item(item.toJavaMap())
