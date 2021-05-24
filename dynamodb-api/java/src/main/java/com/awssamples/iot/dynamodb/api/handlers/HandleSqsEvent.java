@@ -28,7 +28,7 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
     private static final Logger log = LoggerFactory.getLogger(HandleSqsEvent.class);
     private static final String RECORDS = "Records";
     private static final String ONLY_ONE_RECORD_MAY_BE_PROCESSED_AT_A_TIME = "Only one record may be processed at a time";
-    private static final SdkBytes EMPTY_PAYLOAD = SdkBytes.fromByteArray("{}".getBytes());
+    private boolean customProcessingRequired = false;
 
     @Override
     public String handleRequest(final Map input, final Context context) {
@@ -59,6 +59,11 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
         // Create a "DynamoDB message" that has all the fields we want to store
         DynamoDBMessage dynamoDBMessage = new DynamoDBMessage(sentTimestamp, body, sqsMessageId);
 
+        if (customProcessingRequired) {
+            // If the custom processing fails the message will be returned unmodified
+            dynamoDBMessage = attemptCustomProcessing(dynamoDBMessage);
+        }
+
         // Store the message in DynamoDB
         UuidAndMessageId uuidAndMessageId = addMessageToDynamoDb(dynamoDBMessage);
 
@@ -69,6 +74,11 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
         publishNotification(uuidAndMessageId);
 
         return "done";
+    }
+
+    private DynamoDBMessage attemptCustomProcessing(DynamoDBMessage dynamoDBMessage) {
+        // No custom processing implemented at the moment
+        return dynamoDBMessage;
     }
 
     private void publishNotification(UuidAndMessageId uuidAndMessageId) {
