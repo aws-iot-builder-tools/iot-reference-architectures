@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
     id("application")
     id("java")
     id("idea")
@@ -31,14 +31,14 @@ repositories {
 
 // Specify all of our dependency versions
 val slf4jVersion = "1.7.30"
-val gsonVersion = "2.8.6"
-val awsSdk2Version = "2.16.66"
+val gsonVersion = "2.8.7"
+val awsSdk2Version = "2.16.72"
 val junitVersion = "4.13.2"
 val awsLambdaJavaCoreVersion = "1.2.1"
 val vavrVersion = "0.10.3"
 val vavrGsonVersion = "0.10.2"
 val commonsCodecVersion = "1.15"
-val resultsIteratorForAwsJavaSdkVersion = "28.0.3"
+val resultsIteratorForAwsJavaSdkVersion = "28.0.4"
 val xrayVersion = "2.7.1"
 
 group = "com.awssamples.iot.dynamodb.Api"

@@ -5,7 +5,7 @@ import org.wisepersist.gradle.plugins.gwt.GwtPluginExtension
 import org.wisepersist.gradle.plugins.gwt.GwtSuperDevOptions
 
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
     id("application")
     id("java")
     id("idea")
@@ -71,10 +71,10 @@ val awsLambdaJavaCoreVersion = "1.2.1"
 val awsLambdaJavaLog4j2Version = "1.2.0"
 val jacksonVersion = "2.12.3"
 val vavrVersion = "0.10.3"
-val awsSdk2Version = "2.16.66"
+val awsSdk2Version = "2.16.72"
 val gwtServletVersion = "2.9.0"
 val junitVersion = "4.13.2"
-val jettyVersion = "10.0.2"
+val jettyVersion = "10.0.3"
 val bouncyCastleVersion = "1.68"
 val vertxVersion = "4.0.3"
 val jjwtVersion = "3.16.0"

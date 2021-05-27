@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
     id("application")
     id("java")
     id("idea")
@@ -45,9 +45,9 @@ tasks.shadowJar {
 
 // Specify all of our dependency versions
 val slf4jVersion = "1.7.30"
-val gsonVersion = "2.8.6"
+val gsonVersion = "2.8.7"
 val cborVersion = "4.4.3"
-val awsSdk2Version = "2.16.66"
+val awsSdk2Version = "2.16.72"
 val junitVersion = "4.13.2"
 val awsLambdaJavaCoreVersion = "1.2.1"
 val vavrVersion = "0.10.3"

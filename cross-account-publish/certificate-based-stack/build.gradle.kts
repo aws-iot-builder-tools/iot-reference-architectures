@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
     id("application")
     id("java")
     id("idea")
@@ -54,7 +54,7 @@ val awsLambdaJavaLog4j2Version = "1.2.0"
 val log4jVersion = "2.14.1"
 val jacksonVersion = "2.12.1"
 val vavrVersion = "0.10.3"
-val awsSdk2Version = "2.16.66"
+val awsSdk2Version = "2.16.72"
 val gwtServletVersion = "2.9.0"
 val junitVersion = "4.13.2"
 val slf4jSimpleVersion = "1.7.30"
@@ -62,8 +62,8 @@ val vertxVersion = "4.0.2"
 val jjwtVersion = "3.13.0"
 val awsCdkConstructsForJava = "0.9.0"
 val awsLambdaServletVersion = "0.2.4"
-val daggerVersion = "2.35.1"
-val resultsIteratorForAwsJavaSdkVersion = "28.0.3"
+val daggerVersion = "2.36"
+val resultsIteratorForAwsJavaSdkVersion = "28.0.4"
 val bouncyCastleVersion = "1.68"
 
 dependencies {
