@@ -24,6 +24,14 @@ ICCMO.fifo and ICCMT.fifo, respectively) instead of creating its own queues. It 
 to `data.mo_header.imei` and `MESSAGE_ID_NAME` to `data.mo_header.cdr_reference` automatically so it will handle SBD
 inbound messages automatically.
 
+## What is the benefit?
+
+This architecture allows you to connect multiple applications simultaneously to Iridium's CloudConnect service through loT Core. We have provided two example applications to show some common use cases:
+
+- [Audit](dynamodb-api-audit/README.md) - this application logs all create, update, and delete operations on SBD messages in DynamoDB to S3 via Kinesis Firehose. This can be used to create an audit trail across all applications and recover accidentally deleted messages.
+
+- [Backup](dynamodb-api-backup/README.md) - this application backs up all inbound messages to S3 via Kinesis Firehose. This differs from the audit application in that it doesn't show any modifications to messages once they've been added to DynamoDB and it doesn't show if/when messages were deleted. This is useful if you need a more concise log of the messages as they were received from Iridium.
+
 ## How do I launch it?
 
 Run the `./iridium-sbd-deploy.sh` script to deploy this stack.

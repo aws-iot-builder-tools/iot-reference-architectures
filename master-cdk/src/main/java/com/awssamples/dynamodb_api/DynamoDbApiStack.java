@@ -1,4 +1,4 @@
-package com.awssamples.sqs_to_iot_core;
+package com.awssamples.dynamodb_api;
 
 import com.aws.samples.cdk.constructs.iam.permissions.SharedPermissions;
 import com.aws.samples.cdk.constructs.iam.policies.LambdaPolicies;
@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
 import software.amazon.awscdk.core.RemovalPolicy;
+import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.services.dynamodb.*;
 import software.amazon.awscdk.services.iam.*;
 import software.amazon.awscdk.services.iot.CfnTopicRule;
@@ -23,6 +24,7 @@ import software.amazon.awscdk.services.sqs.Queue;
 import software.amazon.awscdk.services.sqs.QueueProps;
 
 import static com.aws.samples.cdk.constructs.iam.policies.CloudWatchLogsPolicies.minimalCloudWatchEventsLoggingPolicy;
+import static com.aws.samples.cdk.constructs.iam.policies.DynamoDbPolicies.getPolicyStatementForTable;
 import static com.aws.samples.cdk.constructs.iam.policies.IotPolicies.searchIndexPolicyStatement;
 import static com.aws.samples.cdk.helpers.CdkHelper.NO_SEPARATOR;
 import static com.aws.samples.cdk.helpers.IotHelper.*;
@@ -30,9 +32,9 @@ import static com.aws.samples.cdk.helpers.ReflectionHelper.HANDLE_REQUEST;
 import static com.aws.samples.cdk.helpers.RoleHelper.buildRoleAssumedByLambda;
 import static com.aws.samples.cdk.helpers.RulesEngineSqlHelper.buildIotEventRule;
 
-public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack implements JavaGradleStack {
+public class DynamoDbApiStack extends Stack implements JavaGradleStack {
     public static final String AWS_IOT_SQL_VERSION = "2016-03-23";
-    public static final Logger log = LoggerFactory.getLogger(SqsToIotCoreStack.class);
+    public static final Logger log = LoggerFactory.getLogger(DynamoDbApiStack.class);
     public static final String INBOUND_SQS_QUEUE_ARN_ENVIRONMENT_VARIABLE = "INBOUND_SQS_QUEUE_ARN";
     public static final String OUTBOUND_SQS_QUEUE_ARN_ENVIRONMENT_VARIABLE = "OUTBOUND_SQS_QUEUE_ARN";
     public static final String UUID_NAME_ENVIRONMENT_VARIABLE = "UUID_NAME";
@@ -131,15 +133,15 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack impleme
     public static final String REQUEST_TOPIC_PREFIX_KEY = "RequestTopicPrefix";
     public static final String RESPONSE_TOPIC_PREFIX_KEY = "ResponseTopicPrefix";
     public static final String DEFAULT_SELECT_CLAUSE = "select *, topic() as topic";
-    public final String projectDirectory = "../dynamodb-api/java/";
-    public final String outputJarName = "java-1.0-SNAPSHOT-all.jar";
-    public final Duration queueVisibilityTimeout = Duration.seconds(30);
+    public static final String PROJECT_DIRECTORY = "../dynamodb-api/java/";
+    public static final String outputJarName = "java-1.0-SNAPSHOT-all.jar";
+    public static final Duration queueVisibilityTimeout = Duration.seconds(30);
     // Queue visibility timeout must be greater than Lambda timeout
     public final Duration lambdaFunctionTimeout = Duration.seconds((int) queueVisibilityTimeout.toSeconds() / 2);
     // Whether to use DynamoDB or the IoT registry for device lookup
     private final boolean dynamoDbDeviceLookup = false;
 
-    public SqsToIotCoreStack(final Construct parent, final String name) {
+    public DynamoDbApiStack(final Construct parent, final String name) {
         super(parent, name);
 
         // Build all of the necessary JARs
@@ -239,7 +241,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack impleme
                 updateThingShadowPolicyStatement,
                 updateThingGroupsForThingPolicyStatement,
                 createThingGroupPolicyStatement);
-        Role notificationRole = buildRoleAssumedByLambda(this, NOTIFICATION_ROLE_NAME, notificationCreateThingPolicyStatements, List.of());
+        Role notificationRole = buildRoleAssumedByLambda(this, NOTIFICATION_ROLE_NAME, notificationCreateThingPolicyStatements, List.empty());
         Function notificationLambda = buildIotEventLambda(NOTIFICATION_LAMBDA_FUNCTION_NAME, notificationRole, defaultEnvironment, NOTIFICATION_METHOD_NAME);
         CfnTopicRule notificationRule = buildIotEventRule(this, NOTIFICATION_RULE_NAME, notificationLambda, DEFAULT_SELECT_CLAUSE, NOTIFICATION_TOPIC_FILTER);
         allowIotTopicRuleToInvokeLambdaFunction(this, notificationRule, notificationLambda, NOTIFICATION_LAMBDA_PERMISSIONS);
@@ -464,15 +466,6 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack impleme
         return getPolicyStatementForTable(table, SharedPermissions.DYNAMODB_SCAN_PERMISSION);
     }
 
-    private PolicyStatement getPolicyStatementForTable(Table table, String action) {
-        PolicyStatementProps dynamoDbPolicyStatementProps = PolicyStatementProps.builder()
-                .effect(Effect.ALLOW)
-                .resources(List.of(table.getTableArn()).asJava())
-                .actions(List.of(action).asJava())
-                .build();
-        return new PolicyStatement(dynamoDbPolicyStatementProps);
-    }
-
     private Table buildMessageTable() {
         Attribute uuid = Attribute.builder()
                 .type(AttributeType.STRING)
@@ -489,6 +482,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack impleme
                 .sortKey(messageId)
                 .billingMode(BillingMode.PAY_PER_REQUEST)
                 .removalPolicy(RemovalPolicy.DESTROY)
+                .stream(StreamViewType.NEW_AND_OLD_IMAGES)
                 .build();
 
         return new Table(this, "DynamoDbTable", tableProps);
@@ -496,7 +490,7 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack impleme
 
     @Override
     public String getProjectDirectory() {
-        return projectDirectory;
+        return PROJECT_DIRECTORY;
     }
 
     @Override

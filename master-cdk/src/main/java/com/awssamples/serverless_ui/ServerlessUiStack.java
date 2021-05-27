@@ -9,10 +9,7 @@ import io.vavr.collection.List;
 import io.vavr.control.Option;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awscdk.core.CfnOutput;
-import software.amazon.awscdk.core.CfnOutputProps;
-import software.amazon.awscdk.core.Construct;
-import software.amazon.awscdk.core.Duration;
+import software.amazon.awscdk.core.*;
 import software.amazon.awscdk.services.apigateway.LambdaRestApi;
 import software.amazon.awscdk.services.iot.CfnAuthorizer;
 import software.amazon.awscdk.services.lambda.FunctionProps;
@@ -22,7 +19,7 @@ import java.util.stream.Collectors;
 
 import static com.aws.samples.cdk.helpers.ServerlessHelper.AUTHORIZERS;
 
-public class ServerlessUiStack extends software.amazon.awscdk.core.Stack implements JavaGradleStack {
+public class ServerlessUiStack extends Stack implements JavaGradleStack {
     private static final Logger log = LoggerFactory.getLogger(ServerlessUiStack.class);
 
     private final String projectDirectory;

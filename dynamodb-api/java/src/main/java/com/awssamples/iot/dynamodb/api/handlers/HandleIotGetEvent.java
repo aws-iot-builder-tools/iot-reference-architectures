@@ -1,5 +1,6 @@
 package com.awssamples.iot.dynamodb.api.handlers;
 
+import com.awssamples.iot.dynamodb.api.InternalUtils;
 import com.awssamples.iot.dynamodb.api.SharedHelper;
 import com.awssamples.iot.dynamodb.api.handlers.interfaces.HandleIotEvent;
 import io.vavr.collection.HashMap;
@@ -37,11 +38,11 @@ public class HandleIotGetEvent implements HandleIotEvent {
                 .build();
         GetItemResponse getItemResponse = dynamoDbClient.getItem(getItemRequest);
 
-        HashMap<String, AttributeValue> item = HashMap.ofAll(getItemResponse.item());
+        HashMap<String, Object> item = HashMap.ofAll(InternalUtils.toSimpleMapValue(getItemResponse.item()));
 
         // Return a payload on the response topic that contains the UUID and message ID
         HashMap<String, Object> payloadMap = HashMap.of(
-                SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuidOption,
+                SharedHelper.UUID_DYNAMO_DB_COLUMN_NAME, uuidOption.get(),
                 SharedHelper.MESSAGE_ID_DYNAMO_DB_COLUMN_NAME, messageId);
 
         if (item.isEmpty()) {

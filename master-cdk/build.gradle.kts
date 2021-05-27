@@ -29,11 +29,11 @@ val slf4jVersion = "2.0.0-alpha1"
 val commonsLangVersion = "3.12.0"
 val commonsIoVersion = "2.9.0"
 val ztZipVersion = "1.14"
-val resultsIteratorForAwsJavaSdkVersion = "28.0.4"
+val resultsIteratorForAwsJavaSdkVersion = "29.0.6"
 val daggerVersion = "2.36"
 val junitVersion = "4.13.2"
 val awsLambdaServletVersion = "0.3.5"
-val awsCdkConstructsForJavaVersion = "0.9.0"
+val awsCdkConstructsForJavaVersion = "0.14.0"
 val googleGuavaVersion = "30.1.1-jre"
 val awsSdk2Version = "2.16.72"
 val bouncyCastleVersion = "1.68"
@@ -61,8 +61,10 @@ dependencies {
     api("software.amazon.awscdk:sqs:$awsCdkVersion")
     api("software.amazon.awscdk:iot:$awsCdkVersion")
     api("software.amazon.awscdk:lambda:$awsCdkVersion")
+    api("software.amazon.awscdk:lambda-event-sources:$awsCdkVersion")
     api("software.amazon.awscdk:dynamodb:$awsCdkVersion")
     api("software.amazon.awscdk:apigateway:$awsCdkVersion")
+    api("software.amazon.awscdk:kinesisfirehose:$awsCdkVersion")
     implementation("io.vavr:vavr:$vavrVersion")
     api("org.gradle:gradle-tooling-api:$gradleDependencyVersion")
     implementation("org.apache.commons:commons-lang3:$commonsLangVersion")
@@ -71,6 +73,7 @@ dependencies {
     implementation("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
     implementation("com.google.guava:guava:$googleGuavaVersion")
     implementation("software.amazon.awssdk:apache-client:$awsSdk2Version")
+    implementation("software.amazon.awssdk:cloudformation:$awsSdk2Version")
 
     api("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
 

@@ -5,7 +5,7 @@ import com.aws.samples.cdk.constructs.iam.permissions.iot.IotResources;
 import com.aws.samples.cdk.constructs.iot.authorizer.data.output.PolicyDocument;
 import com.aws.samples.cdk.constructs.iot.authorizer.data.output.Statement;
 import com.aws.samples.cdk.helpers.CdkHelper;
-import com.aws.samples.cdk.helpers.CloudFormationHelper;
+import com.aws.samples.cdk.helpers.CustomResourceHelper;
 import com.awslabs.iot.helpers.interfaces.IotHelper;
 import com.awssamples.MasterApp;
 import com.awssamples.stacktypes.JavaGradleStack;
@@ -34,22 +34,21 @@ import java.security.KeyPair;
 
 import static com.awslabs.general.helpers.implementations.IoHelper.writeFile;
 
-public class CertificateBasedStack extends software.amazon.awscdk.core.Stack implements JavaGradleStack {
+public class CertificateBasedStack extends Stack implements JavaGradleStack {
     public static final String PARTNER_POLICY = "PartnerPolicy";
     private static final Logger log = LoggerFactory.getLogger(CertificateBasedStack.class);
     private static final String FULL_KEY_PREFIX = "fixed";
     private static final String DESIRED_TOPIC_VARIABLE = "DESIRED_TOPIC";
     private static final String CSR_FILE_VARIABLE = "CSR_FILE";
     private static final String DESTROY_VARIABLE = "DESTROY";
-    private String projectDirectory;
-    private String outputArtifactName;
-    @Inject
-    IotHelper iotHelper;
-
     private final FunctionProps.Builder functionPropsBuilder = FunctionProps.builder()
             .runtime(Runtime.JAVA_11)
             .memorySize(1024)
             .timeout(Duration.minutes(1));
+    @Inject
+    IotHelper iotHelper;
+    private String projectDirectory;
+    private String outputArtifactName;
 
     public CertificateBasedStack(final Construct parent, final String name) {
         super(parent, name);
@@ -161,7 +160,7 @@ public class CertificateBasedStack extends software.amazon.awscdk.core.Stack imp
                                 .toJavaMap());
 
         // Build a publish policy for the certificate
-        List<CustomResource> customResourceList = CloudFormationHelper.getCustomResources(this, getOutputArtifactFile(), Option.of(customResourcePropsBuilder), Option.of(functionPropsBuilder));
+        List<CustomResource> customResourceList = CustomResourceHelper.getCustomResources(this, getOutputArtifactFile(), Option.of(customResourcePropsBuilder), Option.of(functionPropsBuilder));
 
         if (customResourceList.size() != 1) {
             throw new RuntimeException("This stack only expects that one custom resource is present but it found [" + customResourceList.size() + "]");

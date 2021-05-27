@@ -30,32 +30,32 @@ public class MasterApp {
                 .onFailure(ClassNotFoundException.class, MasterApp::logThrowable);
 
         if (tryStackClass.isFailure()) {
-            log.error("Failed to get the stack class, exiting.");
+            log.error("Failed to get the stack class, exiting. Class name [" + className + "]");
             exitWithFailure();
         }
 
         Class stackClass = tryStackClass.get();
 
-        Try<Constructor> tryStackClassConstructor = Try.of(() -> stackClass.getConstructor(Construct.class, String.class))
+        Try<Constructor> stackClassConstructorTry = Try.of(() -> stackClass.getConstructor(Construct.class, String.class))
                 .onFailure(NoSuchMethodException.class, MasterApp::logThrowable);
 
-        if (tryStackClassConstructor.isFailure()) {
-            log.error("Failed to get the stack class constructor, exiting.");
+        if (stackClassConstructorTry.isFailure()) {
+            log.error("Failed to get the stack class constructor, exiting. Class name [" + className + "]");
             exitWithFailure();
         }
 
-        Constructor stackClassConstructor = tryStackClassConstructor.get();
+        Constructor stackClassConstructor = stackClassConstructorTry.get();
 
         App app = new App();
 
-        Try<Void> stackConstructorInvocation = Try.run(() -> stackClassConstructor.newInstance(app, stackName));
+        Try<Void> stackConstructorInvocationTry = Try.run(() -> stackClassConstructor.newInstance(app, stackName));
 
-        if (stackConstructorInvocation.isSuccess()) {
+        if (stackConstructorInvocationTry.isSuccess()) {
             app.synth();
             return;
         }
 
-        Match(stackConstructorInvocation.getCause()).of(
+        Match(stackConstructorInvocationTry.getCause()).of(
                 Case($(instanceOf(RuntimeException.class)), MasterApp::logThrowable),
                 Case($(), MasterApp::logThrowable));
 

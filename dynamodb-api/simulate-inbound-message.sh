@@ -9,7 +9,7 @@ fi
 
 if [ -z "$QUEUE_URL" ];
 then
-  QUEUE_URL=$(aws sqs list-queues --query "QueueUrls[?contains(@, 'sqs-to-iot-core-stack') && contains(@, 'Inbound')]" --output text | grep Inbound)
+  QUEUE_URL=$(aws sqs list-queues --query "QueueUrls[?contains(@, 'dynamodb-api-stack') && contains(@, 'Inbound')]" --output text | grep Inbound)
 
   if [ -z "$QUEUE_URL" ];
   then

@@ -6,17 +6,18 @@ import com.aws.samples.cdk.helpers.LambdaHelper;
 import com.aws.samples.cdk.helpers.RoleHelper;
 import com.aws.samples.cdk.helpers.RulesEngineSqlHelper;
 import com.awslabs.general.helpers.interfaces.LambdaPackagingHelper;
-import com.awslabs.lambda.data.FunctionName;
-import com.awslabs.lambda.data.ImmutableFunctionName;
 import com.awslabs.lambda.data.ImmutablePythonLambdaFunctionDirectory;
 import com.awslabs.lambda.data.PythonLambdaFunctionDirectory;
 import com.awssamples.MasterApp;
+import com.awssamples.stacktypes.PythonStack;
 import io.vavr.collection.HashMap;
 import io.vavr.collection.List;
 import io.vavr.collection.Map;
 import io.vavr.control.Option;
+import org.jetbrains.annotations.NotNull;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
+import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.services.iam.Role;
 import software.amazon.awscdk.services.iot.CfnTopicRule;
 import software.amazon.awscdk.services.lambda.Function;
@@ -27,7 +28,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.nio.file.Path;
 
-public class AmazonIonHandlerStack extends software.amazon.awscdk.core.Stack {
+public class AmazonIonHandlerStack extends Stack implements PythonStack {
     private static final String ION_MESSAGE = "IonMessage";
     private static final String JSON_MESSAGE = "JsonMessage";
     private static final String OUTPUT_TOPIC = "OutputTopic";
@@ -41,9 +42,6 @@ public class AmazonIonHandlerStack extends software.amazon.awscdk.core.Stack {
     private static final String ION_EVENT_HANDLER = String.join(".", ION_HANDLER_SCRIPT_NAME, "function_handler");
     // JSON event handler
     private static final String JSON_EVENT_HANDLER = String.join(".", JSON_HANDLER_SCRIPT_NAME, "function_handler");
-    private static final Duration LAMBDA_FUNCTION_TIMEOUT = Duration.seconds(10);
-    private static final String PROJECT_DIRECTORY = "../amazon-ion-handler/";
-    private static final File PROJECT_DIRECTORY_FILE = new File(PROJECT_DIRECTORY);
 
     @Inject
     LambdaPackagingHelper lambdaPackagingHelper;
@@ -54,10 +52,8 @@ public class AmazonIonHandlerStack extends software.amazon.awscdk.core.Stack {
         // Inject dependencies
         MasterApp.masterInjector.inject(this);
 
-        // Build all of the necessary JARs
-        FunctionName functionName = ImmutableFunctionName.builder().name(name).build();
-        PythonLambdaFunctionDirectory pythonLambdaFunctionDirectory = ImmutablePythonLambdaFunctionDirectory.builder().directory(PROJECT_DIRECTORY_FILE).build();
-        Path dualDeploymentPackage = lambdaPackagingHelper.packagePythonFunction(functionName, pythonLambdaFunctionDirectory);
+        // Build all of the necessary code
+        Path dualDeploymentPackage = build(this, lambdaPackagingHelper);
 
         // Build the properties required for both Lambda functions
         FunctionProps.Builder lambdaFunctionPropsBuilder = FunctionProps.builder()
@@ -86,5 +82,10 @@ public class AmazonIonHandlerStack extends software.amazon.awscdk.core.Stack {
 
     private Map<String, String> getJsonLambdaEnvironment() {
         return HashMap.of(OUTPUT_TOPIC, JSON_OUTPUT_TOPIC);
+    }
+
+    @Override
+    public String getProjectDirectory() {
+        return "../amazon-ion-handler/";
     }
 }

@@ -1,0 +1,15 @@
+{
+  "api_version": 1,
+  "data": {
+    "mo_header": {
+      "cdr_reference": EPOCH_TIME,
+      "session_status_int": 0,
+      "session_status": "No error.",
+      "momsn": 1474,
+      "mtmsn": 0,
+      "imei": "UUID",
+      "time_of_session": "2021-05-20 19:13:41"
+    },
+    "payload": "74657374"
+  }
+}

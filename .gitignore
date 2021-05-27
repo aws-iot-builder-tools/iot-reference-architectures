@@ -23,3 +23,6 @@ aws-iot-sdk-browser-bundle-min.js
 *.pem
 *.pyc
 /master-cdk/src/test/java/JunkTest.java
+/dynamodb-api/dynamodb-api-audit/dynamodb-api-audit.zip
+/dynamodb-api/dynamodb-api-backup/dynamodb-api-backup.zip
+package

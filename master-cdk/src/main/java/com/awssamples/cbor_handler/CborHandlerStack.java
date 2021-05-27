@@ -12,13 +12,14 @@ import io.vavr.collection.Map;
 import io.vavr.control.Option;
 import software.amazon.awscdk.core.Construct;
 import software.amazon.awscdk.core.Duration;
+import software.amazon.awscdk.core.Stack;
 import software.amazon.awscdk.services.iam.Role;
 import software.amazon.awscdk.services.iot.CfnTopicRule;
 import software.amazon.awscdk.services.lambda.Function;
 import software.amazon.awscdk.services.lambda.FunctionProps;
 import software.amazon.awscdk.services.lambda.Runtime;
 
-public class CborHandlerStack extends software.amazon.awscdk.core.Stack implements JavaGradleStack {
+public class CborHandlerStack extends Stack implements JavaGradleStack {
     public static final String CBOR_MESSAGE = "CborMessage";
     public static final String JSON_MESSAGE = "JsonMessage";
     private static final String HANDLER_PACKAGE = "com.awssamples.iot.cbor.handler.handlers";
