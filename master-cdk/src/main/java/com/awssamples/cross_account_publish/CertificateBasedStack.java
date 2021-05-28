@@ -6,7 +6,7 @@ import com.aws.samples.cdk.constructs.iot.authorizer.data.output.PolicyDocument;
 import com.aws.samples.cdk.constructs.iot.authorizer.data.output.Statement;
 import com.aws.samples.cdk.helpers.CdkHelper;
 import com.aws.samples.cdk.helpers.CloudFormationHelper;
-import com.awslabs.iot.helpers.interfaces.V2IotHelper;
+import com.awslabs.iot.helpers.interfaces.IotHelper;
 import com.awssamples.MasterApp;
 import com.awssamples.stacktypes.JavaGradleStack;
 import io.vavr.Tuple;
@@ -44,7 +44,7 @@ public class CertificateBasedStack extends software.amazon.awscdk.core.Stack imp
     private String projectDirectory;
     private String outputArtifactName;
     @Inject
-    V2IotHelper v2IotHelper;
+    IotHelper iotHelper;
 
     private final FunctionProps.Builder functionPropsBuilder = FunctionProps.builder()
             .runtime(Runtime.JAVA_11)
@@ -97,21 +97,21 @@ public class CertificateBasedStack extends software.amazon.awscdk.core.Stack imp
             // Create a new private key
             File temporaryCaPrivateKeyFile = new File(String.join("", projectDirectory, String.join("-", FULL_KEY_PREFIX, "private.pem")));
             log.info("Creating temporary CA private key file [" + temporaryCaPrivateKeyFile.getAbsolutePath() + "]");
-            KeyPair keyPair = v2IotHelper.getRandomRsaKeypair(4096);
-            Try.run(() -> writeFile(temporaryCaPrivateKeyFile.getAbsolutePath(), v2IotHelper.toPem(keyPair))).get();
+            KeyPair keyPair = iotHelper.getRandomRsaKeypair(4096);
+            Try.run(() -> writeFile(temporaryCaPrivateKeyFile.getAbsolutePath(), iotHelper.toPem(keyPair))).get();
 
             // Create CSR
-            PKCS10CertificationRequest pkcs10CertificationRequest = v2IotHelper.generateCertificateSigningRequest(keyPair, List.of(Tuple.of("CN", desiredTopic)));
-            Try.run(() -> writeFile(csrFile.getAbsolutePath(), v2IotHelper.toPem(pkcs10CertificationRequest))).get();
+            PKCS10CertificationRequest pkcs10CertificationRequest = iotHelper.generateCertificateSigningRequest(keyPair, List.of(Tuple.of("CN", desiredTopic)));
+            Try.run(() -> writeFile(csrFile.getAbsolutePath(), iotHelper.toPem(pkcs10CertificationRequest))).get();
         }
 
         // At this point we have the provided CSR or our generated CSR
 
         // Convert from PEM back to CSR and CSR back to PEM just to be sure that the data is valid in case it was edited or corrupted between runs
-        Try<PKCS10CertificationRequest> csrTry = v2IotHelper.tryGetObjectFromPem(csrFile, PKCS10CertificationRequest.class);
+        Try<PKCS10CertificationRequest> csrTry = iotHelper.tryGetObjectFromPem(csrFile, PKCS10CertificationRequest.class);
 
         // Get the CSR string so we can add it to the Lambda backed custom resource's environment
-        String csrString = csrTry.map(v2IotHelper::toPem)
+        String csrString = csrTry.map(iotHelper::toPem)
                 .getOrElseThrow(() -> new RuntimeException("Couldn't read CSR file or the CSR file is invalid [" + csrFile.getAbsolutePath() + "]"));
 
         // Extract the common name which is the topic/topic hierarchy they would like to publish on

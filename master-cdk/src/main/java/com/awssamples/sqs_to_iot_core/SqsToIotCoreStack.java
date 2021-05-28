@@ -422,13 +422,13 @@ public class SqsToIotCoreStack extends software.amazon.awscdk.core.Stack impleme
         return new PolicyStatement(sqsPolicyStatementProps);
     }
 
-    private Role buildIotEventRoleForTopic(String roleName, String topic, List<PolicyStatement> policyStatements, List<ManagedPolicy> managedPolicies) {
+    private Role buildIotEventRoleForTopic(String roleName, String topic, List<PolicyStatement> policyStatements, List<IManagedPolicy> managedPolicies) {
         PolicyStatement iotPolicyStatement = getPublishToTopicPolicyStatement(this, topic);
 
         return buildRoleAssumedByLambda(this, roleName, List.ofAll(policyStatements).append(iotPolicyStatement), managedPolicies);
     }
 
-    private Role buildIotEventRoleForTopicPrefix(String roleName, String topicPrefix, List<PolicyStatement> policyStatements, List<ManagedPolicy> managedPolicies) {
+    private Role buildIotEventRoleForTopicPrefix(String roleName, String topicPrefix, List<PolicyStatement> policyStatements, List<IManagedPolicy> managedPolicies) {
         PolicyStatement iotPolicyStatement = getPublishToTopicPrefixPolicyStatement(this, topicPrefix);
 
         return buildRoleAssumedByLambda(this, roleName, List.ofAll(policyStatements).append(iotPolicyStatement), managedPolicies);
