@@ -9,7 +9,7 @@ from shared import sleep
 
 try:
     MESSAGE_LIMIT = int(os.getenv('MESSAGE_LIMIT'))
-except ValueError as ex:
+except TypeError as ex:
     MESSAGE_LIMIT = None
 
 MESSAGE_COUNT = 0
