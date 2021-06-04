@@ -1,6 +1,12 @@
 # Partner attribution for IoT Core
 
-This section of the repository is for partners, running IoT platforms on AWS, that interact with IoT Core using the HTTPS/REST APIs to publish data. The code samples here demonstrate how to use the AWS SDKs to publish data to IoT Core and have the data attributed to a partner's platform and (optionally) to uniquely identify devices.
+This section of the repository is for partners, running IoT platforms on AWS, that interact with IoT Core.
+
+Partners using the HTTPS/REST APIs to publish data must conform to the "APN/1" format.
+
+Partners using MQTT to publish data must use the "APN/2" prefix instead of "APN/1". There are no restrictions on the "APN/2" format but it is best to match the "APN/1" format if possible for consistency. See [Attribution in systems using MQTT](#Attribution-in-systems-using-MQTT) for more information. That is the only section of this document that covers MQTT. AWS SDKs making REST calls have no notion of the MQTT CONNECT packet. Therefore the values are specified as individual headers in the HTTPS request.
+
+The code samples here demonstrate how to use the AWS SDKs to publish data to IoT Core and have the data attributed to a partner's platform and (optionally) to uniquely identify devices.
 
 <!-- toc -->
 
@@ -18,6 +24,7 @@ This section of the repository is for partners, running IoT platforms on AWS, th
   * [AWS SDK for JavaScript in Node.js](#aws-sdk-for-javascript-in-nodejs)
   * [AWS SDK for Python (Boto 3)](#aws-sdk-for-python-boto-3)
   * [AWS SDK for Golang](#aws-sdk-for-golang)
+- [Attribution in systems using MQTT](#attribution-in-systems-using-mqtt)
 
 <!-- tocstop -->
 
@@ -25,7 +32,7 @@ This section of the repository is for partners, running IoT platforms on AWS, th
 
 There are two values that a partner can include in requests to IoT Core that are used for attribution. Those values are referred to as `SDK` and `Platform`. These fields are identical to the partner attribution values with the same name in Amazon FreeRTOS.
 
-The mechanism Amazon FreeRTOS uses for attribution is different from the mechanism the AWS SDKs support attribution. Amazon FreeRTOS supplies these two fields to IoT Core as a query string parameter at the end of the username field in the [MQTT CONNECT packet](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718028). AWS SDKs making REST calls have no notion of the MQTT CONNECT packet. Therefore the values are specified as individual headers in the HTTPS request.
+NOTE: The mechanism Amazon FreeRTOS uses for attribution is via MQTT. It is different from the mechanism the AWS SDKs support attribution. See [Attribution in systems using MQTT](#Attribution-in-systems-using-MQTT) for the differences.
 
 ## Best practices for partner attribution
 
@@ -90,3 +97,16 @@ The [AWS SDK for Python sample](./python) is for partners using the [AWS SDK for
 ### AWS SDK for Golang
 
 The [AWS SDK for Go sample](./golang) is for partners using the [AWS SDK for Go](https://github.com/aws/aws-sdk-go). Custom request headers are added before the request is sent in the main function of the sample.
+
+## Attribution in systems using MQTT
+
+Attribution in systems using MQTT is provided as a query string parameter at the end of the username field in the [MQTT CONNECT packet](http://docs.oasis-open.org/mqtt/mqtt/v3.1.1/os/mqtt-v3.1.1-os.html#_Toc398718028).
+
+From the above example where the platform value is `APN/1 PartnerSoft,ManagedIoT,v1.2.1` it would need to be changed to `APN/2 PartnerSoft,ManagedIoT,v1.2.1`. Then it would be added as a query string parameter at the end of the username field in the MQTT CONNECT packet.
+
+If the username field is blank the username field would change to `?Platform=APN/1 PartnerSoft,ManagedIoT,v1.2.1`.
+
+If the username field contains some data but no query string parameters then this value would be appended to the existing username field `?Platform=APN/1 PartnerSoft,ManagedIoT,v1.2.1`.
+
+If the username field contains some data and also one or more string parameters then this value would be appended to the existing username field `&Platform=APN/1 PartnerSoft,ManagedIoT,v1.2.1`.
+
