@@ -36,7 +36,7 @@ val awsLambdaServletVersion = "0.3.5"
 val awsCdkConstructsForJavaVersion = "0.12.0"
 val googleGuavaVersion = "30.1.1-jre"
 val awsSdk2Version = "2.16.77"
-val bouncyCastleVersion = "1.68"
+val bouncyCastleVersion = "1.69"
 val log4jVersion = "2.14.1"
 
 repositories {
