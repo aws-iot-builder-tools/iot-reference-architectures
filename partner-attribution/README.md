@@ -104,9 +104,9 @@ Attribution in systems using MQTT is provided as a query string parameter at the
 
 From the above example where the platform value is `APN/1 PartnerSoft,ManagedIoT,v1.2.1` it would need to be changed to `APN/2 PartnerSoft,ManagedIoT,v1.2.1`. Then it would be added as a query string parameter at the end of the username field in the MQTT CONNECT packet.
 
-If the username field is blank the username field would change to `?Platform=APN/1 PartnerSoft,ManagedIoT,v1.2.1`.
+If the username field is blank the username field would change to `?Platform=APN/2 PartnerSoft,ManagedIoT,v1.2.1`.
 
-If the username field contains some data but no query string parameters then this value would be appended to the existing username field `?Platform=APN/1 PartnerSoft,ManagedIoT,v1.2.1`.
+If the username field contains some data but no query string parameters then this value would be appended to the existing username field `?Platform=APN/2 PartnerSoft,ManagedIoT,v1.2.1`.
 
-If the username field contains some data and also one or more string parameters then this value would be appended to the existing username field `&Platform=APN/1 PartnerSoft,ManagedIoT,v1.2.1`.
+If the username field contains some data and also one or more string parameters then this value would be appended to the existing username field `&Platform=APN/2 PartnerSoft,ManagedIoT,v1.2.1`.
 
