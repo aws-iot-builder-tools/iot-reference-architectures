@@ -5,7 +5,8 @@ import org.wisepersist.gradle.plugins.gwt.GwtPluginExtension
 import org.wisepersist.gradle.plugins.gwt.GwtSuperDevOptions
 
 plugins {
-    kotlin("jvm") version "1.5.21"
+    // NOTE: Upgrading the "jvm" plugin to 1.5.0 or beyond will break configuration.compile
+    kotlin("jvm") version "1.4.32"
     id("application")
     id("java")
     id("idea")
@@ -29,9 +30,9 @@ extensions.findByName("buildScan")?.withGroovyBuilder {
 idea.module.isDownloadSources = true
 idea.module.isDownloadJavadoc = true
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
+java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 
-// Required if using DominoMVP and annotations that generate code
+// Required if using Dagger (and other annotations that generate code)
 sourceSets {
     val main by getting
     main.java.srcDirs("build/generated/sources/annotationProcessor/java/main")
@@ -55,10 +56,6 @@ repositories {
     jcenter()
     // Required for AWS Lambda Servlet annotation processor
     maven(url = "https://jitpack.io")
-    // Required for Domino UI
-    maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
-    // Required for Domino UI
-    maven(url = "https://repo.vertispan.com/gwt-snapshot/")
     // Required for Gradle Tooling API
     maven(url = "https://repo.gradle.org/gradle/libs-releases-local/")
 }
@@ -71,26 +68,39 @@ tasks.shadowDistTar { enabled = false }
 val awsLambdaJavaCoreVersion = "1.2.1"
 val awsLambdaJavaLog4j2Version = "1.2.0"
 val jacksonVersion = "2.12.4"
-val vavrVersion = "0.10.3"
 val awsSdk2Version = "2.17.19"
+val vavrVersion = "0.9.2"
+val vavrJacksonVersion = "0.9.2"
+val vavrGwtVersion = "0.9.2"
 val gwtServletVersion = "2.9.0"
 val junitVersion = "4.13.2"
-val jettyVersion = "10.0.6"
+// NOTE: Upgrading Jetty to 10.0.0 or beyond will cause this error - java.lang.NoSuchMethodError: 'void org.eclipse.jetty.server.ServerConnector.setSoLingerTime(int)'
+val jettyVersion = "9.4.40.v20210413"
 val bouncyCastleVersion = "1.69"
 val vertxVersion = "4.1.2"
 val jjwtVersion = "3.18.1"
-val dominoKitVersion = "1.0-alpha-gwt2.8.2-SNAPSHOT"
-val dominoMvpVersion = "1.0-ps-SNAPSHOT"
 val awsCdkConstructsForJava = "0.15.6"
 val awsLambdaServletVersion = "0.3.7"
 val log4jVersion = "2.14.1"
+val daggerVersion = "2.38.1"
+val gwtMaterialVersion = "2.4.2"
+val elemental2Version = "1.1.0"
+val elementoVersion = "1.0.3"
+val gwtJacksonVersion = "0.15.4"
+val resultsIteratorForAwsJavaSdkVersion = "29.0.13"
 
 dependencies {
+    // Dagger code generation
+    annotationProcessor("com.google.dagger:dagger-compiler:$daggerVersion")
+    implementation("com.google.dagger:dagger:$daggerVersion")
+    implementation("com.google.dagger:dagger-gwt:$daggerVersion")
+
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("io.vavr:vavr:$vavrVersion")
-    implementation("io.vavr:vavr-jackson:$vavrVersion")
+    implementation("io.vavr:vavr-jackson:$vavrJacksonVersion")
+    implementation("io.vavr:vavr-gwt:$vavrGwtVersion")
     implementation("software.amazon.awssdk:iot:$awsSdk2Version")
     implementation("software.amazon.awssdk:iotdataplane:$awsSdk2Version")
     implementation("software.amazon.awssdk:sts:$awsSdk2Version")
@@ -105,22 +115,29 @@ dependencies {
     api("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion")
     api("com.amazonaws:aws-lambda-java-log4j2:$awsLambdaJavaLog4j2Version")
 
+    implementation("com.github.gwtmaterialdesign:gwt-material:$gwtMaterialVersion")
+    implementation("com.github.gwtmaterialdesign:gwt-material-themes:$gwtMaterialVersion")
+    // GWT material addins includes GWT material jquery
+    implementation("com.github.gwtmaterialdesign:gwt-material-addins:$gwtMaterialVersion")
+    implementation("com.github.gwtmaterialdesign:gwt-material-table:$gwtMaterialVersion")
+
+    implementation("com.google.elemental2:elemental2-dom:$elemental2Version")
+    implementation("org.jboss.elemento:elemento-core:$elementoVersion")
+    implementation("com.github.nmorel.gwtjackson:gwt-jackson:$gwtJacksonVersion")
+
     implementation("com.auth0:java-jwt:$jjwtVersion")
     implementation("io.vertx:vertx-core:$vertxVersion")
     implementation("org.bouncycastle:bcprov-jdk15on:$bouncyCastleVersion")
     implementation("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
-
-    // Domino MVP + UI
-    api("org.dominokit.domino:domino:$dominoMvpVersion") { isChanging = true }
-    api("org.dominokit:domino-ui:$dominoKitVersion") { isChanging = true }
-    api("org.dominokit.domino:domino-gwt-view:$dominoKitVersion") { isChanging = true }
-    annotationProcessor("org.dominokit.domino.apt:apt-client:$dominoKitVersion") { isChanging = true }
 
     api("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
     annotationProcessor("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
 
     implementation("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJava")
     annotationProcessor("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJava")
+
+    implementation("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
+    implementation("software.amazon.awssdk:apache-client:$awsSdk2Version")
 
     testImplementation("junit:junit:$junitVersion")
 }
@@ -149,8 +166,8 @@ configure<GwtPluginExtension> {
     gwtVersion = gwtServletVersion
     maxHeapSize = "2048M"
 
-    modules("com.awslabs.iatt.spe.serverless.gwt.Jwt")
-    devModules("com.awslabs.iatt.spe.serverless.gwt.JwtDev")
+//    modules("com.awslabs.iatt.spe.serverless.gwt.Jwt")
+    modules("awslabs.Jwt")
 
     compiler(closureOf<GwtCompileOptions> {
         localWorkers = 8
@@ -230,7 +247,6 @@ tasks.shadowJar {
         exclude(dependency("org.gwtproject.timer:.*"))
         exclude(dependency("org.gwtproject.event:.*"))
         exclude(dependency("org.gwtproject.safehtml:.*"))
-        exclude(dependency("org.dominokit:.*"))
         exclude(dependency("io.vertx:.*"))
         exclude(dependency("net.sourceforge.htmlunit:.*"))
         exclude(dependency("colt:.*"))
@@ -242,6 +258,10 @@ tasks.shadowJar {
         exclude(dependency("com.ibm.icu:.*"))
         exclude(dependency("javax.websocket:.*"))
         exclude(dependency("org.glassfish:.*"))
+
+        // Removed dependencies from the results iterator that we don't need
+        exclude(dependency("software.amazon.awssdk:dynamodb:.*"))
+        exclude(dependency("software.amazon.awssdk:ec2:.*"))
     }
 
     isZip64 = true
@@ -289,7 +309,7 @@ val buildDockerImageForBrowserBundle by tasks.registering(Exec::class) {
 
 val removeBrowserBundleContainerBefore by tasks.registering(Exec::class) {
     isIgnoreExitValue = true
-    commandLine("docker", "rm", "-f", "aws-iot-device-sdk-js-container")
+    commandLine("docker", "rm", "-f", "/aws-iot-device-sdk-js-container")
 }
 
 val createDockerContainerForBrowserBundle by tasks.registering(Exec::class) {
@@ -311,17 +331,5 @@ val createDockerContainerForBrowserBundle by tasks.registering(Exec::class) {
         if (execResult!!.exitValue != 0) {
             throw GradleException("Creating the container to extract the Javascript IoT device SDK failed")
         }
-    }
-}
-
-val serverCode by tasks.registering(Exec::class) {
-    inputs.files(fileTree(""))
-}
-
-configurations.all {
-    resolutionStrategy.dependencySubstitution {
-        // This library is not yet in the Maven repositories
-        substitute(module("org.dominokit:domino-aggregator-shared:1.0.2"))
-            .using(module("org.dominokit:domino-aggregator-shared:1.0.2"))
     }
 }

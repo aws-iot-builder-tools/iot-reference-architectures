@@ -41,6 +41,7 @@ val log4jVersion = "2.14.1"
 
 repositories {
     mavenCentral()
+    mavenLocal()
     google()
     maven(url = "https://repo.gradle.org/gradle/libs-releases-local/")
     maven(url = "https://jitpack.io")

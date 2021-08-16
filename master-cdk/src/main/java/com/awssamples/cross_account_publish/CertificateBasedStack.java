@@ -41,15 +41,14 @@ public class CertificateBasedStack extends software.amazon.awscdk.core.Stack imp
     private static final String DESIRED_TOPIC_VARIABLE = "DESIRED_TOPIC";
     private static final String CSR_FILE_VARIABLE = "CSR_FILE";
     private static final String DESTROY_VARIABLE = "DESTROY";
-    private String projectDirectory;
-    private String outputArtifactName;
-    @Inject
-    IotHelper iotHelper;
-
     private final FunctionProps.Builder functionPropsBuilder = FunctionProps.builder()
             .runtime(Runtime.JAVA_11)
             .memorySize(1024)
             .timeout(Duration.minutes(1));
+    @Inject
+    IotHelper iotHelper;
+    private String projectDirectory;
+    private String outputArtifactName;
 
     public CertificateBasedStack(final Construct parent, final String name) {
         super(parent, name);

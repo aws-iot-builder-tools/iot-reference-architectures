@@ -1,0 +1,94 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui">
+
+    <m:MaterialContainer ui:field="container">
+        <m:MaterialPanel containerEnabled="false" paddingLeft="60" paddingRight="60" paddingTop="100">
+            <m:MaterialRow>
+                <m:MaterialCard>
+                    <m:MaterialCollapsible>
+                        <m:MaterialCollapsibleItem>
+                            <m:MaterialCollapsibleHeader>
+                                <m:MaterialLink text="Test invoke authorizer (with MQTT context)" textColor="BLACK"/>
+                                <m:MaterialIcon ui:field="invokeMqttCopy" iconType="CONTENT_COPY" waves="DEFAULT"
+                                                float="RIGHT" circle="true"/>
+                            </m:MaterialCollapsibleHeader>
+                            <m:MaterialCollapsibleBody>
+                                <m:MaterialPanel ui:field="testInvokeAuthorizerMqtt">
+                                    <m:MaterialLabel text="No JWT generated yet"/>
+                                </m:MaterialPanel>
+                            </m:MaterialCollapsibleBody>
+                        </m:MaterialCollapsibleItem>
+                    </m:MaterialCollapsible>
+                </m:MaterialCard>
+                <m:MaterialCard>
+                    <m:MaterialCollapsible>
+                        <m:MaterialCollapsibleItem>
+                            <m:MaterialCollapsibleHeader>
+                                <m:MaterialLink text="Test invoke authorizer (with HTTP context)" textColor="BLACK"/>
+                                <m:MaterialIcon ui:field="invokeHttpCopy" iconType="CONTENT_COPY" waves="DEFAULT"
+                                                float="RIGHT" circle="true"/>
+                            </m:MaterialCollapsibleHeader>
+                            <m:MaterialCollapsibleBody>
+                                <m:MaterialPanel ui:field="testInvokeAuthorizerHttp">
+                                    <m:MaterialLabel text="No JWT generated yet"/>
+                                </m:MaterialPanel>
+                            </m:MaterialCollapsibleBody>
+                        </m:MaterialCollapsibleItem>
+                    </m:MaterialCollapsible>
+                </m:MaterialCard>
+                <m:MaterialCard>
+                    <m:MaterialCollapsible>
+                        <m:MaterialCollapsibleItem>
+                            <m:MaterialCollapsibleHeader>
+                                <m:MaterialLink text="Test invoke authorizer (with signature)" textColor="BLACK"/>
+                                <m:MaterialIcon ui:field="invokeSignatureCopy" iconType="CONTENT_COPY" waves="DEFAULT"
+                                                float="RIGHT" circle="true"/>
+                            </m:MaterialCollapsibleHeader>
+                            <m:MaterialCollapsibleBody>
+                                <m:MaterialPanel ui:field="testInvokeAuthorizerWithSignature">
+                                    <m:MaterialLabel text="No JWT generated yet"/>
+                                </m:MaterialPanel>
+                            </m:MaterialCollapsibleBody>
+                        </m:MaterialCollapsibleItem>
+                    </m:MaterialCollapsible>
+                </m:MaterialCard>
+                <m:MaterialCard>
+                    <m:MaterialCollapsible>
+                        <m:MaterialCollapsibleItem>
+                            <m:MaterialCollapsibleHeader>
+                                <m:MaterialLink text="Mosquitto publish command" textColor="BLACK"/>
+                                <m:MaterialIcon ui:field="mosquittoPublishCopy" iconType="CONTENT_COPY" waves="DEFAULT"
+                                                float="RIGHT" circle="true"/>
+                            </m:MaterialCollapsibleHeader>
+                            <m:MaterialCollapsibleBody>
+                                <m:MaterialPanel ui:field="mosquittoPublish">
+                                    <m:MaterialLabel text="No JWT generated yet"/>
+                                </m:MaterialPanel>
+                            </m:MaterialCollapsibleBody>
+                        </m:MaterialCollapsibleItem>
+                    </m:MaterialCollapsible>
+                </m:MaterialCard>
+                <m:MaterialCard>
+                    <m:MaterialCollapsible>
+                        <m:MaterialCollapsibleItem>
+                            <m:MaterialCollapsibleHeader>
+                                <m:MaterialLink text="cURL HTTP publish command" textColor="BLACK"/>
+                                <m:MaterialIcon ui:field="curlPublishCopy" iconType="CONTENT_COPY" waves="DEFAULT"
+                                                float="RIGHT" circle="true"/>
+                            </m:MaterialCollapsibleHeader>
+                            <m:MaterialCollapsibleBody>
+                                <m:MaterialPanel ui:field="curlPublish">
+                                    <m:MaterialLabel text="No JWT generated yet"/>
+                                </m:MaterialPanel>
+                            </m:MaterialCollapsibleBody>
+                        </m:MaterialCollapsibleItem>
+                    </m:MaterialCollapsible>
+                </m:MaterialCard>
+            </m:MaterialRow>
+            <m:MaterialRow>
+                <m:MaterialLabel text="Messages"/>
+                <m:MaterialCollection ui:field="messageCollection"/>
+            </m:MaterialRow>
+        </m:MaterialPanel>
+    </m:MaterialContainer>
+</ui:UiBinder>

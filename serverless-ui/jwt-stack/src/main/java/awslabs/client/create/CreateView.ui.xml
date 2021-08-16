@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui">
+
+    <m:MaterialContainer ui:field="container">
+        <m:MaterialPanel containerEnabled="false" paddingLeft="60" paddingRight="60" paddingTop="100">
+            <m:MaterialTextBox ui:field="deviceId" label="Device ID (change this to change the ICCID)"/>
+            <m:MaterialTextBox ui:field="iccid" label="ICCID" readOnly="true"/>
+            <m:MaterialTextBox ui:field="expirationInSeconds" label="Expiration time in seconds" type="NUMBER"
+                               value="60" autoValidate="true"/>
+
+            <m:MaterialCard>
+                <m:MaterialCardContent>
+                    <m:MaterialCardTitle title="JWT data" text="JWT data" iconType="CONTENT_COPY"
+                                         iconPosition="RIGHT"/>
+                    <m:MaterialPanel ui:field="jwtData">
+                        <m:MaterialLabel text="No JWT generated yet"/>
+                    </m:MaterialPanel>
+                </m:MaterialCardContent>
+                <m:MaterialCardAction>
+                    <m:MaterialLink text="Generate JWT" ui:field="generateJwtButton" textColor="BLUE"
+                                    backgroundColor="WHITE"/>
+                    <m:MaterialLink text="Validate JWT" ui:field="validateJwtButton" textColor="BLUE"
+                                    backgroundColor="WHITE"/>
+                </m:MaterialCardAction>
+
+            </m:MaterialCard>
+        </m:MaterialPanel>
+    </m:MaterialContainer>
+</ui:UiBinder>

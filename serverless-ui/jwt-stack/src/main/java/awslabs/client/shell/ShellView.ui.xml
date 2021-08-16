@@ -1,0 +1,49 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui"
+             xmlns:m.html="urn:import:gwt.material.design.client.ui.html">
+
+    <ui:with field="tokens" type="awslabs.client.place.NameTokens"/>
+
+    <ui:style>
+        .logo {
+            padding: 10px;
+            border-bottom: 1px solid #E9E9E9;
+        }
+    </ui:style>
+
+    <m:MaterialPanel>
+        <m:MaterialHeader>
+            <m:MaterialNavBar activates="sidenav" backgroundColor="INDIGO">
+                <m:MaterialNavBrand fontSize="1.2em" text="JWT authentication demo, with attribution"/>
+                <m:MaterialNavSection float="RIGHT">
+                    <m:MaterialLink ui:field="devBoard" iconType="DEVELOPER_BOARD" iconColor="AMBER"/>
+                </m:MaterialNavSection>
+            </m:MaterialNavBar>
+        </m:MaterialHeader>
+
+        <!-- The IDE tells us 'm:id="sidenav"' is not allowed here but if you remove it this will not work! -->
+        <m:MaterialSideNavPush ui:field="sideNav" m:id="sidenav" width="280" allowBodyScroll="true" showOnAttach="true">
+            <m.html:ListItem waves="DEFAULT" paddingBottom="22">
+                <m:MaterialImage width="100%" url="launcher-icons/iot-core.svg" addStyleNames="{style.logo}"/>
+            </m.html:ListItem>
+
+            <m.html:ListItem waves="DEFAULT">
+                <m:MaterialLink ui:field="createAndValidate" text="Create and validate" iconType="DEVELOPER_BOARD"
+                                targetHistoryToken="{tokens.createAndValidate}"/>
+            </m.html:ListItem>
+
+            <m.html:ListItem waves="DEFAULT">
+                <m:MaterialLink iconPosition="LEFT" iconType="INFO_OUTLINE"
+                                text="Attribution" targetHistoryToken="{tokens.attribution}"/>
+            </m.html:ListItem>
+
+            <m.html:ListItem waves="DEFAULT">
+                <m:MaterialLink ui:field="test" text="Test" iconType="COMPUTER"
+                                targetHistoryToken="{tokens.test}"/>
+            </m.html:ListItem>
+        </m:MaterialSideNavPush>
+
+        <m:MaterialContainer ui:field="mainContainer">
+        </m:MaterialContainer>
+    </m:MaterialPanel>
+</ui:UiBinder>

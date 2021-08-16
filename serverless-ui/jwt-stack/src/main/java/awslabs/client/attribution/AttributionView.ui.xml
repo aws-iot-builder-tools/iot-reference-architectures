@@ -1,0 +1,14 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui">
+
+    <m:MaterialContainer ui:field="container">
+        <m:MaterialPanel containerEnabled="false" paddingLeft="60" paddingRight="60" paddingTop="100">
+            <m:MaterialCheckBox ui:field="attributionCheckBox" label="Attribution enabled"/>
+            <m:MaterialTextBox ui:field="partnerName" label="Partner name" text="Partner" maxLength="59" autoValidate="true"/>
+            <m:MaterialTextBox ui:field="solutionName" label="Solution name" text="Solution" maxLength="59" autoValidate="true"/>
+            <m:MaterialTextBox ui:field="versionName" label="Version name" text="v1.0" maxLength="8" autoValidate="true"/>
+
+            <m:MaterialLabel ui:field="attributionLabel"/>
+        </m:MaterialPanel>
+    </m:MaterialContainer>
+</ui:UiBinder>

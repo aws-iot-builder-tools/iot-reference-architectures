@@ -24,7 +24,6 @@ import static com.aws.samples.cdk.helpers.ServerlessHelper.AUTHORIZERS;
 
 public class ServerlessUiStack extends software.amazon.awscdk.core.Stack implements JavaGradleStack {
     private static final Logger log = LoggerFactory.getLogger(ServerlessUiStack.class);
-
     private final String projectDirectory;
     private final String outputArtifactName;
     private final List<CfnAuthorizer> iotCustomAuthorizers;
@@ -50,7 +49,8 @@ public class ServerlessUiStack extends software.amazon.awscdk.core.Stack impleme
                 .runtime(Runtime.JAVA_11)
                 .memorySize(1024)
                 .environment(lambdaEnvironment.toJavaMap())
-                .timeout(Duration.seconds(10));
+                // Can't go higher than 30 seconds because that's API gateway's max timeout
+                .timeout(Duration.seconds(30));
 
         List<AwsLambdaServlet> awsLambdaServlets = ServerlessHelper.getAwsLambdaServlets(this, getOutputArtifactFile(), Option.of(lambdaFunctionPropsBuilder));
         logCount("servlets", awsLambdaServlets);

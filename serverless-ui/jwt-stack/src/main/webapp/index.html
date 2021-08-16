@@ -2,9 +2,6 @@
 <head>
     <meta charset=UTF-8>
 
-    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Inconsolata&display=swap" rel="stylesheet"/>
-
     <script src="app/app.nocache.js"></script>
 
     <script>
@@ -16,14 +13,12 @@
         }, 4000)
     </script>
 
-    <script src="https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js"></script>
+    <link rel="stylesheet" href="style/demo.css">
+    <link rel="stylesheet" href="style/prettify.css">
 
     <script src="aws-iot-sdk-browser-bundle-min.js"></script>
 
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
-    <link href="app/css/domino-ui.css" rel="stylesheet" type="text/css">
-    <link href="app/css/themes/all-themes.css" rel="stylesheet" type="text/css">
 
     <title>JWT demo</title>
 
@@ -49,13 +44,6 @@
             window.location.replace(locationString);
         }
     </script>
-
-    <script>
-        var AWSIoTData = require('aws-iot-device-sdk');
-    </script>
-
-    <!-- Forced word wrapping for preformatted text -->
-    <link rel="stylesheet" href="codecard.css">
 </head>
 
 <body>
@@ -66,6 +54,11 @@
         in order for this application to display correctly.
     </div>
 </noscript>
+
+<!-- Will add a custom splashscreen for your GMD app -->
+<script type="text/javascript" src="splash/splash.js"></script>
+
+<script type="text/javascript" src="js/prettify.min.js"></script>
 
 </body>
 </html>
