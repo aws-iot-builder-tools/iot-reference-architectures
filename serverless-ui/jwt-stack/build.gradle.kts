@@ -50,6 +50,7 @@ tasks.wrapper {
 repositories {
     mavenCentral()
     mavenLocal()
+    google()
     // Required for gretty
     jcenter()
     // Required for AWS Lambda Servlet annotation processor
