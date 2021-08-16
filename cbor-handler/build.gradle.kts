@@ -50,7 +50,7 @@ val cborVersion = "4.4.4"
 val awsSdk2Version = "2.16.85"
 val junitVersion = "4.13.2"
 val awsLambdaJavaCoreVersion = "1.2.1"
-val vavrVersion = "0.10.3"
+val vavrVersion = "0.10.4"
 
 dependencies {
     implementation("io.vavr:vavr:$vavrVersion")
