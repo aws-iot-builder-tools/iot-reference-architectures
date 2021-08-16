@@ -23,6 +23,7 @@ application.mainClass.set("not-applicable")
 
 repositories {
     mavenCentral()
+    google()
 
     maven(url = "https://plugins.gradle.org/m2/")
     maven(url = "https://repo.gradle.org/gradle/libs-releases-local/")
