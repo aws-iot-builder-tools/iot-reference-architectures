@@ -81,7 +81,7 @@ val jjwtVersion = "3.18.1"
 val dominoKitVersion = "1.0-alpha-gwt2.8.2-SNAPSHOT"
 val dominoMvpVersion = "1.0-ps-SNAPSHOT"
 val awsCdkConstructsForJava = "0.15.6"
-val awsLambdaServletVersion = "0.3.5"
+val awsLambdaServletVersion = "0.3.7"
 val log4jVersion = "2.14.1"
 
 dependencies {
