@@ -5,7 +5,7 @@ import com.aws.samples.cdk.constructs.iam.permissions.iot.IotResources;
 import com.aws.samples.cdk.constructs.iot.authorizer.data.output.PolicyDocument;
 import com.aws.samples.cdk.constructs.iot.authorizer.data.output.Statement;
 import com.aws.samples.cdk.helpers.CdkHelper;
-import com.aws.samples.cdk.helpers.CloudFormationHelper;
+import com.aws.samples.cdk.helpers.CustomResourceHelper;
 import com.awslabs.iot.helpers.interfaces.IotHelper;
 import com.awssamples.MasterApp;
 import com.awssamples.stacktypes.JavaGradleStack;
@@ -157,11 +157,11 @@ public class CertificateBasedStack extends software.amazon.awscdk.core.Stack imp
         CustomResourceProps.Builder customResourcePropsBuilder = CustomResourceProps.builder()
                 .properties(
                         HashMap.of("CSR", csrString,
-                                "AllowedTopic", allowedTopic)
+                                        "AllowedTopic", allowedTopic)
                                 .toJavaMap());
 
         // Build a publish policy for the certificate
-        List<CustomResource> customResourceList = CloudFormationHelper.getCustomResources(this, getOutputArtifactFile(), Option.of(customResourcePropsBuilder), Option.of(functionPropsBuilder));
+        List<CustomResource> customResourceList = CustomResourceHelper.getCustomResources(this, getOutputArtifactFile(), Option.of(customResourcePropsBuilder), Option.of(functionPropsBuilder));
 
         if (customResourceList.size() != 1) {
             throw new RuntimeException("This stack only expects that one custom resource is present but it found [" + customResourceList.size() + "]");

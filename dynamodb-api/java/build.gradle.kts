@@ -41,6 +41,7 @@ val vavrGsonVersion = "0.10.2"
 val commonsCodecVersion = "1.15"
 val resultsIteratorForAwsJavaSdkVersion = "29.0.13"
 val xrayVersion = "2.7.1"
+val jacksonVersion = "2.11.3"
 
 group = "com.awssamples.iot.dynamodb.Api"
 version = "1.0-SNAPSHOT"
@@ -67,6 +68,8 @@ dependencies {
     implementation("io.vavr:vavr-gson:$vavrGsonVersion")
 
     implementation("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
+
+    implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
 
     testImplementation("junit:junit:$junitVersion")
 }
