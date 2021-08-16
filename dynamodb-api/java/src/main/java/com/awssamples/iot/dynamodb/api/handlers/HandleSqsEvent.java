@@ -106,7 +106,6 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
 
     private UuidAndMessageId addCookedMessageToDynamoDb(CookedMessage cookedMessage) {
         Map<String, AttributeValue> body = cookedMessage.getBody().m();
-        log.info("Body: " + getGson().toJson(body));
 
         // The message ID in DynamoDB is the user specified message ID field, followed by the SQS sent timestamp, followed by the SQS message ID (UUID)
         AttributeValue messageId = Try.of(() -> getField(MESSAGE_ID_KEY, body))
@@ -149,13 +148,10 @@ public class HandleSqsEvent implements RequestHandler<Map, String> {
         }
 
         Map<String, AttributeValue> currentMap = body;
-        log.info("currentMap: " + getGson().toJson(currentMap));
 
         // Nested field. Loop through them until the last one.
         for (int loop = 0; loop < fields.length - 1; loop++) {
-            log.info("loop, fields[loop]: " + loop + ", " + fields[loop]);
             currentMap = currentMap.get(fields[loop]).m();
-            log.info("currentMap: " + getGson().toJson(currentMap));
         }
 
         // Last field, extract the string
