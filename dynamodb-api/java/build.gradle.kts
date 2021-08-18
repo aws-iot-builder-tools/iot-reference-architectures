@@ -39,7 +39,7 @@ val awsLambdaJavaCoreVersion = "1.2.1"
 val vavrVersion = "0.10.4"
 val vavrGsonVersion = "0.10.2"
 val commonsCodecVersion = "1.15"
-val resultsIteratorForAwsJavaSdkVersion = "29.0.13"
+val resultsIteratorForAwsJavaSdkVersion = "29.0.14"
 val xrayVersion = "2.7.1"
 val jacksonVersion = "2.11.3"
 
