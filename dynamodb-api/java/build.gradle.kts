@@ -41,7 +41,7 @@ val vavrGsonVersion = "0.10.2"
 val commonsCodecVersion = "1.15"
 val resultsIteratorForAwsJavaSdkVersion = "29.0.13"
 val xrayVersion = "2.7.1"
-val jacksonVersion = "2.11.3"
+val jacksonVersion = "2.12.4"
 
 group = "com.awssamples.iot.dynamodb.Api"
 version = "1.0-SNAPSHOT"
