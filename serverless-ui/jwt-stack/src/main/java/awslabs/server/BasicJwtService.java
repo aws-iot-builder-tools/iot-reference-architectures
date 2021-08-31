@@ -160,16 +160,11 @@ public class BasicJwtService extends RemoteServiceServlet implements JwtService,
                 credentials = stsClient.getSessionToken().credentials();
             }
 
-            DescribeEndpointRequest describeEndpointRequest = DescribeEndpointRequest.builder()
-                    .endpointType("iot:Data-ATS")
-                    .build();
-            DescribeEndpointResponse describeEndpointResponse = IotClient.create().describeEndpoint(describeEndpointRequest);
-
             ClientConfig clientConfig = new ClientConfig();
             clientConfig.accessKeyId = credentials.accessKeyId();
             clientConfig.secretAccessKey = credentials.secretAccessKey();
             clientConfig.sessionToken = credentials.sessionToken();
-            clientConfig.endpointAddress = describeEndpointResponse.endpointAddress();
+            clientConfig.endpointAddress = endpoint;
             clientConfig.region = DefaultAwsRegionProviderChain.builder().build().getRegion().toString();
             clientConfig.clientId = UUID.randomUUID().toString();
 
