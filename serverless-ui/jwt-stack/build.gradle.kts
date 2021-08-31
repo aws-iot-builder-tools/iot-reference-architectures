@@ -148,10 +148,12 @@ configurations.all {
 
     // Don't allow any configuration to use a broken version of HTTP client
     resolutionStrategy.force("org.apache.httpcomponents:httpclient:4.5.13")
+
+    // Fixes - Caused by: java.util.ServiceConfigurationError: org.apache.juli.logging.Log: org.eclipse.jetty.apache.jsp.JuliLog not a subtype
 }
 
-configurations.compile {
-    // Fixes - Caused by: java.util.ServiceConfigurationError: org.apache.juli.logging.Log: org.eclipse.jetty.apache.jsp.JuliLog not a subtype
+// In Gradle <7.0 this was in configurations.compile
+configurations.implementation {
     exclude("org.mortbay.jasper")
 }
 
