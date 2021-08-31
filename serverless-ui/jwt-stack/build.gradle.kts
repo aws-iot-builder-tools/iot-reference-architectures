@@ -41,7 +41,7 @@ sourceSets {
 // Required for shadow JAR but we don't use it. Can not be replaced with application.mainClass.set.
 application.mainClassName = "not-necessary"
 
-val gradleDependencyVersion = "7.0"
+val gradleDependencyVersion = "7.2"
 
 tasks.wrapper {
     gradleVersion = gradleDependencyVersion
