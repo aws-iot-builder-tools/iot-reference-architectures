@@ -25,7 +25,7 @@ java.toolchain.languageVersion.set(JavaLanguageVersion.of(8))
 // Required for shadow JAR but we don't use it. Can not be replaced with application.mainClass.set.
 application.mainClassName = "not-necessary"
 
-val gradleDependencyVersion = "7.1.1"
+val gradleDependencyVersion = "7.2"
 
 tasks.wrapper {
     gradleVersion = gradleDependencyVersion
@@ -34,6 +34,7 @@ tasks.wrapper {
 
 repositories {
     mavenCentral()
+    google()
     maven(url = "https://jitpack.io")
     // Required for Gradle Tooling API
     maven(url = "https://repo.gradle.org/gradle/libs-releases-local/")
@@ -60,13 +61,19 @@ val junitVersion = "4.13.2"
 val slf4jSimpleVersion = "1.7.30"
 val vertxVersion = "4.0.2"
 val jjwtVersion = "3.13.0"
-val awsCdkConstructsForJava = "0.15.11"
 val awsLambdaServletVersion = "0.2.4"
 val daggerVersion = "2.38.1"
-val resultsIteratorForAwsJavaSdkVersion = "29.0.14"
+val resultsIteratorForAwsJavaSdkVersion = "29.0.18"
 val bouncyCastleVersion = "1.69"
+val awsCdkConstructsForJavaVersion = "0.16.11"
 
 dependencies {
+    // Dagger code generation
+    annotationProcessor("com.google.dagger:dagger-compiler:$daggerVersion")
+
+    // Dependency injection with Dagger
+    api("com.google.dagger:dagger:$daggerVersion")
+
     implementation("io.vavr:vavr:$vavrVersion")
     implementation("io.vavr:vavr-jackson:$vavrVersion")
 
@@ -77,12 +84,6 @@ dependencies {
     api("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion")
     api("com.amazonaws:aws-lambda-java-log4j2:$awsLambdaJavaLog4j2Version")
 
-    // Dagger code generation
-    annotationProcessor("com.google.dagger:dagger-compiler:$daggerVersion")
-
-    // Dependency injection with Dagger
-    implementation("com.google.dagger:dagger:$daggerVersion")
-
     // Required for X.509 certificate features
     implementation("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
 
@@ -90,15 +91,17 @@ dependencies {
     implementation("software.amazon.awssdk:iot:$awsSdk2Version")
     implementation("software.amazon.awssdk:apache-client:$awsSdk2Version")
 
-    implementation("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJava")
-    annotationProcessor("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJava")
-
     testImplementation("junit:junit:$junitVersion")
-
-    // To force dependabot to update the Gradle wrapper dependency
-    testImplementation("org.gradle:gradle-tooling-api:$gradleDependencyVersion")
 
     // For certificate based authentication
     implementation("org.bouncycastle:bcprov-jdk15on:$bouncyCastleVersion")
     implementation("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
+
+    implementation("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJavaVersion")
+    annotationProcessor("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJavaVersion")
+}
+
+task("synth", JavaExec::class) {
+    classpath = sourceSets["main"].runtimeClasspath
+    main = "com.awssamples.crossaccountpublish.CertificateBasedStack"
 }

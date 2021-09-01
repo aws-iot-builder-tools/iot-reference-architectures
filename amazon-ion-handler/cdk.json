@@ -1,3 +1,0 @@
-{
-  "app": "rm -rf cdk.out && cd ../master-cdk && ./gradlew run --args='com.awssamples.amazon_ion_handler.AmazonIonHandlerStack amazon-ion-handler-stack' 1>&2 && cd - > /dev/null && mv ../master-cdk/cdk.out . && rm amazon-ion-handler-stack.zip"
-}

@@ -29,10 +29,7 @@ elif command -v docker &>/dev/null; then
   set -e
   . ../get-aws-credentials.sh
 
-  rm -rf master-cdk-temp
-  cp -R ../../master-cdk master-cdk-temp
   time docker >&2 build -t $BUILD_TAG .
-  rm -rf master-cdk-temp
   mkdir -p build/libs
   echo "time docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \

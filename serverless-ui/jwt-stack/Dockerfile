@@ -63,10 +63,5 @@ COPY cdk.json /serverless-ui/jwt-stack
 # Build the GWT code here so we can cache it before we run "cdk deploy"
 RUN ./gradlew compileGwt --no-daemon
 
-# Copy the master-cdk project and build it so it is cached
-COPY master-cdk-temp /master-cdk
-WORKDIR /master-cdk
-RUN ./gradlew build --no-daemon
-
 # Set the working directory to the stack's directory
 WORKDIR /serverless-ui/jwt-stack

@@ -21,10 +21,10 @@ These reference architectures use [CDK](https://aws.amazon.com/cdk/)
           processed in order.
 - Binary payloads
     - Java
-        - [CBOR Handler](cbor-handler) - An example project that shows how to convert between CBOR and JSON. This uses
+        - [CBOR](cbor-stack) - An example project that shows how to convert between CBOR and JSON. This uses
           the rules engine base64 encoding support to work with binary payloads in AWS Lambda.
     - Python
-        - [Amazon Ion Handler](amazon-ion-handler) - An example project that shows how to convert between Amazon Ion and
+        - [Amazon Ion](amazon-ion-stack) - An example project that shows how to convert between Amazon Ion and
           JSON. This uses the rules engine base64 encoding support to work with binary payloads in AWS Lambda.
 - JWT authentication for AWS IoT Core
     - Java
