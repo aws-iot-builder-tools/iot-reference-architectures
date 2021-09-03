@@ -274,7 +274,6 @@ public class BasicMqttEndpointHandler implements MqttBackendHandler, Handler<Mqt
     private void queuedInvokeAuthenticationFunctions(MqttEndpoint mqttEndpoint, Handler<Option<String>> resultHandler) {
         // Combine all of the individual futures below into a single future with all of the results
         authTaskQueue.execute(() -> AUTHENTICATION_FUNCTION_LIST
-                        .peek(v -> log.info("Auth function invocation #" + authInvocationCounter.incrementAndGet()))
                         // Asynchronously invoke all of the functions
                         .map(functionName -> syncInvokeFunction(functionName, mqttEndpoint))
                         // When we are done find the first defined value, then unwrap the double optional
@@ -303,6 +302,8 @@ public class BasicMqttEndpointHandler implements MqttBackendHandler, Handler<Mqt
     }
 
     private Option<String> syncInvokeFunction(String functionName, MqttEndpoint mqttEndpoint) {
+        log.info("Auth function invocation #" + authInvocationCounter.incrementAndGet());
+
         InvokeRequest.Builder invokeRequestBuilder = InvokeRequest.builder()
                 .functionName(functionName)
                 .invocationType(InvocationType.REQUEST_RESPONSE);
