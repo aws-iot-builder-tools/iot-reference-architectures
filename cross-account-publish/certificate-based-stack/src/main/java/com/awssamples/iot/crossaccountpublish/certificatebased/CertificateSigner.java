@@ -7,8 +7,8 @@ import com.aws.samples.cdk.constructs.autowired.cloudformation.CustomResourceReq
 import com.aws.samples.cdk.constructs.autowired.cloudformation.CustomResourceResponse;
 import com.aws.samples.cdk.constructs.iam.permissions.IamPermission;
 import com.aws.samples.cdk.constructs.iam.permissions.iot.dataplane.actions.ImmutableDescribeEndpoint;
-import com.awslabs.iot.data.V2IotEndpointType;
-import com.awslabs.iot.helpers.interfaces.V2IotHelper;
+import com.awslabs.iot.data.IotEndpointType;
+import com.awslabs.iot.helpers.interfaces.IotHelper;
 import io.vavr.Lazy;
 import io.vavr.Tuple;
 import io.vavr.Tuple2;
@@ -23,7 +23,7 @@ import java.security.cert.X509Certificate;
 @CdkAutoWire
 public class CertificateSigner extends CustomResourceFunction {
     private final Lazy<Injector> lazyDaggerInjector = Lazy.of(DaggerInjector::create);
-    private final Lazy<V2IotHelper> lazyV2IotHelper = Lazy.of(() -> lazyDaggerInjector.get().v2IotHelper());
+    private final Lazy<IotHelper> lazyIotHelper = Lazy.of(() -> lazyDaggerInjector.get().iotHelper());
 
     static {
         // Add BouncyCastle as a security provider in just one place
@@ -39,12 +39,12 @@ public class CertificateSigner extends CustomResourceFunction {
         String allowedTopic = tryGetValue(customResourceRequest, "AllowedTopic", String.class).get();
 
         // Get the ATS endpoint for this account
-        V2IotHelper v2IotHelper = lazyV2IotHelper.get();
-        String endpoint = v2IotHelper.getEndpoint(V2IotEndpointType.DATA_ATS);
+        IotHelper iotHelper = lazyIotHelper.get();
+        String endpoint = iotHelper.getEndpoint(IotEndpointType.DATA_ATS);
 
         // Extract the public key from this CSR. If this is an RSA key it will likely fail later on due to custom
         //   resources only being allowed to return a 4kB value.
-        PublicKey publicKey = v2IotHelper.getPublicKeyFromCsrPem(csr);
+        PublicKey publicKey = iotHelper.getPublicKeyFromCsrPem(csr);
 
         // Put the endpoint information in the certificate as the issuer's common name
         List<Tuple2<String, String>> issuerCommonName = List.of(Tuple.of("CN", endpoint));
@@ -53,13 +53,13 @@ public class CertificateSigner extends CustomResourceFunction {
         List<Tuple2<String, String>> subjectCommonName = List.of(Tuple.of("CN", allowedTopic));
 
         // Generate the certificate with a CA we generate on the fly and throw away
-        X509Certificate x509Certificate = v2IotHelper.generateX509Certificate(publicKey, issuerCommonName, subjectCommonName);
+        X509Certificate x509Certificate = iotHelper.generateX509Certificate(publicKey, issuerCommonName, subjectCommonName);
 
         // Convert the certificate to a PEM formatted string
-        String certificatePem = v2IotHelper.toPem(x509Certificate);
+        String certificatePem = iotHelper.toPem(x509Certificate);
 
         // Get the fingerprint of the certificate since this is what AWS IoT uses as the certificate ID
-        String certificateFingerprint = v2IotHelper.getFingerprint(certificatePem);
+        String certificateFingerprint = iotHelper.getFingerprint(certificatePem);
 
         // Put the PEM and the fingerprint in the return data structure. These are fetched by other code by calling
         //   customResource.getAtt("pem") or customResource.getAtt("fingerprint").

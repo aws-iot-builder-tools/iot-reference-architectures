@@ -41,7 +41,7 @@ sourceSets {
 // Required for shadow JAR but we don't use it. Can not be replaced with application.mainClass.set.
 application.mainClassName = "not-necessary"
 
-val gradleDependencyVersion = "7.0"
+val gradleDependencyVersion = "7.2"
 
 tasks.wrapper {
     gradleVersion = gradleDependencyVersion
@@ -69,17 +69,17 @@ val awsLambdaJavaCoreVersion = "1.2.1"
 val awsLambdaJavaLog4j2Version = "1.2.0"
 val jacksonVersion = "2.12.5"
 val awsSdk2Version = "2.17.29"
-val vavrVersion = "0.10.4"
-val vavrJacksonVersion = "0.10.3"
+val vavrVersion = "0.9.2"
+val vavrJacksonVersion = "0.9.2"
 val vavrGwtVersion = "0.9.2"
 val gwtServletVersion = "2.9.0"
 val junitVersion = "4.13.2"
 // NOTE: Upgrading Jetty to 10.0.0 or beyond will cause this error - java.lang.NoSuchMethodError: 'void org.eclipse.jetty.server.ServerConnector.setSoLingerTime(int)'
-val jettyVersion = "10.0.6"
+val jettyVersion = "9.4.43.v20210629"
 val bouncyCastleVersion = "1.69"
 val vertxVersion = "4.1.2"
 val jjwtVersion = "3.18.1"
-val awsCdkConstructsForJava = "0.15.11"
+val awsCdkConstructsForJava = "0.16.11"
 val awsLambdaServletVersion = "0.3.7"
 val log4jVersion = "2.14.1"
 val daggerVersion = "2.38.1"
@@ -87,7 +87,7 @@ val gwtMaterialVersion = "2.4.2"
 val elemental2Version = "1.1.0"
 val elementoVersion = "1.0.3"
 val gwtJacksonVersion = "0.15.4"
-val resultsIteratorForAwsJavaSdkVersion = "29.0.14"
+val resultsIteratorForAwsJavaSdkVersion = "29.0.18"
 
 dependencies {
     // Dagger code generation
@@ -150,7 +150,7 @@ configurations.all {
     resolutionStrategy.force("org.apache.httpcomponents:httpclient:4.5.13")
 }
 
-configurations.compile {
+configurations.implementation {
     // Fixes - Caused by: java.util.ServiceConfigurationError: org.apache.juli.logging.Log: org.eclipse.jetty.apache.jsp.JuliLog not a subtype
     exclude("org.mortbay.jasper")
 }
@@ -167,7 +167,7 @@ configure<GwtPluginExtension> {
     maxHeapSize = "2048M"
 
 //    modules("com.awslabs.iatt.spe.serverless.gwt.Jwt")
-    modules("awslabs.Jwt")
+    modules("com.awssamples.Jwt")
 
     compiler(closureOf<GwtCompileOptions> {
         localWorkers = 8
@@ -332,4 +332,9 @@ val createDockerContainerForBrowserBundle by tasks.registering(Exec::class) {
             throw GradleException("Creating the container to extract the Javascript IoT device SDK failed")
         }
     }
+}
+
+task("synth", JavaExec::class) {
+    classpath = sourceSets["main"].runtimeClasspath
+    main = "com.awssamples.serverlessui.JwtStack"
 }

@@ -1,4 +1,4 @@
-import awslabs.server.BasicTlsHelper;
+import com.awssamples.server.BasicTlsHelper;
 import org.junit.Test;
 
 import java.io.File;

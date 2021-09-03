@@ -12,7 +12,7 @@ plugins {
     id("com.github.ben-manes.versions") version "0.39.0"
 }
 
-val gradleDependencyVersion = "7.0.2"
+val gradleDependencyVersion = "7.2"
 
 tasks.wrapper {
     gradleVersion = gradleDependencyVersion
