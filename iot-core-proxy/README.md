@@ -25,3 +25,5 @@ clientCount=50 messageCount=10 ./gradlew integrationTest
 ```
 
 All load tests will create an HTML report in `build/reports/tests/integrationTest/index.html`.
+
+To jump directly to the load test report open `build/reports/tests/integrationTest/classes/io.vertx.fargate.SimpleLoadTestIT.html` and click `Standard output`.
