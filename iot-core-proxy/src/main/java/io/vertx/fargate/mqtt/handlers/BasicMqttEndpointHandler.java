@@ -79,6 +79,8 @@ public class BasicMqttEndpointHandler implements MqttBackendHandler, Handler<Mqt
     @Inject
     @Named(AUTH_INVOCATION_COUNTER)
     AtomicInteger authInvocationCounter;
+    @Inject
+    EndpointAddress endpointAddress;
 
     @Inject
     public BasicMqttEndpointHandler() {
@@ -230,6 +232,7 @@ public class BasicMqttEndpointHandler implements MqttBackendHandler, Handler<Mqt
         MqttOverWebsocketsUriConfig mqttOverWebsocketsUriConfig = ImmutableMqttOverWebsocketsUriConfig.builder()
                 .optionalScopeDownPolicyJson(scopeDownPolicyJsonOption.toJavaOptional())
                 .optionalRoleToAssume(roleToAssumeOption.toJavaOptional())
+                .optionalEndpointAddress(endpointAddress)
                 .build();
 
         MqttClientConfig mqttClientConfig = ImmutableMqttClientConfig.builder()

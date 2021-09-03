@@ -117,6 +117,7 @@ dependencies {
     api("com.amazonaws:aws-lambda-java-log4j2:$awsLambdaJavaLog4j2Version")
     implementation("software.amazon.awssdk:sts:$awsSdk2Version")
     implementation("software.amazon.awssdk:cloudwatch:$awsSdk2Version")
+    implementation("software.amazon.awssdk:apache-client:$awsSdk2Version")
     implementation("io.vertx:vertx-core:$vertxVersion")
     implementation("io.vertx:vertx-mqtt:$vertxVersion")
     implementation("com.google.code.gson:gson:$gsonVersion")

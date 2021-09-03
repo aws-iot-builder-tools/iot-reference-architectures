@@ -2,6 +2,10 @@ package io.vertx.fargate.modules;
 
 import com.awslabs.aws.iot.websockets.BasicMqttOverWebsocketsProvider;
 import com.awslabs.aws.iot.websockets.MqttOverWebsocketsProvider;
+import com.awslabs.aws.iot.websockets.data.EndpointAddress;
+import com.awslabs.aws.iot.websockets.data.ImmutableEndpointAddress;
+import com.awslabs.iot.data.IotEndpointType;
+import com.awslabs.iot.helpers.interfaces.IotHelper;
 import dagger.Binds;
 import dagger.Module;
 import dagger.Provides;
@@ -60,6 +64,12 @@ public abstract class BaselineDaggerIotBrokerModule {
     @Named(VERTICLE_COUNTER)
     public static AtomicInteger verticleCounter() {
         return new AtomicInteger(0);
+    }
+
+    @Provides
+    @Singleton
+    public static EndpointAddress endpointAddress(IotHelper iotHelper) {
+        return ImmutableEndpointAddress.builder().endpointAddress(iotHelper.getEndpoint(IotEndpointType.DATA_ATS)).build();
     }
 
     @Binds
