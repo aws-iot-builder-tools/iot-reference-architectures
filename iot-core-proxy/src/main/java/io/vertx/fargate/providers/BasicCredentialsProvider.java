@@ -10,6 +10,7 @@ import software.amazon.awssdk.auth.credentials.AwsCredentialsProviderChain;
 import software.amazon.awssdk.auth.credentials.AwsSessionCredentials;
 import software.amazon.awssdk.services.sts.StsClient;
 import software.amazon.awssdk.services.sts.model.Credentials;
+import software.amazon.awssdk.services.sts.model.GetSessionTokenRequest;
 import software.amazon.awssdk.services.sts.model.GetSessionTokenResponse;
 
 import javax.inject.Inject;
@@ -30,7 +31,12 @@ public class BasicCredentialsProvider implements CredentialsProvider {
 
         if (awsCredentials instanceof AwsBasicCredentials) {
             // Must be running with an IAM user, use STS to get session credentials
-            GetSessionTokenResponse getSessionTokenResponse = lazyStsClient.get().getSessionToken();
+            GetSessionTokenRequest getSessionTokenRequest = GetSessionTokenRequest.builder()
+                    // 36 hours, the maximum duration
+                    .durationSeconds(129600)
+                    .build();
+
+            GetSessionTokenResponse getSessionTokenResponse = lazyStsClient.get().getSessionToken(getSessionTokenRequest);
 
             Credentials credentials = getSessionTokenResponse.credentials();
             return AwsSessionCredentials.create(credentials.accessKeyId(), credentials.secretAccessKey(), credentials.sessionToken());
