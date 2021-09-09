@@ -85,9 +85,9 @@ val immutablesValueVersion = "2.8.8"
 val awsIotCoreWebsocketsVersion = "3.0.1"
 val log4jVersion = "2.14.1"
 val awsLambdaJavaLog4j2Version = "1.2.0"
-val awsCdkConstructsForJavaVersion = "0.16.14"
-val resultsIteratorForAwsJavaSdkVersion = "29.0.18"
-val awsCdkVersion = "1.121.0"
+val awsCdkConstructsForJavaVersion = "0.16.15"
+val resultsIteratorForAwsJavaSdkVersion = "29.0.19"
+val awsCdkVersion = "1.122.0"
 val daggerVersion = "2.38.1"
 
 configurations.all {
