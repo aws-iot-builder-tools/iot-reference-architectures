@@ -280,7 +280,7 @@ public class IotCoreProxyStack extends software.amazon.awscdk.core.Stack impleme
     }
 
     private FargateTaskDefinition getFargateTaskDefinition(Role taskRole) {
-        FargateTaskDefinitionProps.Builder fargateTaskDefinitionPropsBuilder = FargateHelper.getValidMemoryAndCpu(FargateHelper.VCPU.Quarter, 2048);
+        FargateTaskDefinitionProps.Builder fargateTaskDefinitionPropsBuilder = FargateHelper.getValidMemoryAndCpu(FargateHelper.VCPU.One, 1024);
         FargateTaskDefinitionProps fargateTaskDefinitionProps = fargateTaskDefinitionPropsBuilder
                 .taskRole(taskRole)
                 .build();
