@@ -63,7 +63,7 @@ val vertxVersion = "4.0.2"
 val jjwtVersion = "3.13.0"
 val awsLambdaServletVersion = "0.2.4"
 val daggerVersion = "2.38.1"
-val resultsIteratorForAwsJavaSdkVersion = "29.0.18"
+val resultsIteratorForAwsJavaSdkVersion = "29.0.21"
 val bouncyCastleVersion = "1.69"
 val awsCdkConstructsForJavaVersion = "0.16.14"
 
