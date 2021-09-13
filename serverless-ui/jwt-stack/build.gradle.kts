@@ -87,7 +87,7 @@ val gwtMaterialVersion = "2.5.0"
 val elemental2Version = "1.1.0"
 val elementoVersion = "1.0.3"
 val gwtJacksonVersion = "0.15.4"
-val resultsIteratorForAwsJavaSdkVersion = "29.0.18"
+val resultsIteratorForAwsJavaSdkVersion = "29.0.21"
 
 dependencies {
     // Dagger code generation
