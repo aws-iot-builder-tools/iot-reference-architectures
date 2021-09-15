@@ -24,4 +24,4 @@ sed -i "s/<ATTRIBUTE_NAME>/$ATTRIBUTE_NAME/g" packaged-template.yaml
 aws cloudformation deploy --template-file ./packaged-template.yaml --stack-name RegisterThingAPIStack --parameter-overrides "PartnerAccountParameter=$CLOUD_MANAGED_SERVICE_ACCOUNT_ID" --capabilities CAPABILITY_NAMED_IAM --region $AWS_REGION
 
 #Display outputs
-aws cloudformation describe-stacks --stack-name RegisterThingAPIStack --region us-east-1 --query "Stacks[0].Outputs"
+aws cloudformation describe-stacks --stack-name RegisterThingAPIStack --region $AWS_REGION --query "Stacks[0].Outputs"
