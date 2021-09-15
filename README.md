@@ -49,6 +49,7 @@ These reference architectures use CloudFormation, not CDK
       EC2 instance.
     - [Python](cross-account-publish/python) - A Python Lambda function that can cross-account publish from a partner's
       account to a customer's account using the AWS IoT Rules Engine
+- Cross-account Thing Registration
     - [Python](cross-account-register-ztp/python) - A serverless API to be deployed in a customer's account that allows a 
       partner's zero touch provisioning service to register an IoT Thing and Certificate in their account.
 
