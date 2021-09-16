@@ -122,25 +122,20 @@ public class IotCoreProxyStack extends software.amazon.awscdk.core.Stack impleme
     }
 
     private Function buildAnyClientAuthFunction(Role role) {
-        File outputArtifactFile = getOutputArtifactFile();
-
-        if (!outputArtifactFile.exists()) {
-            throw new RuntimeException("Output JAR file [" + outputArtifactFile.getAbsolutePath() + "] does not exist, can not continue");
-        }
 
         HashMap<String, String> environment = HashMap.of(AWS_ACCOUNT_ID_ENVIRONMENT_VARIABLE, getAccount());
 
         FunctionProps functionProps = FunctionProps.builder()
-                .code(Code.fromAsset(outputArtifactFile.getAbsolutePath()))
-                .handler(String.join("::", ANY_CLIENT_AUTH_HANDLER, HANDLE_REQUEST))
+                .code( Code.fromAsset( "src/main/java/com/awssamples/iot/mqtt/auth/handlers/python" ) )
+                .handler("mqtt_proxy_auth.handler")
                 .memorySize(1024)
                 .timeout(Duration.seconds(10))
-                .runtime(Runtime.JAVA_11)
+                .runtime(Runtime.PYTHON_3_9)
                 .role(role)
                 .environment(environment.toJavaMap())
                 .build();
 
-        return new Function(this, "AnyClientAuthLambda", functionProps);
+        return new Function(this, "AnyClientAuthPythonLambda", functionProps);
     }
 
     private Role buildAnyClientAuthRole() {
