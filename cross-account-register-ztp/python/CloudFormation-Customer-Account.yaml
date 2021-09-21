@@ -1,0 +1,111 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  PartnerAccountParameter:
+    Type: String
+    Description: Enter the AWS account ID of the zero touch provisioning service
+Transform: "AWS::Serverless-2016-10-31"
+Resources:
+  CloudManagedIoTPolicy:
+    Type: AWS::IoT::Policy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+        - Effect: Allow
+          Action:
+          - iot:Connect
+          Resource:
+          - !Join ["", ["arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId" , ":client/${iot:Connection.Thing.ThingName}"] ]
+        - Effect: Allow
+          Action: 
+          - iot:Publish
+          Resource:
+          - !Join ["", ["arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId" , ":topic/*"]]
+        - Effect: Allow
+          Action: 
+          - iot:Subscribe
+          Resource:
+          - !Join ["", ["arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId" , ":topic/*"]]
+        - Effect: Allow
+          Action: 
+          - iot:Receive
+          Resource:
+          - !Join ["", ["arn:aws:iot:", !Ref "AWS::Region", ":", !Ref "AWS::AccountId" , ":topic/*"]]
+      PolicyName: cloud_managed_iot_policy
+  PythonCryptographyLayer:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      CompatibleRuntimes: 
+        - python3.7
+      ContentUri: ./lambda/layer/cryptography-layer.zip
+      Description: 'Cryptopgraphy Python3 package'
+      LayerName: cryptography
+      LicenseInfo: Apache
+  RegisterCertAndThingApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Layers: 
+        - !Ref PythonCryptographyLayer
+      Events:
+        RegisterThingApi:
+          Type: Api
+          Properties:
+            Path: /register
+            Method: post
+          Integration: lambda
+      Handler: lambda_function.lambda_handler
+      Runtime: python3.7
+      CodeUri: ./lambda/lambda_function.py
+      Policies:
+        - AWSIoTThingsRegistration
+        - Statement:
+          - Sid: S3ListBucketAccesstoRootCABucket
+            Effect: Allow
+            Action:
+            - s3:ListBucket
+            Resource: !Join ["", ["arn:aws:s3:::", "<MY_BUCKET>"] ]
+          - Sid: S3GetAccessToRootCABucket
+            Effect: Allow
+            Action:
+            - s3:GetObject
+            Resource: !Join ["", ["arn:aws:s3:::", "<MY_BUCKET>", "/root_ca.pem"] ]
+          - Sid: AllowCertificateRegisterWithoutCA
+            Effect: Allow
+            Action:
+            - iot:RegisterCertificateWithoutCA
+            - iot:DescribeEndpoint
+            Resource: '*'
+      Environment: 
+        Variables:
+          IOT_POLICY : cloud_managed_iot_policy
+          S3_BUCKET_NAME_ROOT_CA: <MY_BUCKET>
+          THING_ATTRIBUTE_NAME: <ATTRIBUTE_NAME>
+  PartnerAPIAccessRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS:
+                - !Join ["", ["arn:aws:iam::", !Ref PartnerAccountParameter, ":", "root"]]
+            Action:
+              - 'sts:AssumeRole'
+      Description: Role for Zero Touch Provisoning Service to Assume and POST to API
+      Policies: 
+        - PolicyName: ZTPServiceAPIExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+            - Effect: Allow
+              Action:
+              - execute-api:POST
+              Resource: !Join ["", ["arn:aws:execute-api:", !Ref "AWS::Region", ":", !Ref PartnerAccountParameter, ":", !Ref ServerlessRestApi, "/*/POST/register"]]
+      RoleName: CloudManagedRoleForAPIAccess
+Outputs:
+  APIUrlForRegisterAPI:
+    Value: !Join ["", ["https://", !Ref ServerlessRestApi, ".execute-api.", !Ref "AWS::Region", ".amazonaws.com/Prod/register"]]
+  RoleToAssume:
+    Description: Role for the ZTP Provisioning Service to Assume
+    Value: !GetAtt PartnerAPIAccessRole.Arn
