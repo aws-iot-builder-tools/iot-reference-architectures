@@ -17,8 +17,8 @@ aws s3 cp root_ca.pem s3://$BUCKET_NAME
 aws cloudformation package --template ./CloudFormation-Customer-Account.yaml --s3-bucket $BUCKET_NAME --output-template-file packaged-template.yaml
 
 # Replace parameters in packaged-template.yaml
-sed -i '' "s/<MY_BUCKET>/$BUCKET_NAME/g" packaged-template.yaml
-sed -i '' "s/<ATTRIBUTE_NAME>/$ATTRIBUTE_NAME/g" packaged-template.yaml
+sed -i'' -e "s/<MY_BUCKET>/$BUCKET_NAME/g" packaged-template.yaml
+sed -i'' -e "s/<ATTRIBUTE_NAME>/$ATTRIBUTE_NAME/g" packaged-template.yaml
 
 # Deploy stack
 aws cloudformation deploy --template-file ./packaged-template.yaml --stack-name RegisterThingAPIStack --parameter-overrides "PartnerAccountParameter=$CLOUD_MANAGED_SERVICE_ACCOUNT_ID" --capabilities CAPABILITY_NAMED_IAM --region $AWS_REGION
