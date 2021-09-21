@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import boto3
 from boto3.session import Session
 from requests_aws4auth import AWS4Auth
