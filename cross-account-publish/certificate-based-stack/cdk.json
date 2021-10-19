@@ -1,6 +1,3 @@
 {
-  "context": {
-    "DESIRED_TOPIC": "cross-account-test"
-  },
   "app": "./gradlew synth"
 }

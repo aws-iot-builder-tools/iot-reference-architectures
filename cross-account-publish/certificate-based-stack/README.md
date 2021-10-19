@@ -65,10 +65,10 @@ this:
 $ npm i -g aws-cdk
 ```
 
-Run `cdk deploy` with the `CSR_FILE` environment variable like this:
+Run `cdk deploy` with the `CSR_FILE` context variable like this:
 
 ```
-$ CSR_FILE=cross-account.csr cdk deploy
+$ cdk deploy -c CSR_FILE=cross-account.csr
 ```
 
 Wait for output that looks like this:
