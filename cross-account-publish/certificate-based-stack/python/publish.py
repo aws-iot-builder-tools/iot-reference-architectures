@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 
-import boto3
-import json
-from datetime import datetime, timedelta
-import math
-
 import argparse
 
 import requests
@@ -43,9 +38,20 @@ topic = cert.get_subject().CN.replace("%2F", "/")
 
 publish_url = 'https://' + endpoint + ':8443/topics/' + topic + '?qos=1'
 
+
 def cross_account_publish(message):
     headers = {'x-amzn-platform': 'APN/1 partner,solution'}
-    
-    publish = requests.request('POST', publish_url, data=message, cert=[args.cert, args.key], headers=headers)
 
-cross_account_publish(args.message)
+    publish = requests.request('POST', publish_url, data=str.encode(message), cert=[args.cert, args.key],
+                               headers=headers)
+
+
+message = args.message
+
+if len(message) > 2:
+    if message[0] == '\'':
+        message = message[1:]
+    if message[len(message) - 1] == '\'':
+        message = message[:-1]
+
+cross_account_publish(message)
