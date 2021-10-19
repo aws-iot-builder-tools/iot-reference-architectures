@@ -184,18 +184,18 @@ public class CertificateBasedStack extends software.amazon.awscdk.core.Stack imp
         String certificateArn = Fn.getAtt(cfnCertificate.getLogicalId(), "Arn").toString();
 
         // URL to link directly to the certificate
-        new CfnOutput(this, "CertificateURLOutput", CfnOutputProps.builder()
+        new CfnOutput(this, "CertificateURL", CfnOutputProps.builder()
                 .exportName("CertificateURL")
                 .value(Fn.join("", List.of("https://console.aws.amazon.com/iot/home?region=", Aws.REGION, "#/certificate/", certificateFingerprint).asJava()))
                 .build());
 
         // The certificate ARN
-        new CfnOutput(this, "CertificateARNOutput", CfnOutputProps.builder()
+        new CfnOutput(this, "CertificateARN", CfnOutputProps.builder()
                 .exportName("CertificateARN")
                 .value(certificateArn)
                 .build());
 
-        new CfnOutput(this, "CertificateIDOutput", CfnOutputProps.builder()
+        new CfnOutput(this, "CertificateID", CfnOutputProps.builder()
                 .exportName("CertificateID")
                 .value(certificateFingerprint)
                 .build());
@@ -203,14 +203,19 @@ public class CertificateBasedStack extends software.amazon.awscdk.core.Stack imp
         String certificateFileName = Fn.join(".", List.of(certificateFingerprint, "pem").asJava());
 
         new CfnOutput(this, "CertificatePEMFile", CfnOutputProps.builder()
-                .exportName("CertificateFile")
+                .exportName("CertificatePEMFile")
                 .value(certificateFileName)
                 .build());
 
         // The command to get the certificate PEM into a file
         new CfnOutput(this, "CertificatePEMCommand", CfnOutputProps.builder()
-                .exportName("CertificateCommand")
+                .exportName("CertificatePEMCommand")
                 .value(Fn.join("", List.of("aws iot describe-certificate --certificate-id ", certificateFingerprint, " --query certificateDescription.certificatePem --output text > ", certificateFingerprint, ".pem").asJava()))
+                .build());
+
+        new CfnOutput(this, "CertificateActivateCommand", CfnOutputProps.builder()
+                .exportName("CertificateActivateCommand")
+                .value(Fn.join("", List.of("aws iot update-certificate --certificate-id ", certificateFingerprint, " --new-status ACTIVE").asJava()))
                 .build());
 
         CfnPolicyPrincipalAttachmentProps cfnPolicyPrincipalAttachmentProps = CfnPolicyPrincipalAttachmentProps.builder()

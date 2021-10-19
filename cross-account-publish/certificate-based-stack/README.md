@@ -1,5 +1,7 @@
 # AWS IoT automated cross-account certificate signing
 
+NOTE: Sample code to use certificates created by this architecture exist in the [python](python) and [nodejs](nodejs) directories.
+
 <!-- toc -->
 
 - [What is this architecture?](#what-is-this-architecture)
