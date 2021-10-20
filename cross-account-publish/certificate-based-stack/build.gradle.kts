@@ -65,7 +65,7 @@ val awsLambdaServletVersion = "0.2.4"
 val daggerVersion = "2.39.1"
 val resultsIteratorForAwsJavaSdkVersion = "29.0.22"
 val bouncyCastleVersion = "1.69"
-val awsCdkConstructsForJavaVersion = "0.16.8"
+val awsCdkConstructsForJavaVersion = "0.17.13"
 
 dependencies {
     // Dagger code generation
