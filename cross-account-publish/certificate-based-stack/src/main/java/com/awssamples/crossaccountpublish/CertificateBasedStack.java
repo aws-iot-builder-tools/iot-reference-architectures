@@ -70,11 +70,11 @@ public class CertificateBasedStack extends software.amazon.awscdk.core.Stack imp
         Option<String> desiredTopicArgument = getDesiredTopicArgument();
 
         if (csrFileArgument.isEmpty() && desiredTopicArgument.isEmpty()) {
-            throw new RuntimeException("In the environment variables either a CSR filename [" + CSR_FILE_VARIABLE + "] or a desired topic/topic hierarchy [" + DESIRED_TOPIC_VARIABLE + "] must be specified");
+            throw new RuntimeException("In the context variables either a CSR filename [" + CSR_FILE_VARIABLE + "] or a desired topic/topic hierarchy [" + DESIRED_TOPIC_VARIABLE + "] must be specified");
         }
 
         if (csrFileArgument.isDefined() && desiredTopicArgument.isDefined()) {
-            throw new RuntimeException("In the environment variables either a CSR filename [" + CSR_FILE_VARIABLE + "] or a desired topic/topic hierarchy [" + DESIRED_TOPIC_VARIABLE + "] must be specified, but not both");
+            throw new RuntimeException("In the context variables either a CSR filename [" + CSR_FILE_VARIABLE + "] or a desired topic/topic hierarchy [" + DESIRED_TOPIC_VARIABLE + "] must be specified, but not both");
         }
 
         // Build all of the necessary JARs
