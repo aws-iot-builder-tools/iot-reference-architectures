@@ -1,0 +1,51 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '5.0.0'
+}
+
+def gradleDependencyVersion = '5.5.1'
+
+wrapper {
+    gradleVersion = gradleDependencyVersion
+}
+
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = 'com.awssamples.iot.attribution.SampleV1SDK'
+
+// Specify all of our dependency versions
+def slf4jVersion = '1.7.25'
+def jcabiLogVersion = '0.18'
+def awsSdkVersion = '1.11.530'
+
+distZip.enabled = shadowDistZip.enabled = false
+distTar.enabled = shadowDistTar.enabled = false
+
+group = 'com.awssamples.iot.attribution.SampleV1SDK'
+version = '1.0-SNAPSHOT'
+
+description = """"""
+
+shadowJar {
+    // Create a shadow JAR with all of the necessary dependencies
+    archiveFileName = 'sample-v1-sdk.jar'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.slf4j:slf4j-log4j12:$slf4jVersion"
+    compile "com.jcabi:jcabi-log:$jcabiLogVersion"
+    compile "com.amazonaws:aws-java-sdk-iot:$awsSdkVersion"
+}
