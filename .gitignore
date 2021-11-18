@@ -25,3 +25,5 @@ aws-iot-sdk-browser-bundle-min.js
 JunkTest.java
 *.iml
 package-lock.json
+/partner-attribution/golang/sample
+*.sum

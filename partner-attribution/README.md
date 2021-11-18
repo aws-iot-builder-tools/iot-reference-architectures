@@ -17,6 +17,7 @@ This section of the repository is for partners, running IoT platforms on AWS, th
   * [AWS SDK for Java v2](#aws-sdk-for-java-v2)
   * [AWS SDK for JavaScript in Node.js](#aws-sdk-for-javascript-in-nodejs)
   * [AWS SDK for Python (Boto 3)](#aws-sdk-for-python-boto-3)
+  * [AWS SDK for Golang](#aws-sdk-for-golang)
 
 <!-- tocstop -->
 
@@ -56,7 +57,7 @@ Platform value: `APN/1 PartnerSoft`
 - Partner software: `Managed IoT` -> `ManagedIoT` (no spaces allowed)
 - Partner software version: N/A
 
-Platform value: `APN/1 PartnerSoft,ManagedIoT`
+Platform value: `APN/1 PartnerSoft,Managed IoT`
 
 ##### Best
 
@@ -85,3 +86,7 @@ The [AWS SDK for JavaScript in Node.js sample](./nodejs) is for partners using t
 ### AWS SDK for Python (Boto 3)
 
 The [AWS SDK for Python sample](./python) is for partners using the [AWS SDK for Python (Boto 3)](https://github.com/boto/boto3). Custom request headers are added before the request is sent. There is an initialization function that needs to be called with the desired SDK and Platform values. After the initialization function is called Boto 3 calls can be made as normal and they will have the headers added automatically.
+
+### AWS SDK for Golang
+
+The [AWS SDK for Go sample](./golang) is for partners using the [AWS SDK for Go](https://github.com/aws/aws-sdk-go). Custom request headers are added before the request is sent in the main function of the sample.
