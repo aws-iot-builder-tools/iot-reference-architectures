@@ -27,3 +27,6 @@ JunkTest.java
 package-lock.json
 /partner-attribution/golang/sample
 *.sum
+GreengrassInstaller
+/greengrass-v2/poll-api/greengrass
+/greengrass-v2/poll-api/recipes/com.greengrass.ExportStreamToS3-1.0.0.json

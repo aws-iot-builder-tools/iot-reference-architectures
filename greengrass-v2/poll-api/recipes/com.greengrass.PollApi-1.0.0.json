@@ -1,0 +1,42 @@
+{
+  "RecipeFormatVersion": "2020-01-25",
+  "ComponentName": "com.greengrass.PollApi",
+  "ComponentVersion": "1.0.0",
+  "ComponentDescription": "Polls an API endpoint and writes the data to a stream",
+  "ComponentPublisher": "AWS",
+  "ComponentConfiguration": {
+    "DefaultConfiguration": {
+      "Endpoint": "http://localhost:5000/data",
+      "PollIntervalSecs": 2,
+      "StreamName": "RawApiDataStream"
+    }
+  },
+  "ComponentDependencies": {
+    "aws.greengrass.StreamManager": {
+      "VersionRequirement": ">=2.0.12",
+      "DependencyType": "HARD"
+    },
+    "com.greengrass.GGUtils": {
+      "VersionRequirement": ">=1.0.0",
+      "DependencyType": "HARD"
+    }
+  },
+  "Manifests": [
+    {
+      "Platform": {
+        "os": "linux",
+        "architecture": "/amd64|x86|aarch64/"
+      },
+      "Lifecycle": {
+        "Setenv": {
+          "GGUTILS_PATH": "{com.greengrass.GGUtils:artifacts:path}",
+          "LC_ALL": "C.UTF-8",
+          "LANG": "C.UTF-8"
+        },
+        "Run": {
+          "Script": "bash {artifacts:path}/installer.sh\npython3 {artifacts:path}/poll.py"
+        }
+      }
+    }
+  ]
+}

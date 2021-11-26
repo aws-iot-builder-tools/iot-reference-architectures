@@ -1,0 +1,31 @@
+{
+  "RecipeFormatVersion": "2020-01-25",
+  "ComponentName": "com.greengrass.FakeApi",
+  "ComponentVersion": "1.0.0",
+  "ComponentDescription": "A fake API to make testing polling scripts easier",
+  "ComponentPublisher": "AWS",
+  "ComponentConfiguration": {
+    "DefaultConfiguration": {
+    }
+  },
+  "ComponentDependencies": {
+  },
+  "Manifests": [
+    {
+      "Platform": {
+        "os": "linux",
+        "architecture": "/amd64|x86|aarch64/"
+      },
+      "Lifecycle": {
+        "Setenv": {
+          "LC_ALL": "C.UTF-8",
+          "LANG": "C.UTF-8",
+          "FLASK_APP": "{artifacts:path}/app.py"
+        },
+        "Run": {
+          "Script": "bash {artifacts:path}/installer.sh\ncd {work:path} && flask run -h localhost"
+        }
+      }
+    }
+  ]
+}

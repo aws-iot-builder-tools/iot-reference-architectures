@@ -1,0 +1,47 @@
+{
+  "RecipeFormatVersion": "2020-01-25",
+  "ComponentName": "com.greengrass.FilterApiStream",
+  "ComponentVersion": "1.0.0",
+  "ComponentDescription": "Gets API data from a stream and filters it",
+  "ComponentPublisher": "AWS",
+  "ComponentConfiguration": {
+    "DefaultConfiguration": {
+      "PollIntervalSecs": 10,
+      "FilteredStreamName": "FilteredStream",
+      "DeviceList": [ "device_4", "device_7", "device_2" ]
+    }
+  },
+  "ComponentDependencies": {
+    "aws.greengrass.StreamManager": {
+      "VersionRequirement": ">=2.0.12",
+      "DependencyType": "HARD"
+    },
+    "com.greengrass.GGUtils": {
+      "VersionRequirement": ">=1.0.0",
+      "DependencyType": "HARD"
+    },
+    "com.greengrass.PollApi": {
+      "VersionRequirement": ">=1.0.0",
+      "DependencyType": "HARD"
+    }
+  },
+  "Manifests": [
+    {
+      "Platform": {
+        "os": "linux",
+        "architecture": "/amd64|x86|aarch64/"
+      },
+      "Lifecycle": {
+        "Setenv": {
+          "GGUTILS_PATH": "{com.greengrass.GGUtils:artifacts:path}",
+          "LC_ALL": "C.UTF-8",
+          "LANG": "C.UTF-8",
+          "ExtraConfigList": "com.greengrass.PollApi"
+        },
+        "Run": {
+          "Script": "bash {artifacts:path}/installer.sh\npython3 {artifacts:path}/filter.py"
+        }
+      }
+    }
+  ]
+}

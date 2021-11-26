@@ -1,0 +1,64 @@
+{
+  "RecipeFormatVersion": "2020-01-25",
+  "ComponentName": "com.greengrass.ProcessApiStream",
+  "ComponentVersion": "1.0.0",
+  "ComponentDescription": "Gets API data from a stream and processes it",
+  "ComponentPublisher": "AWS",
+  "ComponentConfiguration": {
+    "DefaultConfiguration": {
+      "PollIntervalSecs": 10,
+      "CheckFieldNumber": 3,
+      "CheckFieldMinValue": 2,
+      "CheckFieldMaxValue": 8,
+      "LowValueStreamName": "LowValueStream",
+      "HighValueStreamName": "HighValueStream",
+      "AbnormalValueStreamName": "AbnormalValueStream",
+      "accessControl": {
+        "aws.greengrass.ipc.mqttproxy": {
+          "com.greengrass.ProcessApiStream:mqttproxy:1": {
+            "policyDescription": "Publish to the anomalies topic on AWS IoT Core",
+            "operations": [
+              "aws.greengrass#PublishToIoTCore"
+            ],
+            "resources": [
+              "anomalies"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "ComponentDependencies": {
+    "aws.greengrass.StreamManager": {
+      "VersionRequirement": ">=2.0.12",
+      "DependencyType": "HARD"
+    },
+    "com.greengrass.GGUtils": {
+      "VersionRequirement": ">=1.0.0",
+      "DependencyType": "HARD"
+    },
+    "com.greengrass.FilterApiStream": {
+      "VersionRequirement": ">=1.0.0",
+      "DependencyType": "HARD"
+    }
+  },
+  "Manifests": [
+    {
+      "Platform": {
+        "os": "linux",
+        "architecture": "/amd64|x86|aarch64/"
+      },
+      "Lifecycle": {
+        "Setenv": {
+          "GGUTILS_PATH": "{com.greengrass.GGUtils:artifacts:path}",
+          "LC_ALL": "C.UTF-8",
+          "LANG": "C.UTF-8",
+          "ExtraConfigList": "com.greengrass.FilterApiStream"
+        },
+        "Run": {
+          "Script": "bash {artifacts:path}/installer.sh\npython3 {artifacts:path}/process.py"
+        }
+      }
+    }
+  ]
+}
