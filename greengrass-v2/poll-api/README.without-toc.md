@@ -329,7 +329,7 @@ GGUtils is based on
 aws-greengrass-component-examples/machine-learning/sagemaker-edge-manager/artifacts/com.greengrass.SageMakerEdgeManager.ObjectDetection/1.0.0/object_detection/IPCUtils.py.
 It has been converted into a component so it can be shared with other components.
 
-### Architecture diagram
+### Architecture diagram 1: Streaming data to S3 only
 
 ```text
 ┌────────────────┬─────────────────────────────────────────────────────────────────────────────────────────┐                      
