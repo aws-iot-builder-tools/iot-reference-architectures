@@ -53,11 +53,13 @@ or not) to AWS:
 
 ## How can I get started quickly?
 
-If you already have a Greengrass core running, you can simply copy the artifacts and recipes to your core and merge them with your configuration.
+If you already have a Greengrass core running, you can simply copy the artifacts and recipes to your core and merge them
+with your configuration.
 
 If you'd like to see values exported to S3 with a simple polling setup you can do the following:
 
-- Copy `recipe/com.greengrass.ExportStreamToS3-1.0.0.json.template` to `recipe/com.greengrass.ExportStreamToS3-1.0.0.json`
+- Copy `recipe/com.greengrass.ExportStreamToS3-1.0.0.json.template`
+  to `recipe/com.greengrass.ExportStreamToS3-1.0.0.json`
 - Set the `BucketName` value in `recipe/com.greengrass.ExportStreamToS3-1.0.0.json` to the name of your S3 bucket
 - Create the bucket if it does not exist already
 - Make sure your Greengrass core's permissions allow it to access the bucket
@@ -338,20 +340,11 @@ In the component configuration it would look like this:
       "Lifecycle": {
         "Setenv": {
           "LC_ALL": "C.UTF-8",
-          !
-    [
-      img.png
-    ]
-    (img.png)
-    "LANG"
-    :
-    "C.UTF-8",
-    "NOTE"
-    :
-    "... SOME CONFIGURATION DATA OMITTED ..."
+          "LANG": "C.UTF-8",
+          "NOTE": "... SOME CONFIGURATION DATA OMITTED ..."
+        }
+      }
     }
-  }
-  }
   ]
 }
 ```
