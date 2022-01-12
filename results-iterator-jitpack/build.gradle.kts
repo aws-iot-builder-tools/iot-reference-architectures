@@ -27,7 +27,7 @@ tasks.shadowDistTar { enabled = false }
 // Specify all of our dependency versions
 val resultsIteratorForAwsJavaSdkVersion = "29.0.23"
 val junitVersion = "4.13.2"
-val awsSdk2Version = "2.17.98"
+val awsSdk2Version = "2.17.109"
 val vavrVersion = "0.10.4"
 val jcabiVersion = "0.20.1"
 
