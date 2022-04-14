@@ -77,7 +77,7 @@ val junitVersion = "4.13.2"
 // NOTE: Upgrading Jetty to 10.0.0 or beyond will cause this error - java.lang.NoSuchMethodError: 'void org.eclipse.jetty.server.ServerConnector.setSoLingerTime(int)'
 val jettyVersion = "10.0.7"
 val bouncyCastleVersion = "1.70"
-val vertxVersion = "4.2.3"
+val vertxVersion = "4.2.7"
 val jjwtVersion = "3.18.2"
 val awsCdkConstructsForJava = "0.19.3"
 val awsLambdaServletVersion = "0.3.8"
