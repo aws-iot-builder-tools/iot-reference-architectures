@@ -30,3 +30,4 @@ package-lock.json
 GreengrassInstaller
 /greengrass-v2/poll-api/greengrass
 /greengrass-v2/poll-api/recipes/com.greengrass.ExportStreamToS3-1.0.0.json
+*aws-iot-sdk-browser-bundle-min.js*
