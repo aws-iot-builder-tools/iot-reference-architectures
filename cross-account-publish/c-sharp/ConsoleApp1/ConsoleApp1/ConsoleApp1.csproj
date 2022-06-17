@@ -8,7 +8,7 @@
     <ItemGroup>
       <PackageReference Include="AWSSDK.IoT" Version="3.7.10.3" />
       <PackageReference Include="AWSSDK.IotData" Version="3.7.1.61" />
-      <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.1.97" />
+      <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.1.166" />
     </ItemGroup>
 
 </Project>
