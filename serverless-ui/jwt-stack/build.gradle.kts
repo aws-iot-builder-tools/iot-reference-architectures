@@ -5,7 +5,6 @@ import org.wisepersist.gradle.plugins.gwt.GwtPluginExtension
 import org.wisepersist.gradle.plugins.gwt.GwtSuperDevOptions
 
 plugins {
-    // NOTE: Upgrading the "jvm" plugin to 1.5.0 or beyond will break configuration.compile
     kotlin("jvm") version "1.6.10"
     id("application")
     id("java")
