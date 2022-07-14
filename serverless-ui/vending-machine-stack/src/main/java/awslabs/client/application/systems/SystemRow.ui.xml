@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui"
+>
+
+    <m:MaterialContainer ui:field="container">
+        <m:MaterialRow>
+            <m:MaterialCard>
+                <m:MaterialCardContent>
+                    <m:MaterialCardTitle ui:field="name" iconType="COMPUTER" iconPosition="RIGHT"/>
+                    <m:MaterialLabel ui:field="description"/>
+                </m:MaterialCardContent>
+                <m:MaterialCardAction>
+                    <m:MaterialLink ui:field="connectLink"/>
+                    <m:MaterialLink ui:field="shareLink"/>
+                </m:MaterialCardAction>
+            </m:MaterialCard>
+        </m:MaterialRow>
+    </m:MaterialContainer>
+</ui:UiBinder>

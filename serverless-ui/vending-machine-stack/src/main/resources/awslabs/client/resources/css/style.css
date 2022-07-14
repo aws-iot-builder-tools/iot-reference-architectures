@@ -1,0 +1,12 @@
+.refresh {
+    transform: rotate(360deg);
+    transition-property: all;
+    transition-duration: 500ms;
+}
+
+.notransition {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    transition: none !important;
+}

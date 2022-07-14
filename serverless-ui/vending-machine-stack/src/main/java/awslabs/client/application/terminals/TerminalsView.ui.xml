@@ -1,0 +1,15 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui">
+
+    <m:MaterialContainer ui:field="container">
+        <m:MaterialPanel containerEnabled="false" paddingLeft="60" paddingRight="60">
+            <m:MaterialRow marginTop="100">
+                <m:MaterialTitle title="Terminals"
+                                 description="Below the terminal menu item on the left is the list of terminals that are currently open."/>
+            </m:MaterialRow>
+            <m:MaterialRow>
+                <m:MaterialLabel text="You can open a terminal by going to the Systems view and clicking CONNECT on a system that is online and has SSM installed."/>
+            </m:MaterialRow>
+        </m:MaterialPanel>
+    </m:MaterialContainer>
+</ui:UiBinder>

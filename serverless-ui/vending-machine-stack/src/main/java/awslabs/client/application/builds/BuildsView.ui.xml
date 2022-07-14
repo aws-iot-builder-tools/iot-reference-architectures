@@ -1,0 +1,27 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui">
+
+    <ui:with field='res' type='awslabs.client.resources.AppResources'/>
+
+    <m:MaterialContainer ui:field="container">
+        <m:MaterialPanel containerEnabled="false" paddingLeft="60" paddingRight="60">
+            <m:MaterialRow ui:field="noBuildsRow" paddingTop="100" visible="false">
+                <m:MaterialLabel text="No builds yet..."/>
+            </m:MaterialRow>
+            <m:MaterialRow ui:field="buildsLoadingRow" paddingTop="100">
+                <m:MaterialPreLoader size="BIG">
+                    <m:MaterialSpinner color="BLUE_ONLY"/>
+                </m:MaterialPreLoader>
+                <m:MaterialLabel text="Builds loading..."/>
+            </m:MaterialRow>
+            <m:MaterialRow ui:field="buildsRow" paddingTop="100" visible="false">
+            </m:MaterialRow>
+        </m:MaterialPanel>
+
+        <m:MaterialFAB>
+            <!-- m:id is required so that we can have the reload icon animation work properly -->
+            <m:MaterialButton m:id="reload" ui:field="reload" iconType="REFRESH" type="FLOATING" size="LARGE"
+                              backgroundColor="PINK"/>
+        </m:MaterialFAB>
+    </m:MaterialContainer>
+</ui:UiBinder>

@@ -1,0 +1,22 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui"
+>
+
+    <m:MaterialContainer ui:field="container">
+        <m:MaterialRow>
+            <m:MaterialCard>
+                <m:MaterialCollapsible>
+                    <m:MaterialCollapsibleItem>
+                        <m:MaterialCollapsibleHeader>
+                            <m:MaterialLabel ui:field="name"/>
+                        </m:MaterialCollapsibleHeader>
+                        <m:MaterialCollapsibleBody>
+                            <m:MaterialLabel ui:field="buildDuration"/>
+                            <m:MaterialLink ui:field="downloadLink"/>
+                        </m:MaterialCollapsibleBody>
+                    </m:MaterialCollapsibleItem>
+                </m:MaterialCollapsible>
+            </m:MaterialCard>
+        </m:MaterialRow>
+    </m:MaterialContainer>
+</ui:UiBinder>
