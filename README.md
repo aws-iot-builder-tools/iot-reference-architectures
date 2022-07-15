@@ -33,6 +33,9 @@ These reference architectures use [CDK](https://aws.amazon.com/cdk/)
 - Cross-account publish
     - [Certificate based stack](cross-account-publish/certificate-based-stack) - A stack that simplifies onboarding an
       AWS IoT data producer to an account using a certificate to allow cross-account publishing
+- Vending machine
+    - Java
+        - [Disk image vending machine stack](serverless-ui/vending-machine-stack) - A stack that has a web UI to create disk images. Currently supports Raspberry Pi devices and can pre-install and provision the [AWS Systems Manager](https://aws.amazon.com/systems-manager/) agent.
 
 ## CloudFormation reference architecture list
 
