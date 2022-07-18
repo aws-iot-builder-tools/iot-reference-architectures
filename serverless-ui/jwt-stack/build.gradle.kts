@@ -15,7 +15,7 @@ plugins {
     // Creates fat JAR
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
-    id("org.wisepersist.gwt") version "1.1.16"
+    id("org.wisepersist.gwt") version "1.1.18"
     id("org.gretty") version "3.0.6"
 
     id("com.github.ben-manes.versions") version "0.41.0"
