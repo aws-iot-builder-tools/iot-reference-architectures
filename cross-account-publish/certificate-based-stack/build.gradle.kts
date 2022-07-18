@@ -9,7 +9,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 
     // Adds dependencyUpdates task
-    id("com.github.ben-manes.versions") version "0.41.0"
+    id("com.github.ben-manes.versions") version "0.42.0"
 }
 
 extensions.findByName("buildScan")?.withGroovyBuilder {
