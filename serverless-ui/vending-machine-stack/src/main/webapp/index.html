@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0">
+
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+    <title>app</title>
+
+    <script src="app/app.nocache.js"></script>
+
+    <link rel="stylesheet" href="style/demo.css"/>
+    <link rel="stylesheet" href="xterm/xterm.css"/>
+
+    <script src="xterm/xterm.js"></script>
+    <!-- xterm.js license is in xterm/LICENSE -->
+
+    <script>
+        setTimeout(function () {
+            if (!document.getElementById("app")) {
+                // The GWT app failed to load in 4 seconds, reload the page
+                window.location.reload();
+            }
+        }, 4000)
+    </script>
+
+    <style>
+        :focus {
+            outline: none;
+        }
+    </style>
+
+    <script>
+        String.prototype.endsWith = function (s) {
+            return this.length >= s.length && this.substr(this.length - s.length) == s;
+        }
+
+        var originalLocationString = String(window.location);
+        var locationString = String(window.location);
+        var queryString = String(window.location.search);
+        locationString = locationString.replace(queryString, '');
+
+        if (!locationString.endsWith("/")) {
+            // Redirect to the correct URL, slash is required at the end so relative links work as expected
+            // Use window.location.replace so the previous incorrect location is not stored in the browser history
+            locationString = locationString + "/"
+        }
+
+        locationString = locationString + queryString;
+
+        if (locationString != originalLocationString) {
+            window.location.replace(locationString);
+        }
+    </script>
+</head>
+
+<body>
+<!-- RECOMMENDED if your web app will not function without JavaScript enabled -->
+<noscript>
+    <div style="width: 22em; position: absolute; left: 50%; margin-left: -11em; color: red; background-color: white; border: 1px solid red; padding: 4px; font-family: sans-serif">
+        Your web browser must have JavaScript enabled
+        in order for this application to display correctly.
+    </div>
+</noscript>
+
+<!-- Will add a custom splashscreen for your GMD app -->
+<script type="text/javascript" src="splash/splash.js"></script>
+</body>
+</html>

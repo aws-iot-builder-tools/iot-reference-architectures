@@ -1,0 +1,108 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui">
+
+    <m:MaterialContainer ui:field="container">
+        <m:MaterialPanel containerEnabled="false" paddingLeft="60" paddingRight="60">
+            <m:MaterialRow paddingTop="100">
+                <m:MaterialCollapsible>
+                    <!-- Name -->
+                    <m:MaterialCollapsibleItem>
+                        <m:MaterialCollapsibleHeader>
+                            <m:MaterialLink text="Name" iconType="PERSON_PIN" iconPosition="LEFT"
+                                            textColor="BLACK"/>
+                        </m:MaterialCollapsibleHeader>
+                        <m:MaterialCollapsibleBody>
+                            <m:MaterialTextBox ui:field="imageName" label="Image name" visible="true"/>
+                        </m:MaterialCollapsibleBody>
+                    </m:MaterialCollapsibleItem>
+
+                    <!-- Networking (WiFi) -->
+                    <m:MaterialCollapsibleItem>
+                        <m:MaterialCollapsibleHeader>
+                            <m:MaterialLink text="Networking" iconType="WIFI" iconPosition="LEFT"
+                                            textColor="BLACK"/>
+                        </m:MaterialCollapsibleHeader>
+                        <m:MaterialCollapsibleBody>
+                            <m:MaterialCheckBox ui:field="wifiEnabled" text="Enable WiFi" value="false"
+                                                type="FILLED"/>
+                            <m:MaterialTextBox ui:field="wifiSsid" label="SSID" visible="false"/>
+                            <m:MaterialTextBox ui:field="wifiPassword" label="Password" visible="false"
+                                               type="PASSWORD"/>
+                            <m:MaterialCheckBox ui:field="wifiPasswordHidden" text="Hide password" value="true"
+                                                visible="false" type="FILLED"/>
+                        </m:MaterialCollapsibleBody>
+                    </m:MaterialCollapsibleItem>
+
+                    <!-- AWS features -->
+                    <m:MaterialCollapsibleItem>
+                        <m:MaterialCollapsibleHeader>
+                            <m:MaterialLink text="AWS features" iconType="CLOUD_QUEUE" iconPosition="LEFT"
+                                            textColor="BLACK"/>
+                        </m:MaterialCollapsibleHeader>
+                        <m:MaterialCollapsibleBody>
+                            <m:MaterialCheckBox ui:field="ssmEnabled" text="Enable SSM" value="true" type="FILLED"/>
+                            <m:MaterialCheckBox ui:field="greengrassEnabled" text="Enable Greengrass (coming soon)"
+                                                value="false"
+                                                type="FILLED" enabled="false"/>
+                        </m:MaterialCollapsibleBody>
+                    </m:MaterialCollapsibleItem>
+
+                    <!-- Physical interfaces -->
+                    <m:MaterialCollapsibleItem>
+                        <m:MaterialCollapsibleHeader>
+                            <m:MaterialLink text="Physical interfaces" iconType="SETTINGS_ETHERNET"
+                                            iconPosition="LEFT"
+                                            textColor="BLACK"/>
+                        </m:MaterialCollapsibleHeader>
+                        <m:MaterialCollapsibleBody>
+                            <m:MaterialPanel containerEnabled="false" paddingBottom="45">
+                                <m:MaterialRow>
+                                    <m:MaterialColumn grid="s3">
+                                        <m:MaterialCheckBox ui:field="oneWireEnabled" text="Enable 1-wire"
+                                                            value="true"
+                                                            type="FILLED"/>
+                                    </m:MaterialColumn>
+                                    <m:MaterialColumn grid="s3">
+                                        <m:MaterialTextBox ui:field="oneWirePin" label="1-wire pin" value="4"
+                                                           type="NUMBER"
+                                                           fieldWidth="20"/>
+                                    </m:MaterialColumn>
+                                </m:MaterialRow>
+
+                                <m:MaterialRow grid="s12">
+                                    <m:MaterialCheckBox ui:field="i2cEnabled" text="Enable I2C" value="true"
+                                                        type="FILLED"/>
+                                </m:MaterialRow>
+                            </m:MaterialPanel>
+                        </m:MaterialCollapsibleBody>
+                    </m:MaterialCollapsibleItem>
+
+                    <!-- Pi specific -->
+                    <m:MaterialCollapsibleItem>
+                        <m:MaterialCollapsibleHeader>
+                            <m:MaterialLink text="Admin" iconType="ALARM_ON"
+                                            iconPosition="LEFT"
+                                            textColor="BLACK"/>
+                        </m:MaterialCollapsibleHeader>
+                        <m:MaterialCollapsibleBody>
+                            <m:MaterialPanel containerEnabled="false" paddingBottom="45">
+                                <m:MaterialRow>
+                                    <m:MaterialColumn grid="s3">
+                                        <m:MaterialCheckBox ui:field="addPiAccount" text="Set Pi account password to 'raspberry'"
+                                                            value="true"
+                                                            type="FILLED"/>
+                                    </m:MaterialColumn>
+                                </m:MaterialRow>
+                            </m:MaterialPanel>
+                        </m:MaterialCollapsibleBody>
+                    </m:MaterialCollapsibleItem>
+                </m:MaterialCollapsible>
+            </m:MaterialRow>
+
+            <m:MaterialFAB>
+                <m:MaterialButton ui:field="build" iconType="BUILD" type="FLOATING" size="LARGE"
+                                  backgroundColor="PINK"/>
+            </m:MaterialFAB>
+        </m:MaterialPanel>
+    </m:MaterialContainer>
+</ui:UiBinder>

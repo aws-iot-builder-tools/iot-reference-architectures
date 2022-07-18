@@ -3,6 +3,7 @@ import org.akhikhl.gretty.GrettyExtension
 import org.wisepersist.gradle.plugins.gwt.GwtCompileOptions
 import org.wisepersist.gradle.plugins.gwt.GwtPluginExtension
 import org.wisepersist.gradle.plugins.gwt.GwtSuperDevOptions
+import org.wisepersist.gradle.plugins.gwt.Style
 
 plugins {
     kotlin("jvm") version "1.6.10"
@@ -13,12 +14,12 @@ plugins {
     id("war")
 
     // Creates fat JAR
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
 
-    id("org.wisepersist.gwt") version "1.1.16"
-    id("org.gretty") version "3.0.6"
+    id("org.wisepersist.gwt") version "1.1.12"
+    id("org.gretty") version "3.0.5"
 
-    id("com.github.ben-manes.versions") version "0.41.0"
+    id("com.github.ben-manes.versions") version "0.39.0"
 }
 
 extensions.findByName("buildScan")?.withGroovyBuilder {
@@ -31,7 +32,7 @@ idea.module.isDownloadJavadoc = true
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 
-// Required if using Dagger (and other annotations that generate code)
+// Required if using DominoMVP and annotations that generate code
 sourceSets {
     val main by getting
     main.java.srcDirs("build/generated/sources/annotationProcessor/java/main")
@@ -49,10 +50,7 @@ tasks.wrapper {
 
 repositories {
     mavenCentral()
-    mavenLocal()
     google()
-    // Required for gretty
-    jcenter()
     // Required for AWS Lambda Servlet annotation processor
     maven(url = "https://jitpack.io")
     // Required for Gradle Tooling API
@@ -65,29 +63,34 @@ tasks.shadowDistZip { enabled = false }
 tasks.shadowDistTar { enabled = false }
 
 val awsLambdaJavaCoreVersion = "1.2.1"
-val awsLambdaJavaLog4j2Version = "1.5.1"
-val jacksonVersion = "2.13.1"
-val awsSdk2Version = "2.17.98"
+val awsLambdaJavaLog4j2Version = "1.2.0"
+val jacksonVersion = "2.12.4"
 val vavrVersion = "0.9.2"
-val vavrJacksonVersion = "0.9.2"
-val vavrGwtVersion = "0.9.2"
-val gwtServletVersion = "2.9.0"
+val awsSdk2Version = "2.17.19"
+val awsCdkVersion = "1.159.0"
 val junitVersion = "4.13.2"
-// NOTE: Upgrading Jetty to 10.0.0 or beyond will cause this error - java.lang.NoSuchMethodError: 'void org.eclipse.jetty.server.ServerConnector.setSoLingerTime(int)'
-val jettyVersion = "10.0.7"
-val bouncyCastleVersion = "1.70"
-val vertxVersion = "4.2.3"
-val jjwtVersion = "3.18.2"
+val jettyVersion = "9.4.40.v20210413"
+val bouncyCastleVersion = "1.68"
+val vertxVersion = "4.0.3"
+val jjwtVersion = "3.15.0"
+// NOTE: Versions newer than 0.16.8 will not work without modifications to this application
 val awsCdkConstructsForJava = "0.16.8"
-val awsCdkVersion = "1.156.1"
 val awsLambdaServletVersion = "0.3.7"
-val log4jVersion = "2.17.1"
+val log4jVersion = "2.14.1"
 val daggerVersion = "2.38.1"
-val gwtMaterialVersion = "2.5.0"
+
+val gwtVersion = "2.9.0"
+val gwtServletVersion = gwtVersion
+val gwtMaterialVersion = "2.4.2"
+val gwtMaterialTempVersion = "2.4.2.1-temp"
 val elemental2Version = "1.1.0"
 val elementoVersion = "1.0.3"
 val gwtJacksonVersion = "0.15.4"
-val resultsIteratorForAwsJavaSdkVersion = "29.0.23"
+val guavaGwtVersion = "30.1.1-jre"
+
+val resultsIteratorForAwsJavaSdkVersion = "29.0.16"
+val httpClientVersion = "4.5.13"
+val hamcrestVersion = "2.2"
 
 dependencies {
     // Dagger code generation
@@ -95,18 +98,26 @@ dependencies {
     implementation("com.google.dagger:dagger:$daggerVersion")
     implementation("com.google.dagger:dagger-gwt:$daggerVersion")
 
+    // Dependency added to fix - https://github.com/aws/aws-sdk-java-v2/issues/652
+    implementation("org.apache.httpcomponents:httpclient:$httpClientVersion")
+    implementation("software.amazon.awssdk:apache-client:$awsSdk2Version")
+
     implementation("com.fasterxml.jackson.core:jackson-core:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-databind:$jacksonVersion")
     implementation("com.fasterxml.jackson.core:jackson-annotations:$jacksonVersion")
     implementation("io.vavr:vavr:$vavrVersion")
-    implementation("io.vavr:vavr-jackson:$vavrJacksonVersion")
-    implementation("io.vavr:vavr-gwt:$vavrGwtVersion")
+    implementation("io.vavr:vavr-jackson:$vavrVersion")
+    implementation("io.vavr:vavr-gwt:$vavrVersion")
     implementation("software.amazon.awssdk:iot:$awsSdk2Version")
     implementation("software.amazon.awssdk:iotdataplane:$awsSdk2Version")
     implementation("software.amazon.awssdk:sts:$awsSdk2Version")
+    implementation("software.amazon.awssdk:ssm:$awsSdk2Version")
+    implementation("software.amazon.awssdk:lambda:$awsSdk2Version")
+    implementation("software.amazon.awscdk:lambda:$awsCdkVersion")
     implementation("com.google.gwt:gwt-servlet:$gwtServletVersion")
     implementation("org.eclipse.jetty:jetty-servlet:$jettyVersion")
     implementation("org.eclipse.jetty:jetty-server:$jettyVersion")
+    implementation("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
 
     // Lambda core and logging
     implementation("com.amazonaws:aws-lambda-java-core:$awsLambdaJavaCoreVersion")
@@ -114,6 +125,14 @@ dependencies {
     implementation("org.apache.logging.log4j:log4j-core:$log4jVersion")
     api("org.apache.logging.log4j:log4j-slf4j18-impl:$log4jVersion")
     api("com.amazonaws:aws-lambda-java-log4j2:$awsLambdaJavaLog4j2Version")
+
+    api("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
+    annotationProcessor("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
+
+    implementation("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJava")
+    annotationProcessor("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJava")
+
+    testImplementation("junit:junit:$junitVersion")
 
     implementation("com.github.gwtmaterialdesign:gwt-material:$gwtMaterialVersion")
     implementation("com.github.gwtmaterialdesign:gwt-material-themes:$gwtMaterialVersion")
@@ -125,21 +144,11 @@ dependencies {
     implementation("org.jboss.elemento:elemento-core:$elementoVersion")
     implementation("com.github.nmorel.gwtjackson:gwt-jackson:$gwtJacksonVersion")
 
-    implementation("com.auth0:java-jwt:$jjwtVersion")
-    implementation("io.vertx:vertx-core:$vertxVersion")
-    implementation("org.bouncycastle:bcprov-jdk15on:$bouncyCastleVersion")
-    implementation("org.bouncycastle:bcpkix-jdk15on:$bouncyCastleVersion")
+    // For client side base64 encoding and decoding
+    implementation("com.google.guava:guava-gwt:$guavaGwtVersion")
 
-    api("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
-    annotationProcessor("com.github.aws-samples:aws-lambda-servlet:$awsLambdaServletVersion")
-
-    implementation("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJava")
-    annotationProcessor("com.github.aws-samples:aws-cdk-constructs-for-java:$awsCdkConstructsForJava")
-
-    implementation("com.github.awslabs:results-iterator-for-aws-java-sdk:$resultsIteratorForAwsJavaSdkVersion")
-    implementation("software.amazon.awssdk:apache-client:$awsSdk2Version")
-
-    testImplementation("junit:junit:$junitVersion")
+    testImplementation("org.hamcrest:hamcrest:$hamcrestVersion")
+    testImplementation("org.hamcrest:hamcrest-core:$hamcrestVersion")
 }
 
 configurations.all {
@@ -166,15 +175,14 @@ configure<GwtPluginExtension> {
     gwtVersion = gwtServletVersion
     maxHeapSize = "2048M"
 
-//    modules("com.awslabs.iatt.spe.serverless.gwt.Jwt")
-    modules("com.awssamples.Jwt")
+    modules("awslabs.VendingMachine")
 
     compiler(closureOf<GwtCompileOptions> {
         localWorkers = 8
         optimize = 9
         maxHeapSize = "2048M"
         // Set this value if you need to debug the generated source
-        // style = Style.PRETTY
+        style = Style.OBF
     } as Closure<GwtCompileOptions>)
 
     superDev(closureOf<GwtSuperDevOptions> {
@@ -185,7 +193,7 @@ configure<GwtPluginExtension> {
 
 // Task configuration
 val awsIotBrowserBundle = "aws-iot-sdk-browser-bundle-min.js"
-val awsIotBrowserBundleRelativeDestination = "./war/" + awsIotBrowserBundle
+val awsIotBrowserBundleRelativeDestination = "./src/main/webapp/" + awsIotBrowserBundle
 val awsIotBrowserBundleAbsoluteDestination =
     project.projectDir.absolutePath + "/" + awsIotBrowserBundleRelativeDestination
 
@@ -213,58 +221,6 @@ tasks.war {
 
     // Make sure the fixed keys are generated before the WAR
     dependsOn += tasks.test
-}
-
-tasks.shadowJar {
-    // To prevent broken log4j2 configurations - see https://stackoverflow.com/a/61475766
-    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java)
-
-    // Wait until the war is generated so we can get the files from its output directory
-    dependsOn += tasks.war
-    dependsOn += tasks.warTemplate
-
-    // Make sure the fixed keys are generated before the shadow JAR
-    dependsOn += tasks.test
-
-    // Get all of the GWT compiler output
-    inputs.files(fileTree("build/gwt/out"))
-    from("build/gwt/out")
-
-    // Get all of the static assets
-    inputs.files(fileTree("war"))
-    from("war")
-
-    // Exclude WEB-INF so we don't include a bunch of classes we don't need
-    exclude("WEB-INF")
-
-    dependencies {
-        // NOTE: Do not exclude the following dependencies or things will break
-        // - javax.servlet:.*
-        // - com.google.gwt:gwt-servlet:.*
-        exclude(dependency("org.gwtproject.i18n:.*"))
-        exclude(dependency("org.gwtproject.core:.*"))
-        exclude(dependency("org.gwtproject.editor:.*"))
-        exclude(dependency("org.gwtproject.timer:.*"))
-        exclude(dependency("org.gwtproject.event:.*"))
-        exclude(dependency("org.gwtproject.safehtml:.*"))
-        exclude(dependency("io.vertx:.*"))
-        exclude(dependency("net.sourceforge.htmlunit:.*"))
-        exclude(dependency("colt:.*"))
-        exclude(dependency("com.github.tdesjardins:.*"))
-        exclude(dependency("tapestry:.*"))
-        exclude(dependency("com.google.gwt:gwt-dev:.*"))
-        exclude(dependency("com.google.gwt:gwt-user:.*"))
-        exclude(dependency("net.sourceforge.cssparser:.*"))
-        exclude(dependency("com.ibm.icu:.*"))
-        exclude(dependency("javax.websocket:.*"))
-        exclude(dependency("org.glassfish:.*"))
-
-        // Removed dependencies from the results iterator that we don't need
-        exclude(dependency("software.amazon.awssdk:dynamodb:.*"))
-        exclude(dependency("software.amazon.awssdk:ec2:.*"))
-    }
-
-    isZip64 = true
 }
 
 val validateDockerIsAvailable by tasks.registering(Exec::class) {
@@ -302,14 +258,14 @@ val buildDockerImageForBrowserBundle by tasks.registering(Exec::class) {
 
     doLast {
         if (execResult!!.exitValue != 0) {
-            throw GradleException("The docker build of the Javascript IoT device SDK failed")
+            throw GradleException("The Docker build of the Javascript IoT device SDK failed")
         }
     }
 }
 
 val removeBrowserBundleContainerBefore by tasks.registering(Exec::class) {
     isIgnoreExitValue = true
-    commandLine("docker", "rm", "-f", "/aws-iot-device-sdk-js-container")
+    commandLine("docker", "rm", "-f", "aws-iot-device-sdk-js-container")
 }
 
 val createDockerContainerForBrowserBundle by tasks.registering(Exec::class) {
@@ -334,7 +290,63 @@ val createDockerContainerForBrowserBundle by tasks.registering(Exec::class) {
     }
 }
 
+tasks.shadowJar {
+    // To prevent broken log4j2 configurations - see https://stackoverflow.com/a/61475766
+    transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java)
+
+    // Wait until the war is generated so we can get the files from its output directory
+    dependsOn += tasks.war
+    dependsOn += tasks.warTemplate
+
+    // Make sure the fixed keys are generated before the shadow JAR
+    dependsOn += tasks.test
+
+    // Get all of the GWT compiler output
+    inputs.files(fileTree("build/gwt/out"))
+    from("build/gwt/out")
+
+    // Get all of the static assets
+    inputs.files(fileTree("war"))
+    from("war")
+
+    // Exclude WEB-INF so we don't include a bunch of classes we don't need
+    exclude("WEB-INF")
+
+    dependencies {
+        // NOTE: Do not exclude the following dependencies or things will break
+        // - javax.servlet:.*
+        // - com.google.gwt:gwt-servlet:.*
+        exclude(dependency("org.gwtproject.i18n:.*"))
+        exclude(dependency("org.gwtproject.core:.*"))
+        exclude(dependency("org.gwtproject.editor:.*"))
+        exclude(dependency("org.gwtproject.timer:.*"))
+        exclude(dependency("org.gwtproject.event:.*"))
+        exclude(dependency("org.gwtproject.safehtml:.*"))
+        exclude(dependency("org.dominokit:.*"))
+        exclude(dependency("io.vertx:.*"))
+        exclude(dependency("net.sourceforge.htmlunit:.*"))
+        exclude(dependency("colt:.*"))
+        exclude(dependency("com.github.tdesjardins:.*"))
+        exclude(dependency("tapestry:.*"))
+        exclude(dependency("com.google.gwt:gwt-dev:.*"))
+        exclude(dependency("com.google.gwt:gwt-user:.*"))
+        exclude(dependency("net.sourceforge.cssparser:.*"))
+        exclude(dependency("com.ibm.icu:.*"))
+        exclude(dependency("javax.websocket:.*"))
+        exclude(dependency("org.glassfish:.*"))
+
+        // Removed dependencies from the results iterator that we don't need
+        exclude(dependency("software.amazon.awssdk:dynamodb:.*"))
+        exclude(dependency("software.amazon.awssdk:ec2:.*"))
+        exclude(dependency("software.amazon.awssdk:greengrass:.*"))
+        exclude(dependency("software.amazon.awssdk:greengrassv2:.*"))
+    }
+
+    isZip64 = true
+}
+
 task("synth", JavaExec::class) {
     classpath = sourceSets["main"].runtimeClasspath
-    main = "com.awssamples.serverlessui.JwtStack"
+    main = "com.awssamples.serverlessui.VendingMachineStack"
 }
+

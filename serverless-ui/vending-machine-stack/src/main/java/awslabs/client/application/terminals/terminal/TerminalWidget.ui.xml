@@ -1,0 +1,18 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui">
+
+    <ui:with field='res' type='awslabs.client.resources.AppResources'/>
+
+    <m:MaterialContainer ui:field="container">
+        <m:MaterialPanel containerEnabled="false" paddingLeft="60" paddingRight="60" paddingTop="100">
+            <m:MaterialCard>
+                <m:MaterialCardContent ui:field="terminalCardContent"/>
+            </m:MaterialCard>
+        </m:MaterialPanel>
+
+        <m:MaterialFAB>
+            <m:MaterialButton ui:field="close" iconType="CLOSE" type="FLOATING" size="LARGE"
+                              backgroundColor="PINK"/>
+        </m:MaterialFAB>
+    </m:MaterialContainer>
+</ui:UiBinder>

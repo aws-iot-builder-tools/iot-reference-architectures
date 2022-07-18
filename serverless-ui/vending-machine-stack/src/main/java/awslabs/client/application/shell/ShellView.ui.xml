@@ -1,0 +1,101 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:m="urn:import:gwt.material.design.client.ui"
+             xmlns:ma="urn:import:gwt.material.design.addins.client"
+             xmlns:m.html="urn:import:gwt.material.design.client.ui.html">
+
+    <ui:with field="tokens" type="awslabs.client.place.NameTokens"/>
+
+    <ui:style>
+        .logo {
+            padding: 10px;
+            border-bottom: 1px solid #E9E9E9;
+        }
+    </ui:style>
+
+    <m:MaterialPanel>
+        <m:MaterialRow>
+            <m:MaterialColumn>
+                <ma:cutout.MaterialCutOut ui:field="cutout" backgroundColor="BLUE" circle="true" opacity="0.8"
+                                          textAlign="CENTER">
+                    <m:MaterialCard grid="s4" offset="s4">
+                        <m:MaterialCardContent>
+                            <m:MaterialCardTitle title="Your user ID" text="Your user ID" iconType="PERSON"
+                                                 iconPosition="RIGHT"/>
+                            <m:MaterialLabel fontWeight="BOLD"
+                                             text="NOTE: Treat this like a password! This ID gives a user access to your builds and systems!"/>
+                            <m:MaterialLabel
+                                    text="Below is your unique ID. You can change it in the text area or copy it to save it for when you use another computer."/>
+                            <m:MaterialTextBox ui:field="userId" label="User ID"/>
+                        </m:MaterialCardContent>
+                        <m:MaterialCardAction>
+                            <m:MaterialLink text="Revert changes" ui:field="cancelChangeId" textColor="BLUE"
+                                            backgroundColor="WHITE"/>
+                            <m:MaterialLink text="Accept changes" ui:field="acceptChangeId" textColor="BLUE"
+                                            backgroundColor="WHITE"/>
+                        </m:MaterialCardAction>
+                    </m:MaterialCard>
+                </ma:cutout.MaterialCutOut>
+            </m:MaterialColumn>
+        </m:MaterialRow>
+
+        <m:MaterialHeader>
+            <m:MaterialNavBar ui:field="navBar" activates="sidenav" backgroundColor="INDIGO">
+                <m:MaterialNavBrand ui:field="vendingMachine" fontSize="1.2em" text="IoT vending machine"/>
+                <m:MaterialNavSection float="RIGHT">
+                    <m:MaterialLink ui:field="devBoard" iconType="DEVELOPER_BOARD" iconColor="AMBER"/>
+                </m:MaterialNavSection>
+            </m:MaterialNavBar>
+        </m:MaterialHeader>
+
+        <!-- The IDE tells us 'm:id="sidenav"' is not allowed here but if you remove it this will not work! -->
+        <m:MaterialSideNavPush ui:field="sideNav" m:id="sidenav" width="280" allowBodyScroll="true" showOnAttach="true">
+            <m.html:ListItem waves="DEFAULT" paddingBottom="22">
+                <m:MaterialImage width="100%" url="launcher-icons/iot-core.svg" addStyleNames="{style.logo}"/>
+            </m.html:ListItem>
+
+            <m.html:ListItem waves="DEFAULT">
+                <m:MaterialLink iconPosition="LEFT" iconType="INFO_OUTLINE"
+                                text="About" targetHistoryToken="{tokens.about}">
+                </m:MaterialLink>
+            </m.html:ListItem>
+
+            <m.html:ListItem waves="DEFAULT">
+                <m:MaterialLink ui:field="raspberryPi" text="Raspberry Pi" iconType="DEVELOPER_BOARD"
+                                targetHistoryToken="{tokens.raspberryPi}">
+                </m:MaterialLink>
+            </m.html:ListItem>
+
+            <m.html:ListItem waves="DEFAULT">
+                <m:MaterialLink ui:field="builds" text="Builds" iconType="BUILD"
+                                targetHistoryToken="{tokens.builds}">
+                    <m:MaterialBadge ui:field="buildCount" text="0 builds" textColor="WHITE"/>
+                </m:MaterialLink>
+            </m.html:ListItem>
+
+            <m.html:ListItem waves="DEFAULT">
+                <m:MaterialLink ui:field="systems" text="Systems" iconType="COMPUTER"
+                                targetHistoryToken="{tokens.systems}">
+                    <m:MaterialBadge ui:field="systemCount" text="0 systems" textColor="WHITE"/>
+                </m:MaterialLink>
+            </m.html:ListItem>
+
+            <m:MaterialCollapsible>
+                <m:MaterialCollapsibleItem>
+                    <m:MaterialCollapsibleHeader waves="DEFAULT">
+                        <m:MaterialLink ui:field="terminals" text="Terminals" iconType="SCREEN_SHARE"
+                                        targetHistoryToken="{tokens.terminals}">
+                            <m:MaterialBadge ui:field="terminalCount" text="0 terminals" textColor="WHITE"/>
+                        </m:MaterialLink>
+                    </m:MaterialCollapsibleHeader>
+                    <m:MaterialCollapsibleBody>
+                        <m.html:UnorderedList ui:field="terminalMenuList">
+                        </m.html:UnorderedList>
+                    </m:MaterialCollapsibleBody>
+                </m:MaterialCollapsibleItem>
+            </m:MaterialCollapsible>
+        </m:MaterialSideNavPush>
+
+        <m:MaterialContainer ui:field="mainContainer">
+        </m:MaterialContainer>
+    </m:MaterialPanel>
+</ui:UiBinder>
