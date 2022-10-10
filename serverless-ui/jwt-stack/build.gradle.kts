@@ -71,7 +71,7 @@ val awsSdk2Version = "2.17.290"
 val vavrVersion = "0.9.2"
 val vavrJacksonVersion = "0.10.3"
 val vavrGwtVersion = "0.9.2"
-val gwtServletVersion = "2.9.0"
+val gwtServletVersion = "2.10.0"
 val junitVersion = "4.13.2"
 // NOTE: Upgrading Jetty to 10.0.0 or beyond will cause this error - java.lang.NoSuchMethodError: 'void org.eclipse.jetty.server.ServerConnector.setSoLingerTime(int)'
 val jettyVersion = "10.0.7"
