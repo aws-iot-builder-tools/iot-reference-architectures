@@ -85,7 +85,7 @@ val log4jVersion = "2.17.1"
 val daggerVersion = "2.38.1"
 val gwtMaterialVersion = "2.5.0"
 val elemental2Version = "1.1.0"
-val elementoVersion = "1.0.3"
+val elementoVersion = "1.0.10-gwtcom"
 val gwtJacksonVersion = "0.15.4"
 val resultsIteratorForAwsJavaSdkVersion = "29.0.23"
 
