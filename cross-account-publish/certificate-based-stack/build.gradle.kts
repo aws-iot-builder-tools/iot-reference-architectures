@@ -50,7 +50,7 @@ tasks.shadowJar {
     transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java)
 }
 
-val awsLambdaJavaCoreVersion = "1.2.1"
+val awsLambdaJavaCoreVersion = "1.2.2"
 val awsLambdaJavaLog4j2Version = "1.5.1"
 val log4jVersion = "2.18.0"
 val jacksonVersion = "2.12.1"
