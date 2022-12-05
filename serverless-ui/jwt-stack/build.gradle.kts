@@ -147,7 +147,7 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor(10, TimeUnit.MINUTES)
 
     // Don't allow any configuration to use a broken version of HTTP client
-    resolutionStrategy.force("org.apache.httpcomponents:httpclient:4.5.13")
+    resolutionStrategy.force("org.apache.httpcomponents:httpclient:4.5.14")
 }
 
 configurations.implementation {
