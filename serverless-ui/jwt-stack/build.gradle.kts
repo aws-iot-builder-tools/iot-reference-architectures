@@ -18,7 +18,7 @@ plugins {
     id("org.wisepersist.gwt") version "1.1.19"
     id("org.gretty") version "4.0.3"
 
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.46.0"
 }
 
 extensions.findByName("buildScan")?.withGroovyBuilder {
