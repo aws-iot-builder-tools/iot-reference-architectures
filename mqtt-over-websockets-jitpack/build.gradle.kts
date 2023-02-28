@@ -6,7 +6,7 @@ plugins {
     id("java-library")
 
     // Creates fat JAR
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.0"
 
     // Adds dependencyUpdates task
     id("com.github.ben-manes.versions") version "0.42.0"
