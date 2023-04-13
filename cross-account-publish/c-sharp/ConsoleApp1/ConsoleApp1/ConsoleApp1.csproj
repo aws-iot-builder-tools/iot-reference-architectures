@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <OutputType>Exe</OutputType>
@@ -6,7 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AWSSDK.IoT" Version="3.7.17.32" />
+      <PackageReference Include="AWSSDK.IoT" Version="3.7.106.1" />
       <PackageReference Include="AWSSDK.IotData" Version="3.7.2.81" />
       <PackageReference Include="AWSSDK.SecurityToken" Version="3.7.1.214" />
     </ItemGroup>
