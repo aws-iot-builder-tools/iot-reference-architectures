@@ -1,4 +1,4 @@
-requests==2.25.1
+requests==2.31.0
 boto3==1.17.64
 AWSIoTPythonSDK==1.4.9
 argparse==1.4.0
