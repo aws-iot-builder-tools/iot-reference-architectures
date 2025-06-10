@@ -1,15 +1,15 @@
 plugins {
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.9.10"
     id("application")
     id("java")
     id("idea")
     id("java-library")
 
     // Creates fat JAR
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 
     // Adds dependencyUpdates task
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.47.0"
 }
 
 extensions.findByName("buildScan")?.withGroovyBuilder {
@@ -50,19 +50,19 @@ tasks.shadowJar {
     transform(com.github.jengelman.gradle.plugins.shadow.transformers.Log4j2PluginsCacheFileTransformer::class.java)
 }
 
-val awsLambdaJavaCoreVersion = "1.2.1"
+val awsLambdaJavaCoreVersion = "1.2.3"
 val awsLambdaJavaLog4j2Version = "1.5.1"
 val log4jVersion = "2.18.0"
 val jacksonVersion = "2.12.1"
 val vavrVersion = "0.10.3"
-val awsSdk2Version = "2.17.291"
+val awsSdk2Version = "2.20.139"
 val gwtServletVersion = "2.9.0"
 val junitVersion = "4.13.2"
 val slf4jSimpleVersion = "1.7.30"
 val vertxVersion = "4.0.2"
 val jjwtVersion = "3.13.0"
 val awsLambdaServletVersion = "0.2.4"
-val daggerVersion = "2.44"
+val daggerVersion = "2.48"
 val resultsIteratorForAwsJavaSdkVersion = "29.0.25"
 val bouncyCastleVersion = "1.70"
 val awsCdkConstructsForJavaVersion = "0.20.0"
