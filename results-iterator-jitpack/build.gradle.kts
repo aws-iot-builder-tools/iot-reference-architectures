@@ -4,10 +4,10 @@ plugins {
     id("idea")
 
     // Creates fat JAR
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 
     // Adds dependencyUpdates task
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.47.0"
 }
 
 val gradleDependencyVersion = "7.2"
@@ -27,9 +27,9 @@ tasks.shadowDistTar { enabled = false }
 // Specify all of our dependency versions
 val resultsIteratorForAwsJavaSdkVersion = "29.0.25"
 val junitVersion = "4.13.2"
-val awsSdk2Version = "2.17.291"
+val awsSdk2Version = "2.20.139"
 val vavrVersion = "0.10.4"
-val jcabiVersion = "0.22.0"
+val jcabiVersion = "0.23.0"
 
 group = "com.awslabs.aws.iot.resultsiterator.jitpack.Example"
 version = "1.0-SNAPSHOT"

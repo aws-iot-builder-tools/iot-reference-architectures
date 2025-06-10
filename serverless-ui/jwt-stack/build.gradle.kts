@@ -5,7 +5,7 @@ import org.wisepersist.gradle.plugins.gwt.GwtPluginExtension
 import org.wisepersist.gradle.plugins.gwt.GwtSuperDevOptions
 
 plugins {
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.9.10"
     id("application")
     id("java")
     id("idea")
@@ -18,7 +18,7 @@ plugins {
     id("org.wisepersist.gwt") version "1.1.19"
     id("org.gretty") version "4.0.3"
 
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.47.0"
 }
 
 extensions.findByName("buildScan")?.withGroovyBuilder {
@@ -64,25 +64,25 @@ tasks.distTar { enabled = false }
 tasks.shadowDistZip { enabled = false }
 tasks.shadowDistTar { enabled = false }
 
-val awsLambdaJavaCoreVersion = "1.2.1"
+val awsLambdaJavaCoreVersion = "1.2.3"
 val awsLambdaJavaLog4j2Version = "1.5.1"
-val jacksonVersion = "2.13.4"
-val awsSdk2Version = "2.17.292"
+val jacksonVersion = "2.14.1"
+val awsSdk2Version = "2.18.35"
 val vavrVersion = "0.10.4"
 val vavrJacksonVersion = "0.10.3"
 val vavrGwtVersion = "0.9.2"
 val gwtServletVersion = "2.10.0"
 val junitVersion = "4.13.2"
 // NOTE: Upgrading Jetty to 10.0.0 or beyond will cause this error - java.lang.NoSuchMethodError: 'void org.eclipse.jetty.server.ServerConnector.setSoLingerTime(int)'
-val jettyVersion = "11.0.12"
+val jettyVersion = "11.0.13"
 val bouncyCastleVersion = "1.70"
-val vertxVersion = "4.3.4"
 val jjwtVersion = "4.4.0"
+val vertxVersion = "4.4.5"
 val awsCdkConstructsForJava = "0.20.0"
 val awsCdkVersion = "1.156.1"
 val awsLambdaServletVersion = "0.3.8"
 val log4jVersion = "2.18.0"
-val daggerVersion = "2.44"
+val daggerVersion = "2.44.2"
 val gwtMaterialVersion = "2.6.1"
 val elemental2Version = "1.1.0"
 val elementoVersion = "1.0.10-gwtcom"
@@ -147,7 +147,7 @@ configurations.all {
     resolutionStrategy.cacheChangingModulesFor(10, TimeUnit.MINUTES)
 
     // Don't allow any configuration to use a broken version of HTTP client
-    resolutionStrategy.force("org.apache.httpcomponents:httpclient:4.5.13")
+    resolutionStrategy.force("org.apache.httpcomponents:httpclient:4.5.14")
 }
 
 configurations.implementation {

@@ -1,15 +1,15 @@
 plugins {
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.9.10"
     id("application")
     id("java")
     id("idea")
     id("java-library")
 
     // Creates fat JAR
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 
     // Adds dependencyUpdates task
-    id("com.github.ben-manes.versions") version "0.42.0"
+    id("com.github.ben-manes.versions") version "0.47.0"
 }
 
 val gradleDependencyVersion = "7.2"
@@ -27,7 +27,7 @@ tasks.shadowDistTar { enabled = false }
 
 // Specify all of our dependency versions
 val awsIotCoreWebsockets = "4.0.1"
-val awsSdkV2Version = "2.17.291"
+val awsSdkV2Version = "2.20.139"
 val junitVersion = "4.13.2"
 val awaitilityVersion = "4.2.0"
 
