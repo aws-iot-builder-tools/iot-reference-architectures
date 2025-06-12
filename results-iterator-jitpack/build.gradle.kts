@@ -29,7 +29,7 @@ val resultsIteratorForAwsJavaSdkVersion = "29.0.25"
 val junitVersion = "4.13.2"
 val awsSdk2Version = "2.20.139"
 val vavrVersion = "0.10.4"
-val jcabiVersion = "0.23.0"
+val jcabiVersion = "0.24.3"
 
 group = "com.awslabs.aws.iot.resultsiterator.jitpack.Example"
 version = "1.0-SNAPSHOT"
