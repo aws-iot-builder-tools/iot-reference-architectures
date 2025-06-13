@@ -51,7 +51,7 @@ tasks.shadowJar {
 }
 
 val awsLambdaJavaCoreVersion = "1.2.3"
-val awsLambdaJavaLog4j2Version = "1.5.1"
+val awsLambdaJavaLog4j2Version = "1.6.0"
 val log4jVersion = "2.18.0"
 val jacksonVersion = "2.12.1"
 val vavrVersion = "0.10.3"
