@@ -29,7 +29,7 @@ tasks.shadowDistTar { enabled = false }
 val awsIotCoreWebsockets = "4.0.1"
 val awsSdkV2Version = "2.31.63"
 val junitVersion = "4.13.2"
-val awaitilityVersion = "4.2.0"
+val awaitilityVersion = "4.3.0"
 
 // NOTE: Do not use 1.2.3 or you will get null pointer exceptions
 val pahoVersion = "1.2.5"
