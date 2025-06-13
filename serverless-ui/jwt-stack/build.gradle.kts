@@ -13,7 +13,7 @@ plugins {
     id("war")
 
     // Creates fat JAR
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 
     id("org.wisepersist.gwt") version "1.1.19"
     id("org.gretty") version "4.0.3"
