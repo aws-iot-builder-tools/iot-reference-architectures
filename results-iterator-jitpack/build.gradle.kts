@@ -28,7 +28,7 @@ tasks.shadowDistTar { enabled = false }
 val resultsIteratorForAwsJavaSdkVersion = "29.0.25"
 val junitVersion = "4.13.2"
 val awsSdk2Version = "2.31.63"
-val vavrVersion = "0.10.4"
+val vavrVersion = "0.10.6"
 val jcabiVersion = "0.24.3"
 
 group = "com.awslabs.aws.iot.resultsiterator.jitpack.Example"
