@@ -74,7 +74,7 @@ val vavrGwtVersion = "0.9.2"
 val gwtServletVersion = "2.10.0"
 val junitVersion = "4.13.2"
 // NOTE: Upgrading Jetty to 10.0.0 or beyond will cause this error - java.lang.NoSuchMethodError: 'void org.eclipse.jetty.server.ServerConnector.setSoLingerTime(int)'
-val jettyVersion = "11.0.13"
+val jettyVersion = "11.0.25"
 val bouncyCastleVersion = "1.70"
 val jjwtVersion = "4.5.0"
 val vertxVersion = "5.0.0"
