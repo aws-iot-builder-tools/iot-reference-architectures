@@ -16,7 +16,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
 
     id("org.wisepersist.gwt") version "1.1.19"
-    id("org.gretty") version "4.0.3"
+    id("org.gretty") version "4.1.6"
 
     id("com.github.ben-manes.versions") version "0.47.0"
 }
