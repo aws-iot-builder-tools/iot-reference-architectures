@@ -27,7 +27,7 @@ tasks.shadowDistTar { enabled = false }
 
 // Specify all of our dependency versions
 val awsIotCoreWebsockets = "4.0.1"
-val awsSdkV2Version = "2.31.72"
+val awsSdkV2Version = "2.32.21"
 val junitVersion = "4.13.2"
 val awaitilityVersion = "4.3.0"
 
