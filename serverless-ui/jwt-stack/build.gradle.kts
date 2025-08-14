@@ -5,7 +5,7 @@ import org.wisepersist.gradle.plugins.gwt.GwtPluginExtension
 import org.wisepersist.gradle.plugins.gwt.GwtSuperDevOptions
 
 plugins {
-    kotlin("jvm") version "2.2.0"
+    kotlin("jvm") version "2.2.10"
     id("application")
     id("java")
     id("idea")
