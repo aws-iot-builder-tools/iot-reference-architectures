@@ -64,7 +64,7 @@ tasks.distTar { enabled = false }
 tasks.shadowDistZip { enabled = false }
 tasks.shadowDistTar { enabled = false }
 
-val awsLambdaJavaCoreVersion = "1.3.0"
+val awsLambdaJavaCoreVersion = "1.4.0"
 val awsLambdaJavaLog4j2Version = "1.6.0"
 val jacksonVersion = "2.19.2"
 val awsSdk2Version = "2.32.22"
